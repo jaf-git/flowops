@@ -1,0 +1,40 @@
+# What the scanner must not read, and why each line is here.
+#
+# Semgrep ships defaults for this, and adding a file of our own **replaces** them rather than adding
+# to them — which is why the vendor directories below are restated rather than assumed.
+#
+# The rule this file exists for: **build output is not source.** A scanner that reads it reports
+# findings in code nobody wrote and nobody can fix, and a gate that cries wolf is one somebody
+# switches off. Found on 2026-08-16, when `mvnw clean verify` began succeeding past javadoc and the
+# JDK's own generated `search-page.js` — `window.location = getURL(...)` — failed the merge gate as an
+# open redirect. It is the JDK's file, it is regenerated on every build, and it is unreachable from
+# anything this product serves.
+#
+# It bites locally rather than in CI, because CI gives each job its own checkout and nothing has run
+# a build in the tree the scanner reads. That makes it exactly the kind of difference between local
+# and CI this repository has already paid for twice, so it is closed here rather than remembered.
+
+# Build output — regenerated, never authored.
+app/backend/target/
+app/frontend/dist/
+app/frontend/coverage/
+
+# Dependencies, restated because naming this file discards semgrep's defaults.
+node_modules/
+.git/
+
+# Generated documentation of any kind.
+**/apidocs/
+
+# The design prototype, which is a reference drawing rather than source. Added 2026-08-19, when the
+# local gate reported eight blocking findings — all of them `window.parent.postMessage(…, "*")` in
+# four copies of the design tool's own `support.js`. It is the same shape as the JDK file above and
+# fails the same way: nobody here wrote it, nothing here can fix it, no build reads it, and nothing
+# this product serves can reach it.
+#
+# It is also **local-only noise**. `inspiration/` is deliberately untracked (ARCHITECTURE-01 names the
+# repository shape and a top-level folder outside it is the Owner's to add), so CI never sees these
+# files and never failed on them. Excluding them here is what makes the local run agree with CI,
+# which is the whole point of the bundle — and leaving it would train somebody to read a red
+# scanner as normal.
+inspiration/

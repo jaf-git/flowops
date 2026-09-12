@@ -1,0 +1,93 @@
+### FEATURE_CANVAS — the live channel
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects, and a request without them answers 401 for a
+### reason that has nothing to do with the endpoint being right.
+###
+### Ports: the demo backend runs on 8081 (Tomcat9 owns 8080 on this machine).
+###
+### The order is the protocol's own, and it is the point of this file: cursor, snapshot, subscribe.
+### `DECISION-REALTIME-PROTOCOL-01` is snapshot-then-delta, and the cursor is read **before** the
+### snapshot so nothing can land in the gap between them unnoticed. Run them in the wrong order and
+### the stream is correct in every visible way while quietly able to lose one delta.
+###
+### The stream itself does not end. An editor that waits for a response will sit there holding an open
+### connection, which is the endpoint working — read the events as they arrive and close the tab. To
+### watch a delta appear, move a task from another window: block one from `task.http`, or assign a
+### reachable step from `process.http`, and the event lands within a second.
+###
+### The first thing back is a comment — `: subscribed` — and it arrives immediately, before anything
+### has happened on the run. It is what flushes the response headers, and without it a subscription to
+### a quiet process sends nothing at all until the first delta: the connection is open on the wire and
+### never in the browser, so `EventSource` does not fire `open` and the indicator reads Connecting…
+### indefinitely. An editor may not show a comment line at all; that is the comment doing its job.
+###
+### After that, a frame named `beat` arrives every `flowops.canvas.heartbeat-interval-ms` — fifteen
+### seconds by default — with an empty body and **no `id`**. It is the only thing that ever writes on a
+### calm board, and it is what makes silence measurable: a connection wedged open by a proxy produces
+### exactly the same nothing as a quiet process, so without it the client can only claim live for ever
+### or cry offline on a working stream. It carries no `id` deliberately; a heartbeat that advanced the
+### client's resume position would let a reconnect skip the deltas it was supposed to replay.
+###
+### It is a named event rather than a comment because `EventSource` does not dispatch comments to
+### JavaScript at all — a comment would keep the socket warm and leave the client exactly as unable to
+### measure silence as it was before. The greeting above is right as a comment because it only has to
+### flush headers; a heartbeat has to be heard.
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@manager = ionut@atelier.ro
+@password = a-long-enough-passphrase
+
+### Sign in as somebody who may see a running process.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{owner}}",
+  "password": "{{password}}"
+}
+
+### CANVAS-VIEW-PROCESS-01 (live) — where the stream stands. 200 {"cursor": n}, zero when nothing has
+### happened yet. A session and no permission: the answer is one number and names nothing and nobody.
+GET {{host}}/api/canvas/cursor
+
+### The snapshot, read second. PROCESS owns it — this is the same endpoint `process.http` probes, and
+### it is repeated here because the order is the thing being demonstrated rather than the response.
+### Paste an instance identifier from `process.http`'s start-an-instance response.
+GET {{host}}/api/process-instances/{{instanceId}}
+
+### CANVAS-VIEW-PROCESS-01 (live) — subscribe from the cursor read above. Events carry an identifier
+### and a kind and never a payload of anybody's data; the client refetches what it may then read.
+### Every event's SSE `id` is its cursor, so the browser's own reconnect resumes from it.
+GET {{host}}/api/canvas/stream/process-instances/{{instanceId}}?cursor={{cursor}}
+Accept: text/event-stream
+
+### Subscribing with no cursor at all — legitimate, and what a client does when it has no position to
+### resume from. It starts from this moment and replays nothing.
+GET {{host}}/api/canvas/stream/process-instances/{{instanceId}}
+Accept: text/event-stream
+
+### Extension — a gap too old to replay. Answers a `stale` event carrying CURSOR_TOO_OLD on the stream
+### and closes, rather than a status, because the client is already listening and this is an
+### instruction to it rather than a failure of the request. Named `stale` and not `error` because
+### `EventSource` dispatches its own transport failures under that name.
+GET {{host}}/api/canvas/stream/process-instances/{{instanceId}}?cursor=1
+Accept: text/event-stream
+
+### CANVAS_02 section 5 — an instance that does not exist, and one that is out of scope, answer alike:
+### 404 STREAM_NOT_AVAILABLE. A stream must not be usable to ask which runs there are.
+GET {{host}}/api/canvas/stream/process-instances/00000000-0000-0000-0000-000000000000
+Accept: text/event-stream
+
+### Sign in as a manager whose reporting tree does not contain this run's people, then subscribe: the
+### same 404. Scope is re-asked for **every event emitted** rather than once at connect, so a person
+### leaving the viewer's subtree stops receiving their events mid-connection — which this file cannot
+### demonstrate in one request and `CanvasStreamTest` proves instead.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{manager}}",
+  "password": "{{password}}"
+}

@@ -1,0 +1,69 @@
+### FEATURE_AI_ASSIST — what a model makes of work the deterministic rules do not catch.
+###
+### **Read this section before demonstrating it.** The one honest claim this feature makes is narrow:
+### `ProcessShapeHeuristic` catches long checklists and handover language, and a test asserts that it
+### returns **nothing** for *Onboarding client nou: strânge brieful, trimite contractul, programează
+### kickoff-ul* — four handovers between three people, and a process by any reading. Decision row 374
+### records that miss deliberately. This is the one place in the product where the rules run out.
+###
+### It is **off by default**. `FLOWOPS_AI_ENABLED=true` and `docker compose up -d ollama`.
+
+@host = http://localhost:8081
+@templateId = REPLACE-WITH-AN-APPROVED-TEMPLATE-id
+
+### Sign in first — see auth.http for why the token dance is required.
+
+### ── The case the rules miss ──────────────────────────────────────────────────────────────────────
+###
+### On the seeded demo this is *Onboarding client nou*, whose `processShapeHints` from
+### `GET /task-templates` is an **empty array**. Ask the model about the same template and it answers
+### `suggested: true` with four steps.
+###
+### **Check three things in the body, because each is a guarantee rather than a nicety:**
+###
+### 1. Every `text` is in **Romanian** — the words somebody typed. The model answers with *keys*
+###    (`c1`, `c2`) and the server looks the words up. An early version asked it to title the steps
+###    and it returned *Client brief* and *Contract signing*: fluent, plausible, nobody's words.
+###
+### 2. There is **no rationale field at all**. The model writes one sentence to think in and the
+###    product throws it away — one sampled run produced *Strângeleaza clientul*, which is not a
+###    Romanian word. So no model-authored text reaches a screen, and `evidenceLines` is the only
+###    number, counted by the server from rows it holds.
+###
+### 3. `partial` says whether some of the answer was dropped as untraceable, or the template was
+###    longer than the forty-line evidence bound. A screen must not imply it saw the whole picture.
+###
+### The first call takes about eighteen seconds. The second is instant — ten-minute cache, misses
+### included, because *there is nothing to suggest* is the common answer and re-discovering it costs
+### the same eighteen seconds.
+GET {{host}}/api/ai-assist/template-shape/{{templateId}}
+
+### The same template again. Sub-second, identical body.
+GET {{host}}/api/ai-assist/template-shape/{{templateId}}
+
+### ── Where it is wrong, which is the part to rehearse ─────────────────────────────────────────────
+###
+### Try it on *Raport săptămânal de vânzări* — export the figures, compare with last week. That is one
+### person's work and the model says **process about half the time**. Measured on the seeded demo, six
+### runs at temperature 0.1.
+###
+### That is why the card asks *Does this change hands?* rather than announcing an answer, and why it
+### carries a sentence saying the product is not sure. **Do not demonstrate this as a classifier.** It
+### is a prompt to look, on the one case the rules cannot reach, and it writes nothing either way.
+GET {{host}}/api/ai-assist/template-shape/REPLACE-WITH-A-SIMPLE-TEMPLATE-id
+
+### ── Switched off ─────────────────────────────────────────────────────────────────────────────────
+###
+### Restart without `FLOWOPS_AI_ENABLED=true` and run the first request again. **200 with
+### `available: false`**, not a 404 and not a 503: `CONSTRAINT-AI-OPTIONAL-01` makes a model-less
+### product a supported configuration rather than a fault. The card renders nothing at all, and every
+### other figure on the template page is exactly as it was — none of them ever came from a model.
+###
+### Worth doing once before the walkthrough: it is the configuration the thesis defends, and the
+### switched-off product contains no code that can reach Ollama.
+GET {{host}}/api/ai-assist/template-shape/{{templateId}}
+
+### 403 for a caller without TASK_TEMPLATE_VIEW. The permission is the one for the thing being
+### reasoned about rather than a permission of its own — an opinion is a derived reading of the same
+### words, and a separate permission would be a route to the content through the commentary.
+GET {{host}}/api/ai-assist/template-shape/{{templateId}}

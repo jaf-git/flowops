@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 380" width="1200" height="380" role="img" aria-label="FlowOps — the process nobody wrote down">
+  <title>FlowOps</title>
+  <defs>
+    <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#dcfb4b" stop-opacity="0"/>
+      <stop offset="45%" stop-color="#dcfb4b" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#dcfb4b" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="edgeFade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3a3d43"/>
+      <stop offset="100%" stop-color="#5c6066"/>
+    </linearGradient>
+    <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.1" fill="#ffffff" fill-opacity="0.045"/>
+    </pattern>
+    <clipPath id="card"><rect x="0" y="0" width="1200" height="380" rx="20"/></clipPath>
+  </defs>
+
+  <style>
+    .mono { font-family: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace; }
+    .sans { font-family: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+
+    /* The travelling pulse: one packet of work moving left to right through the chain. */
+    .pulse { animation: travel 7s cubic-bezier(.65,0,.35,1) infinite; }
+    @keyframes travel {
+      0%   { transform: translateX(0);    opacity: 0; }
+      6%   { opacity: 1; }
+      94%  { opacity: 1; }
+      100% { transform: translateX(720px); opacity: 0; }
+    }
+
+    /* Each station lights as the pulse reaches it. Five stations, 7s cycle. */
+    .stn { transition: none; }
+    .s1 { animation: lit 7s linear infinite; animation-delay: 0.20s; }
+    .s2 { animation: lit 7s linear infinite; animation-delay: 1.55s; }
+    .s3 { animation: lit 7s linear infinite; animation-delay: 2.90s; }
+    .s4 { animation: lit 7s linear infinite; animation-delay: 4.25s; }
+    .s5 { animation: lit 7s linear infinite; animation-delay: 5.60s; }
+    @keyframes lit {
+      0%, 100% { fill: #17181a; stroke: #2a2c30; }
+      2%       { fill: #dcfb4b; stroke: #dcfb4b; }
+      16%      { fill: #17181a; stroke: #6b7a0a; }
+      92%      { fill: #17181a; stroke: #2a2c30; }
+    }
+    .lbl1 { animation: say 7s linear infinite; animation-delay: 0.20s; }
+    .lbl2 { animation: say 7s linear infinite; animation-delay: 1.55s; }
+    .lbl3 { animation: say 7s linear infinite; animation-delay: 2.90s; }
+    .lbl4 { animation: say 7s linear infinite; animation-delay: 4.25s; }
+    .lbl5 { animation: say 7s linear infinite; animation-delay: 5.60s; }
+    @keyframes say {
+      0%, 100% { fill: #63666c; }
+      2%, 14%  { fill: #f2f4f6; }
+      92%      { fill: #63666c; }
+    }
+
+    /* The underline sweep beneath the wordmark. */
+    .sweep { animation: sweep 7s ease-in-out infinite; }
+    @keyframes sweep {
+      0%   { transform: translateX(-260px); }
+      50%  { transform: translateX(260px); }
+      100% { transform: translateX(-260px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .pulse, .stn, .s1, .s2, .s3, .s4, .s5,
+      .lbl1, .lbl2, .lbl3, .lbl4, .lbl5, .sweep { animation: none; }
+    }
+  </style>
+
+  <g clip-path="url(#card)">
+    <rect width="1200" height="380" fill="#0b0b0c"/>
+    <rect width="1200" height="380" fill="url(#dots)"/>
+
+    <!-- wordmark -->
+    <g transform="translate(72, 96)">
+      <rect x="0" y="-26" width="34" height="34" rx="9" fill="#dcfb4b"/>
+      <circle cx="11" cy="-15" r="3.4" fill="#0b0b0c"/>
+      <circle cx="23" cy="-15" r="3.4" fill="#0b0b0c"/>
+      <circle cx="11" cy="-3"  r="3.4" fill="#0b0b0c"/>
+      <circle cx="23" cy="-3"  r="3.4" fill="#0b0b0c"/>
+      <text class="sans" x="50" y="4" font-size="44" font-weight="700" fill="#f2f4f6" letter-spacing="-1">FlowOps</text>
+    </g>
+
+    <!-- sweeping hairline under the wordmark -->
+    <g clip-path="url(#card)">
+      <rect x="72" y="118" width="288" height="1.5" fill="#2a2c30"/>
+      <rect class="sweep" x="72" y="118" width="180" height="1.5" fill="url(#fade)"/>
+    </g>
+
+    <text class="sans" x="72" y="158" font-size="19" fill="#b4b8bf">The process nobody wrote down, recovered from the work people</text>
+    <text class="sans" x="72" y="184" font-size="19" fill="#b4b8bf">were already doing.</text>
+
+    <text class="mono" x="72" y="228" font-size="12.5" fill="#63666c" letter-spacing="1.6">SPRING BOOT 3.5 · JAVA 21 · REACT 19 · POSTGRESQL 16 · HEXAGONAL</text>
+
+    <!-- the chain: chat → mark → node → bracket → process -->
+    <g transform="translate(96, 292)">
+      <!-- rail -->
+      <line x1="16" y1="0" x2="736" y2="0" stroke="url(#edgeFade)" stroke-width="1.5" stroke-dasharray="3 5"/>
+
+      <!-- travelling packet -->
+      <g class="pulse">
+        <circle cx="16" cy="0" r="5.5" fill="#dcfb4b"/>
+        <circle cx="16" cy="0" r="11" fill="#dcfb4b" fill-opacity="0.16"/>
+      </g>
+
+      <g>
+        <rect class="stn s1" x="0"   y="-13" width="32" height="26" rx="8" fill="#17181a" stroke="#2a2c30" stroke-width="1.5"/>
+        <rect class="stn s2" x="180" y="-13" width="32" height="26" rx="8" fill="#17181a" stroke="#2a2c30" stroke-width="1.5"/>
+        <rect class="stn s3" x="360" y="-13" width="32" height="26" rx="8" fill="#17181a" stroke="#2a2c30" stroke-width="1.5"/>
+        <rect class="stn s4" x="540" y="-13" width="32" height="26" rx="8" fill="#17181a" stroke="#2a2c30" stroke-width="1.5"/>
+        <rect class="stn s5" x="720" y="-13" width="32" height="26" rx="8" fill="#17181a" stroke="#2a2c30" stroke-width="1.5"/>
+      </g>
+
+      <text class="mono lbl1" x="16"  y="34" font-size="11" fill="#63666c" text-anchor="middle" letter-spacing="1.2">MESSAGE</text>
+      <text class="mono lbl2" x="196" y="34" font-size="11" fill="#63666c" text-anchor="middle" letter-spacing="1.2">MARK</text>
+      <text class="mono lbl3" x="376" y="34" font-size="11" fill="#63666c" text-anchor="middle" letter-spacing="1.2">WORK NODE</text>
+      <text class="mono lbl4" x="556" y="34" font-size="11" fill="#63666c" text-anchor="middle" letter-spacing="1.2">BRACKET</text>
+      <text class="mono lbl5" x="736" y="34" font-size="11" fill="#63666c" text-anchor="middle" letter-spacing="1.2">PROCESS</text>
+    </g>
+
+    <!-- corner figure: the numbers that make the claim checkable -->
+    <g transform="translate(1128, 96)" text-anchor="end">
+      <text class="sans" x="0" y="0"   font-size="54" font-weight="700" fill="#dcfb4b" letter-spacing="-1.5">91</text>
+      <text class="mono" x="0" y="24"  font-size="11" fill="#63666c" letter-spacing="1.4">TABLES</text>
+      <text class="sans" x="0" y="86"  font-size="34" font-weight="700" fill="#f2f4f6" letter-spacing="-0.8">265</text>
+      <text class="mono" x="0" y="108" font-size="11" fill="#63666c" letter-spacing="1.4">ENDPOINTS</text>
+      <text class="sans" x="0" y="164" font-size="34" font-weight="700" fill="#f2f4f6" letter-spacing="-0.8">506</text>
+      <text class="mono" x="0" y="186" font-size="11" fill="#63666c" letter-spacing="1.4">TEST FILES</text>
+    </g>
+
+    <rect x="0.75" y="0.75" width="1198.5" height="378.5" rx="19.25" fill="none" stroke="#2a2c30" stroke-width="1.5"/>
+  </g>
+</svg>

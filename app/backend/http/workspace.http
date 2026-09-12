@@ -1,0 +1,884 @@
+### WORKSPACE — every endpoint this feature exposes, plus the failure probes.
+###
+### REST Client format; runs from the IDE with no external tool. It versions with the code, so it
+### never drifts from the routes it probes (QUALITY-01). The smoke test is the guarantee that runs in
+### CI; this is the manual probe for when something still surprises you.
+###
+### Run the requests in order. The session and the cross-site token are both cookies, so the client
+### carries them forward on its own once request 0a has been refused — that refusal is what mints the
+### token. The token is read back out of the jar with {{$cookie XSRF-TOKEN}}: it is minted per session
+### by the server, so it cannot live in an env file and must not be pasted by hand.
+###
+### The passcode is not in any response by design — it exists only in the delivered message. Read it
+### from Mailpit at http://localhost:8025 and paste it into the signup request below.
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@password = a-long-enough-passphrase
+
+### 0a. Establish the cross-site token. 401 is the expected answer; the cookie is the point.
+GET {{host}}/api/auth/session
+
+### 0b. Request the passcode, then read it from Mailpit.
+POST {{host}}/api/auth/signup/passcode
+Content-Type: application/json
+
+{"email": "{{owner}}"}
+
+### 0c. Become the owner. Paste the passcode from Mailpit. Expect 201 and a SESSION cookie.
+POST {{host}}/api/auth/signup
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"email": "{{owner}}", "passcode": "PASTE-FROM-MAILPIT", "password": "{{password}}"}
+
+### 1. The prefill. Expect 200, setupCompleted false, a suggested zone, and the valid set.
+GET {{host}}/api/workspace/setup
+
+### 2. Set the workspace up. Expect 200, the workspace, and the landing target.
+POST {{host}}/api/workspace/setup
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "ownerName": "Maria Ionescu",
+  "workspaceName": "Atelier Ionescu",
+  "use": "WORK",
+  "timezone": "Europe/Bucharest"
+}
+
+### 3. Replay it. Expect 200, the workspace unchanged, and no second event — reaching setup twice
+### is a routing accident, not an error.
+POST {{host}}/api/workspace/setup
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "ownerName": "Someone Else",
+  "workspaceName": "A Different Name",
+  "use": "PERSONAL",
+  "timezone": "Europe/London"
+}
+
+### --- Failure probes. Each one exists so a live 404 versus 403 versus 500 is one keystroke away. ---
+
+### 4. No session. Expect 401 and no body — the chain refuses before the endpoint runs.
+### A 404 here would mean the route is not registered at all, which is the failure this probe is for.
+GET {{host}}/api/workspace/setup
+Cookie:
+
+### 5. No cross-site token, session present. Expect 403.
+POST {{host}}/api/workspace/setup
+Content-Type: application/json
+
+{
+  "ownerName": "Maria Ionescu",
+  "workspaceName": "Atelier Ionescu",
+  "use": "WORK",
+  "timezone": "Europe/Bucharest"
+}
+
+### 6. Bad cross-site token. Expect 403.
+POST {{host}}/api/workspace/setup
+Content-Type: application/json
+X-XSRF-TOKEN: not-the-token-you-were-given
+
+{
+  "ownerName": "Maria Ionescu",
+  "workspaceName": "Atelier Ionescu",
+  "use": "WORK",
+  "timezone": "Europe/Bucharest"
+}
+
+### 7. Empty workspace name. Expect 400, code REQUEST_INVALID, details naming workspaceName / NotBlank.
+### Not WORKSPACE_NAME_REQUIRED: bean validation on the request refuses a blank name before the use
+### case runs, so the domain's own refusal is unreachable over HTTP. The field is named either way.
+POST {{host}}/api/workspace/setup
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "ownerName": "Maria Ionescu",
+  "workspaceName": "   ",
+  "use": "WORK",
+  "timezone": "Europe/Bucharest"
+}
+
+### 8. Empty owner name. Expect 400, code REQUEST_INVALID, details naming ownerName / NotBlank.
+### Same reason as probe 7.
+POST {{host}}/api/workspace/setup
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "ownerName": "   ",
+  "workspaceName": "Atelier Ionescu",
+  "use": "WORK",
+  "timezone": "Europe/Bucharest"
+}
+
+### 9. A zone the runtime does not know. Expect 400, code TIMEZONE_UNKNOWN.
+### This is the field that produces no error anywhere else and quietly skews every later measurement.
+POST {{host}}/api/workspace/setup
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "ownerName": "Maria Ionescu",
+  "workspaceName": "Atelier Ionescu",
+  "use": "WORK",
+  "timezone": "Europe/Atlantis"
+}
+
+### 10. A fixed offset rather than a zone. Expect 400 — it parses, and it is wrong twice a year.
+POST {{host}}/api/workspace/setup
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "ownerName": "Maria Ionescu",
+  "workspaceName": "Atelier Ionescu",
+  "use": "WORK",
+  "timezone": "+02:00"
+}
+
+### 11. Malformed body. Expect 400 and the shared envelope, never a stack trace.
+POST {{host}}/api/workspace/setup
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"ownerName": "Maria Ionescu"}
+
+### 12. Someone who does not own setup. Sign in as a colleague first, then expect 403 and
+### code SETUP_NOT_PERMITTED — on the prefill as well as on the action. There is no such colleague
+### until WORKSPACE-INVITE-01 is built.
+POST {{host}}/api/workspace/setup
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "ownerName": "Ionuț Ștefănescu",
+  "workspaceName": "Altă Firmă",
+  "use": "WORK",
+  "timezone": "Europe/Bucharest"
+}
+
+###############################################################################
+# WORKSPACE-INVITE-01 — invite a person with a role and a reporting line
+#
+# Requires PERSON_INVITE, which in this pass the owner alone holds. Manager
+# invitations and the owner-approval switch are specified and deferred together
+# (DECISION-MVP-TRIAGE-01), so there is no probe for AWAITING_APPROVAL — it has
+# no producer yet, and a probe for a state nothing creates would read as a gap
+# rather than as a deferral.
+#
+# No probe here carries a token, and none can: the token is never returned by
+# any endpoint. Replace {{managerId}} with the owner's own membership id, which
+# is the only active membership until the first invitation is accepted.
+###############################################################################
+
+### 13. Invite a colleague. Expect 201, state SENT, an expiry seven days out,
+### and NO token anywhere in the response body.
+POST {{host}}/api/workspace/invitations
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "emailAddress": "ionut@atelier.ro",
+  "role": "EMPLOYEE",
+  "managerId": "{{managerId}}"
+}
+
+### 14. The same address again while the first invitation is open.
+### Expect 409 and code DUPLICATE_INVITATION — not a second message to Ionuț.
+POST {{host}}/api/workspace/invitations
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "emailAddress": "IONUT@Atelier.ro",
+  "role": "EMPLOYEE",
+  "managerId": "{{managerId}}"
+}
+
+### 15. The caller's own address. Expect 422 and code SELF_INVITATION —
+### distinct from ALREADY_MEMBER, because "you are already here" and "somebody
+### else holds that" send a person to different places.
+POST {{host}}/api/workspace/invitations
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "emailAddress": "maria@atelier.ro",
+  "role": "EMPLOYEE",
+  "managerId": "{{managerId}}"
+}
+
+### 16. A manager identifier that is not an active membership.
+### Expect 422 and code MANAGER_INACTIVE — checked at submission, not at render.
+POST {{host}}/api/workspace/invitations
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "emailAddress": "ioana@atelier.ro",
+  "role": "EMPLOYEE",
+  "managerId": "00000000-0000-0000-0000-000000000000"
+}
+
+### 17. The owner role, which the request type cannot express.
+### Expect 400 from deserialisation: nobody may invite an owner, including the
+### owner, so the enum has no such constant to submit.
+POST {{host}}/api/workspace/invitations
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "emailAddress": "cineva@atelier.ro",
+  "role": "OWNER",
+  "managerId": "{{managerId}}"
+}
+
+### 18. Malformed address. Expect 400 and the shared envelope naming the field.
+POST {{host}}/api/workspace/invitations
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "emailAddress": "not-an-address",
+  "role": "EMPLOYEE",
+  "managerId": "{{managerId}}"
+}
+
+### 19. No session. Expect 401 from the security chain, with no body.
+POST {{host}}/api/workspace/invitations
+Content-Type: application/json
+
+{
+  "emailAddress": "ionut@atelier.ro",
+  "role": "EMPLOYEE",
+  "managerId": "{{managerId}}"
+}
+
+### 20. Session but no cross-site token. Expect 403 from the CSRF filter,
+### before the endpoint is reached at all.
+POST {{host}}/api/workspace/invitations
+Content-Type: application/json
+
+{
+  "emailAddress": "ionut@atelier.ro",
+  "role": "EMPLOYEE",
+  "managerId": "{{managerId}}"
+}
+
+### 21. The fourth invitation to one address inside a day, after three have been
+### created and declined or revoked. Expect 429 and code RATE_LIMIT, and no
+### message sent — the bound that makes this endpoint safe to publish.
+POST {{host}}/api/workspace/invitations
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "emailAddress": "ionut@atelier.ro",
+  "role": "EMPLOYEE",
+  "managerId": "{{managerId}}"
+}
+
+### --- WORKSPACE-VIEW-PEOPLE-01 — the directory and the reporting line ---
+
+### 22. The people screen, as the owner. Expect 200: every membership with its
+### display name, role and managerId, plus `invitations` because the owner holds
+### PERSON_INVITE, plus `onlyMember`.
+###
+### Read the body for two absences rather than for what is present. No member
+### row carries an address — only display names — and nothing anywhere counts,
+### scores, averages or ranks anybody's work (CONSTRAINT-METRICS-PRIVACY-01).
+### The owner's row has managerId null, which is invariant I2: the tree is
+### rooted at the owner and the root is the membership with no manager.
+GET {{host}}/api/workspace/people
+
+### 23. The same request as somebody who does not hold PERSON_INVITE — sign in
+### as an employee first. Expect 200, and expect the `invitations` field to be
+### **absent from the JSON entirely**, not present and empty.
+###
+### The difference is the point. An empty array is the claim "there are none",
+### which is a different and possibly false thing to tell somebody; an
+### unannounced hire is information about the business and does not reach people
+### with no part in the decision. If you see `"invitations": []` here, the
+### server-side filter has been replaced by a client-side one and the disclosure
+### has already happened.
+GET {{host}}/api/workspace/people
+
+### 24. No session. Expect 401 from the security chain, with no body — the same
+### answer an address that does not exist would give, so nothing is learned
+### about what the product has.
+GET {{host}}/api/workspace/people
+
+### 25. Authenticated but without PEOPLE_VIEW. Expect 403.
+###
+### Unreachable as shipped: V9 grants PEOPLE_VIEW to owner, manager and employee
+### alike, so no real caller can be refused. To see it, delete the row —
+###   delete from auth_role_permission
+###    where role_name = 'EMPLOYEE' and permission_name = 'PEOPLE_VIEW';
+### — sign in as an employee, run this, and put the row back. That is exactly
+### what the round-trip test does, and it is the only way to show the annotation
+### is load-bearing rather than decorative.
+GET {{host}}/api/workspace/people
+
+### --- WORKSPACE-REVOKE-INVITE-01 — withdraw an invitation before it is accepted ---
+
+### 26. Withdraw the invitation created by probe 17. Expect 200, state REVOKED,
+### and a revokedAt. Run probe 22 afterwards: the invitation is gone from the
+### directory, which is where the person acted from.
+###
+### The response carries no token and no hash — there is no field for either.
+POST {{host}}/api/workspace/invitations/{{invitationId}}/revoke
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+### 27. The same call again. Expect 200, state still REVOKED, and **revokedAt
+### null** — this call changed nothing, so it withdrew nothing.
+###
+### Check `select count(*) from workspace_event where action = 'INVITATION_REVOKED'`
+### after: it must still be 1. Two events would have the record claim an
+### invitation was withdrawn twice, which is the failure the row lock prevents.
+POST {{host}}/api/workspace/invitations/{{invitationId}}/revoke
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+### 28. An identifier naming no invitation. Expect 404 and INVITATION_NOT_FOUND.
+###
+### A refusal rather than a silent success, unlike the already-terminal case
+### above: "this invitation cannot be accepted" is true of one that never
+### existed, and answering success would also be true of a typo, leaving the
+### caller believing they had withdrawn something.
+POST {{host}}/api/workspace/invitations/00000000-0000-0000-0000-000000000000/revoke
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+### 29. No session. Expect 401 from the security chain, with no body.
+POST {{host}}/api/workspace/invitations/{{invitationId}}/revoke
+Content-Type: application/json
+
+### 30. Holding neither revoke permission. Expect 403.
+###
+### Unreachable as shipped — V10 grants the owner both. To see it:
+###   delete from auth_role_permission where role_name = 'OWNER'
+###    and permission_name in ('INVITATION_REVOKE_OWN', 'INVITATION_REVOKE_ANY');
+### then sign in, run this, and put the rows back. Both go, not one: the
+### annotation accepts either, which is decision row 91.
+POST {{host}}/api/workspace/invitations/{{invitationId}}/revoke
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+### 31. NOT_YOURS — a manager reaching for an invitation somebody else created.
+### Expect 403 and code NOT_YOURS, told apart from probe 30 by the code rather
+### than the status, because both answer 403.
+###
+### Unreachable until AUTH-ACCEPT-INVITE-01 ships: there is no second person to
+### hold the manager role. The rule is built and unit-tested against a manager
+### who does hold it.
+POST {{host}}/api/workspace/invitations/{{invitationId}}/revoke
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+### 32. ALREADY_ACCEPTED — expect 409, and a message naming the person and
+### naming deactivation without offering it, because
+### WORKSPACE-DEACTIVATE-PERSON-01 is Specced and not built.
+###
+### Also unreachable until acceptance ships: nothing sets ACCEPTED.
+POST {{host}}/api/workspace/invitations/{{invitationId}}/revoke
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+### --- WORKSPACE-EDIT-REPORTING-LINE-01 — change who a person reports to ---
+
+### 33. What the move would do, before doing it. Expect 200 with the former and
+### new manager by name, and `movingWithThem` naming everybody who travels with
+### the person because they report to them.
+###
+### Read the list, not the count: extension 3a exists because moving one person
+### can silently relocate a third of the company. There is no separate count
+### field — it is the list's length, so the two cannot disagree.
+GET {{host}}/api/workspace/people/{{personId}}/manager/preview?proposedManagerId={{managerId}}
+
+### 34. Make the move. Expect 200, `changed: true`, and exactly one
+### REPORTING_LINE_CHANGED row in workspace_event.
+###
+### The event is not optional and not decoration. Moving a person under yourself
+### grants visibility over their work with no permission having changed, so
+### `select * from workspace_event where action = 'REPORTING_LINE_CHANGED'` is
+### the only place the question "how did this manager come to see this?" can be
+### answered from.
+POST {{host}}/api/workspace/people/{{personId}}/manager
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "proposedManagerId": "{{managerId}}"
+}
+
+### 35. The same call again. Expect 200 and `changed: false` — the proposal is
+### already true. Nothing is written and **no second event is appended**, because
+### the log records what happened and nothing did.
+POST {{host}}/api/workspace/people/{{personId}}/manager
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "proposedManagerId": "{{managerId}}"
+}
+
+### 36. CYCLE — name somebody below this person as their manager. Expect 422,
+### code CYCLE, and `details` carrying the path that closes the loop, one step
+### per entry, from the person being moved down to the proposed manager.
+###
+### This is the only refusal in the feature a reasonable person triggers by
+### accident, which is why it carries the path instead of only saying no. The
+### screen turns it into "Andrei reports to Ioana, who reports to Ionuț. So Ionuț
+### cannot report to Andrei."
+POST {{host}}/api/workspace/people/{{managerId}}/manager
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "proposedManagerId": "{{personId}}"
+}
+
+### 37. SELF_MANAGER. Expect 422 — a cycle of length one is still a cycle.
+POST {{host}}/api/workspace/people/{{personId}}/manager
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "proposedManagerId": "{{personId}}"
+}
+
+### 38. OWNER_HAS_NO_MANAGER — the owner is the root (invariant I2). Expect 422.
+### Checked before anything about the proposal, because it is a fact about the
+### subject: telling somebody their chosen manager is ineligible when the real
+### answer is that this person cannot have one at all sends them to change the
+### wrong field.
+POST {{host}}/api/workspace/people/{{ownerMembershipId}}/manager
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "proposedManagerId": "{{managerId}}"
+}
+
+### 39. MANAGER_NOT_ELIGIBLE — name somebody holding the employee role. Expect
+### 422. Invariant I3's second half: a person with reports gains visibility over
+### other people's work, and that visibility is what the manager role *is*.
+POST {{host}}/api/workspace/people/{{personId}}/manager
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "proposedManagerId": "{{employeeMembershipId}}"
+}
+
+### 40. MANAGER_INACTIVE — name somebody deactivated. Expect 422, told apart from
+### probe 39 by the code rather than the status, because both answer 422 and they
+### send the person somewhere different: pick somebody still here, or pick
+### somebody who may hold reports.
+POST {{host}}/api/workspace/people/{{personId}}/manager
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "proposedManagerId": "{{deactivatedMembershipId}}"
+}
+
+### 41. SUBJECT_INACTIVE — move somebody who was deactivated. Expect 422, and the
+### code rather than the status is what separates it from probe 40: that one is
+### about the person being moved *to*, this one about the person being moved. The
+### directory hides the row action on a deactivated row, so this probe is the only
+### way to reach the rule — which is the reason it is a rule and not a hidden
+### control. The precondition has always said it; until now only the owner half of
+### it was enforced.
+POST {{host}}/api/workspace/people/{{deactivatedMembershipId}}/manager
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "proposedManagerId": "{{managerId}}"
+}
+
+### 42. MEMBERSHIP_NOT_FOUND. Expect 404 — answered for the subject and the
+### proposed manager alike, because distinguishing them would tell a caller which
+### of two identifiers exists.
+POST {{host}}/api/workspace/people/00000000-0000-0000-0000-000000000000/manager
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "proposedManagerId": "{{managerId}}"
+}
+
+### 43. Without REPORTING_LINE_EDIT. Expect 403 and NOT_PERMITTED.
+###
+### Unreachable as shipped: V11 grants it to the owner, and to nobody else on
+### purpose. To see it:
+###   delete from auth_role_permission
+###    where role_name = 'OWNER' and permission_name = 'REPORTING_LINE_EDIT';
+### then sign in, run this, and put the row back. Widening this permission is not
+### a configuration change — WORKSPACE_UC_04 warns the containment check it would
+### need fails silently.
+POST {{host}}/api/workspace/people/{{personId}}/manager
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{
+  "proposedManagerId": "{{managerId}}"
+}
+
+### AUTH-ACCEPT-INVITE-01 — see what an invitation offers, with no session at all.
+###
+### The only endpoint in WORKSPACE reachable without signing in. To try it: run request 8 above to
+### create an invitation, take the token out of the link in the message the server sent, and paste it
+### here. The token is stored nowhere — the mail is the only place it ever exists.
+###
+### Send this one from a fresh client, or with the session cookie removed. If it answers while you
+### are signed in but 401 when you are not, the public path entry is missing and the screen an
+### invited person opens will never work.
+GET {{host}}/api/workspace/invitations/{{invitationToken}}
+Accept-Language: ro
+
+### 24. The same address with a token that was never minted — 410 INVITATION_NOT_USABLE.
+### Expired, already used, revoked and awaiting-approval all answer exactly this, byte for byte.
+### If any of them differs, criterion 5 is broken and the difference tells whoever holds the token
+### that an address is under consideration.
+GET {{host}}/api/workspace/invitations/a-token-that-was-never-minted
+Accept-Language: en
+
+### 25. AUTH-ACCEPT-INVITE-01 slice B — agree and join, with no session at all.
+###
+### Run request 23 first. That GET is not optional here: it is what mints the XSRF-TOKEN cookie, and
+### unlike the read this is a POST, so the cross-site token applies. `consentVersion` must be the
+### version request 23 answered with — send a different one and it answers 409 CONSENT_VERSION_STALE,
+### which is the point: nobody is recorded as agreeing to words they did not read.
+###
+### Expect 201, a SESSION cookie, and a landing target. Then call GET {{host}}/api/auth/session with
+### the same client: it should answer 200 as the person who just joined.
+POST {{host}}/api/workspace/invitations/{{invitationToken}}/accept
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"displayName": "Cosmin Ionescu", "password": "{{password}}", "consentVersion": "PASTE-FROM-REQUEST-23"}
+
+### 26. A password that fails policy — 400 PASSWORD_POLICY_VIOLATION, naming the rule.
+### `details[0].rule` is the enum constant the frontend turns into a message key. Nothing is created.
+POST {{host}}/api/workspace/invitations/{{invitationToken}}/accept
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"displayName": "Cosmin Ionescu", "password": "short", "consentVersion": "PASTE-FROM-REQUEST-23"}
+
+### 27. An empty name — 400 DISPLAY_NAME_REQUIRED, and nothing is created.
+### The invitation carries an address and never a name, so this is the only moment to ask for one.
+POST {{host}}/api/workspace/invitations/{{invitationToken}}/accept
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"displayName": "   ", "password": "{{password}}", "consentVersion": "PASTE-FROM-REQUEST-23"}
+
+### 28. Decline — 204, and nothing is created.
+### Afterwards the invitation reads DECLINED with a declined_at, there is no account and no
+### membership, and the event log holds INVITATION_DECLINED and nothing claiming anybody joined.
+POST {{host}}/api/workspace/invitations/{{invitationToken}}/decline
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+### 29. The carve-out is one path segment wide, and this is how you check it.
+### Accepting and declining are public; revoking sits at the same depth and must stay 401 to a caller
+### with no session. Send this one with the session cookie removed — a 200 here is a stranger being
+### able to withdraw somebody's invitation.
+POST {{host}}/api/workspace/invitations/{{invitationId}}/revoke
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+
+### ------------------------------------------------------------------------------------------------
+### WORKSPACE-ERASE-PERSON-01 -- the only irreversible operation in the product.
+### Three barriers stand in front of it and each removes a different failure, so each has its own
+### probe below: prior deactivation removes the accidental single click, re-authentication removes the
+### unattended session, and the typed name removes the wrong row.
+### ------------------------------------------------------------------------------------------------
+
+### 30. What erasing somebody would destroy -- 200, and nothing is written.
+### `destroys` and `survives` are keys the interface translates, never sentences. `refusal` names the
+### barrier in the way rather than throwing, so the screen can explain it where the owner is looking.
+### Note what is NOT in this response: no email address. The directory forbids that shape and so does
+### this -- a response carrying something the interface then hides has already disclosed it.
+GET {{host}}/api/workspace/people/{{membershipId}}/erasure
+
+### 31. Erase, with no re-authentication -- 403 REAUTHENTICATION_REQUIRED, and nothing is destroyed.
+### Run this BEFORE probe 32. It is the barrier that would have answered 500: AUTH's guard throws
+### AUTH's exception and AUTH's advice is scoped to AUTH's package, so WORKSPACE needed its own.
+POST {{host}}/api/workspace/people/{{membershipId}}/erase
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"typedName": "Ionut Petrescu"}
+
+### 32. Elevate the session, which is the second barrier satisfied.
+### The password is spent here and never travels with the destructive request itself.
+POST {{host}}/api/auth/reauthenticate
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"password": "{{password}}"}
+
+### 33. Erase somebody still working here -- 422 SUBJECT_ACTIVE.
+### The first barrier. Point this at an ACTIVE membership; erasing is two deliberate acts and this is
+### the refusal that makes it two.
+POST {{host}}/api/workspace/people/{{activeMembershipId}}/erase
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"typedName": "Ioana Radu"}
+
+### 34. Erase with a colleague's name typed instead -- 422 NAME_MISMATCH, and nothing is destroyed.
+### The third barrier. Use a name that belongs to somebody real: against a nonsense string a guard that
+### refuses everything and one that compares correctly are indistinguishable, and the mistake this
+### exists to catch is the right person acting deliberately on the wrong row.
+POST {{host}}/api/workspace/people/{{membershipId}}/erase
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"typedName": "Ioana Radu"}
+
+### 35. Erase -- 200, and it cannot be undone.
+### Afterwards: the membership reads ERASED with an erased_at and its deactivated_at intact, the
+### account holds an opaque erased+<id>@erased.invalid address and no display name, auth_credential has
+### no row for it, and the directory returns the person under no filter at all.
+### `opaqueIdentifier` is the account identifier -- everything they authored already resolves through
+### it, so nothing is minted and nothing is rewritten.
+POST {{host}}/api/workspace/people/{{membershipId}}/erase
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"typedName": "Ionut Petrescu"}
+
+### 36. Erase the same person again -- 200 with `changed: false`, and no second event.
+### There is nothing left to destroy, so the caller's intent is already true. Check the event table
+### afterwards: exactly one PERSON_ERASED, not two.
+POST {{host}}/api/workspace/people/{{membershipId}}/erase
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"typedName": "anything at all"}
+
+### 37. The refusal for a caller who holds no PERSON_ERASE -- 403 NOT_PERMITTED.
+### Sign in as an employee first. Owner-only and never delegable: erasure is the one operation where a
+### mistaken grant of authority cannot be corrected afterwards.
+POST {{host}}/api/workspace/people/{{membershipId}}/erase
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"typedName": "Ionut Petrescu"}
+
+
+### ------------------------------------------------------------------------------------------------
+### WORKSPACE-VIEW-OWN-DATA-01 and WORKSPACE-EDIT-OWN-PROFILE-01 -- the right of access, and my name.
+### Note what is missing from every probe below: a parameter naming whose data to return. That absence
+### is the access control, not an oversight -- an endpoint accepting one would be a decision waiting to
+### be got wrong. The single exception is probe 42, and it is bounded twice.
+### ------------------------------------------------------------------------------------------------
+
+### 38. Everything held about me -- 200.
+### Read the response for what is NOT in it: no colleague's address, no task content, no comment text.
+### The only other person named anywhere is a manager in the caller's own reporting line, and that line
+### is the caller's data -- it is the record of who could see their work.
+GET {{host}}/api/workspace/me
+
+### 39. Take a copy -- 200, delivered as an attachment.
+### Same use case and same mapper as probe 38, because criterion 3 says the file carries the same
+### information as the screen and two readers would drift. This is the one read on this path that
+### writes: a row in workspace_data_export naming the subject, the producer and the moment.
+POST {{host}}/api/workspace/me/export
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+### 40. The sixth copy in a day -- 429 EXPORT_LIMIT.
+### Send probe 39 five times first. Asserting that the first succeeds proves nothing about a bound; the
+### sixth is the one that has to be told no. An export reads across every table holding anything about
+### somebody, so an unbounded loop of them is aimed at the person's own workspace.
+POST {{host}}/api/workspace/me/export
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+### 41. The owner produces a deactivated person's copy -- 200, and the file says who made it.
+### Extension 3a: the right of access does not lapse when access does. Deactivate somebody first.
+### `producedForSomebodyElse` is true, and `account.sessions` is empty because deactivation ended them.
+POST {{host}}/api/workspace/people/{{deactivatedMembershipId}}/export
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+### 42. The same, aimed at somebody still working here -- 422 SUBJECT_ACTIVE.
+### They can sign in and ask for their own copy, which is the path this one substitutes for. Check
+### afterwards that workspace_data_export has no row: a refusal must not spend one of their five.
+POST {{host}}/api/workspace/people/{{activeMembershipId}}/export
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+### 43. The same, as an employee -- 403 NOT_PERMITTED.
+### Sign in as an employee. PERSON_DEACTIVATE is owner-only and non-delegable, and its population is
+### exactly the people this path may reach -- which is why it is the permission borrowed here rather
+### than a new one invented in a specification that is not mine.
+POST {{host}}/api/workspace/people/{{deactivatedMembershipId}}/export
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+### 44. Change my own name -- 200 with `changed: true`.
+### Afterwards the directory reads the new name everywhere, on things authored before the change too,
+### because nothing stores a copy of it. The event holds the person, the actor and the moment and
+### NEITHER name -- owner ruling on WORKSPACE_REQ_BLOCKER_06, option A. Check workspace_event: no row
+### contains either spelling.
+PUT {{host}}/api/workspace/me/profile
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"displayName": "Ioana Radu-Marin"}
+
+### 45. Submit the same name again -- 200 with `changed: false`, and no second event.
+### Extension 1b. Count PROFILE_CHANGED afterwards: one, not two.
+PUT {{host}}/api/workspace/me/profile
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"displayName": "Ioana Radu-Marin"}
+
+### 46. A name of nothing but spaces -- 400, and nothing is stored.
+### Bean validation refuses this before the use case runs, so over HTTP this proves the boundary and
+### not the use case's own guard. That guard is real and is proven where it is reachable, in
+### EditOwnProfileServiceTest -- two walls, and only one of them is visible from here.
+PUT {{host}}/api/workspace/me/profile
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"displayName": "   "}
+
+### 47. An attempt to change the address -- there is no field for it, and adding one changes nothing.
+### Extension 1c. The address is what the invitation, the consent record and the credential are bound
+### to. The extra property is ignored and the name is what changes.
+PUT {{host}}/api/workspace/me/profile
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"displayName": "Ioana Radu-Marin", "emailAddress": "somebody-else@atelier.ro"}
+
+
+### ------------------------------------------------------------------------------------------------
+### WORKSPACE-CONFIGURE-01 -- quietly the most consequential screen in the product. Every number TRIAGE
+### shows and every nudge AUTOMATION sends is computed against these values, and nothing validates them
+### against reality: a wrong working day produces no error, only confidently incorrect metrics.
+### Owner-only. Sign in as the owner before any of these.
+### ------------------------------------------------------------------------------------------------
+
+### 48. How the business is measured -- 200, and never empty.
+### Shipping defaults apply until somebody changes them: Monday to Friday, nine to five, a 24-hour
+### at-risk window, escalation at 24/72/168 hours, quiet hours 22:00 to 06:00, approval switch off.
+### `effectiveFrom` is here because a person asking why a number looks wrong is asking exactly that.
+GET {{host}}/api/workspace/settings
+
+### 49. Change two values -- 200, and `changedFields` names exactly those two.
+### Afterwards there are TWO rows in workspace_settings: the old one closed at the instant the new one
+### opened. That is what lets a measurement taken last month resolve last month's parameters. And
+### workspace_settings_change holds one row per field that moved, with its old and new value -- the
+### event alone would say something changed and be unable to say what.
+PUT {{host}}/api/workspace/settings
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"name": "Atelier Bucuresti", "use": "WORK", "timezone": "Europe/Bucharest",
+ "workingDays": ["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],
+ "workingHoursStart": "09:00", "workingHoursEnd": "17:00",
+ "atRiskWindowHours": 48,
+ "escalationIntervalsHours": [24, 72, 168],
+ "quietHoursStart": "22:00", "quietHoursEnd": "06:00",
+ "invitationApprovalRequired": true}
+
+### 50. Send exactly the same values again -- 200, and `changedFields` is EMPTY.
+### Extension 5b. Check afterwards: no third settings row, and still one SETTINGS_CHANGED event rather
+### than two. The record is a history of changes, not a history of visits -- and superseding a row with
+### an identical one would end its period for no reason, which is the one way to corrupt the history.
+PUT {{host}}/api/workspace/settings
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"name": "Atelier Bucuresti", "use": "WORK", "timezone": "Europe/Bucharest",
+ "workingDays": ["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],
+ "workingHoursStart": "09:00", "workingHoursEnd": "17:00",
+ "atRiskWindowHours": 48,
+ "escalationIntervalsHours": [24, 72, 168],
+ "quietHoursStart": "22:00", "quietHoursEnd": "06:00",
+ "invitationApprovalRequired": true}
+
+### 51. Quiet hours that wrap midnight -- 200. This is the NORMAL case, not an inverted range.
+### Extension 3c. Treating it as inverted would either fire escalations through the night or never fire
+### them, and both look like a working system from outside.
+PUT {{host}}/api/workspace/settings
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"name": "Atelier Bucuresti", "use": "WORK", "timezone": "Europe/Bucharest",
+ "workingDays": ["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],
+ "workingHoursStart": "09:00", "workingHoursEnd": "17:00", "atRiskWindowHours": 48,
+ "escalationIntervalsHours": [24, 72, 168],
+ "quietHoursStart": "21:30", "quietHoursEnd": "07:15",
+ "invitationApprovalRequired": true}
+
+### 52. An escalation ladder that does not ascend -- 422 ESCALATION_INTERVALS_UNORDERED.
+### Extension 3a, and `details` names TWO positions rather than one field: an interval is only wrong
+### relative to its neighbour, so a refusal naming a single field cannot describe what broke.
+PUT {{host}}/api/workspace/settings
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"name": "Atelier Bucuresti", "use": "WORK", "timezone": "Europe/Bucharest",
+ "workingDays": ["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],
+ "workingHoursStart": "09:00", "workingHoursEnd": "17:00", "atRiskWindowHours": 48,
+ "escalationIntervalsHours": [24, 72, 48],
+ "quietHoursStart": "22:00", "quietHoursEnd": "06:00",
+ "invitationApprovalRequired": false}
+
+### 53. Quiet hours covering the whole day -- 422 QUIET_HOURS_COVER_THE_DAY.
+### Extension 3d. Escalation would never fire and the product would appear to work while doing nothing,
+### which is the failure mode hardest to notice.
+PUT {{host}}/api/workspace/settings
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"name": "Atelier Bucuresti", "use": "WORK", "timezone": "Europe/Bucharest",
+ "workingDays": ["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],
+ "workingHoursStart": "09:00", "workingHoursEnd": "17:00", "atRiskWindowHours": 48,
+ "escalationIntervalsHours": [24, 72, 168],
+ "quietHoursStart": "00:00", "quietHoursEnd": "00:00",
+ "invitationApprovalRequired": false}
+
+### 54. No working day -- 422 NO_WORKING_DAYS. Extension 3e: nothing would ever be measured.
+PUT {{host}}/api/workspace/settings
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"name": "Atelier Bucuresti", "use": "WORK", "timezone": "Europe/Bucharest",
+ "workingDays": [],
+ "workingHoursStart": "09:00", "workingHoursEnd": "17:00", "atRiskWindowHours": 48,
+ "escalationIntervalsHours": [24, 72, 168],
+ "quietHoursStart": "22:00", "quietHoursEnd": "06:00",
+ "invitationApprovalRequired": false}
+
+### 55. An at-risk window of zero -- 422 AT_RISK_WINDOW_INVALID.
+### Extension 3b: zero marks everything at risk, which is the same as marking nothing. Four refusals
+### share the 422, and only the code tells them apart -- which is why each has its own.
+PUT {{host}}/api/workspace/settings
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"name": "Atelier Bucuresti", "use": "WORK", "timezone": "Europe/Bucharest",
+ "workingDays": ["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],
+ "workingHoursStart": "09:00", "workingHoursEnd": "17:00", "atRiskWindowHours": 0,
+ "escalationIntervalsHours": [24, 72, 168],
+ "quietHoursStart": "22:00", "quietHoursEnd": "06:00",
+ "invitationApprovalRequired": false}
+
+### 56. Settings as an employee -- 403 NOT_PERMITTED, on both the read and the write.
+### Criterion 11. Sign in as an employee first. WORKSPACE_CONFIGURE is owner-only and non-delegable:
+### the approval switch decides whether managers may reach outsiders without the owner's consent, so
+### turning it off is itself a grant of authority.
+GET {{host}}/api/workspace/settings

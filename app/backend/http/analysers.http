@@ -1,0 +1,186 @@
+### THE ANALYSER SUBSYSTEM — nine small analysers over one snapshot
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects. The demo backend runs on 8081 — Tomcat9 owns 8080
+### on this machine.
+###
+### **Four endpoints, not nine, and that is deliberate.** Two to run and diagnose, two to work the
+### queue. The engineering boundary must not become the
+### navigation boundary: nine analysers produce findings and a person meets one run. An endpoint per
+### analyser would make the subsystem's internal structure the thing somebody has to learn, and "which
+### of the nine told me this" is a question nobody has.
+###
+### **Why nine small ones rather than one pipeline.** The node pipeline was built as a single thing
+### running from raw nodes to discovered processes. Its first real run reported zero, and it took four
+### separate investigations to find out why: no finished engagements in the window, marked text that
+### was chatter, `output_type` written to the bracket while the pipeline read the node, and a
+### truncation warning that crashed at exactly 200 nodes. Four independent causes, one output, each
+### silently emptying the next — so everything upstream looked correct and produced nothing.
+###
+### **The figure to watch is `itemsRead`, and it is not decoration.** No findings across 400 brackets is
+### a real answer about a business. The same silence across 0 brackets means the thing is not running.
+### Without the count those are the same response.
+###
+### Requires PIPELINE_RUN_START — the same permission the node pipeline's run control uses, because it
+### is the same act: asking the installation to look at its own graph.
+
+@host = http://localhost:8081
+@employee = ionut@atelier.ro
+@password = password1234
+### Paste one from `groups[].items[].id` in GET /api/analysis/findings before sending the dismissal.
+@findingId = 00000000-0000-0000-0000-000000000000
+
+###############################################################################################
+### ANALYSER-RUN-01 — look at the graph, and let every analyser answer
+###############################################################################################
+
+### Run every analyser over one snapshot. 200.
+###
+### **One run, one window, one snapshot, many analysers.** Every analyser reads the same object, so two
+### of them cannot disagree from different eras — the defect class that has cost this project five
+### sessions. Read `windowFrom` and `windowTo` off the response: they are always there, because an
+### analyser answering honestly about very little is indistinguishable from a broken one unless the
+### span it looked at is beside the answer.
+POST {{host}}/api/analysis/runs
+
+### The same, with the window stated.
+###
+### **The default is 90 days rather than 30, and the number is measured.** This corpus is 76%
+### future-dated: a 30-day window holds 83 of 348 nodes. Run this with `windowDays=30` and then with
+### the default, and watch `itemsRead` move — that difference is the reason the default is not 30.
+POST {{host}}/api/analysis/runs?windowDays=30
+
+### 400. A window of zero days holds nothing to analyse, and says so rather than running over nothing
+### and reporting a confident silence.
+POST {{host}}/api/analysis/runs?windowDays=0
+
+###############################################################################################
+### ANALYSER-RUN-01 — what the last run said, analyser by analyser
+###############################################################################################
+
+### Four things per analyser, and the fourth is the one that matters: what it read, what it found,
+### what it needed, and **what it could not see**.
+###
+### That last column is the diagnostic that would have replaced four investigations with one screen.
+### Look for:
+###
+###   `itemsRead`      — silence over 400 and silence over 0 are different facts
+###   `absences`       — "212 of 348 nodes have no work type". `blocking` says whether it stopped the
+###                      analyser or merely narrowed it, and without that distinction the panel
+###                      becomes noise and stops being read
+###   `clean`          — "18 approved templates checked; every one has matched work." **NOT an
+###                      absence.** An absence is "I could not see"; this is "I saw, and it is fine".
+###                      Three analysers in the simulation emitted neither, which on screen reads as
+###                      broken — so the runner now REFUSES a report carrying no finding, no absence
+###                      and no clean result, and marks the run failed naming who was silent
+###   `preconditions`  — "needs at least 3 finished engagements; you have 0". **An analyser never
+###                      returns a silent zero**: the unmet precondition IS the output
+###   `failure`        — that analyser's own exception. One broken analyser does not take the other
+###                      eight down, and a run that lost one says so instead of looking complete
+GET {{host}}/api/analysis/runs/latest
+
+### 204, before anything has ever been run.
+###
+### Not an empty run object — those are different facts and the caller is owed the difference. Reset
+### the database and send this before any POST above to see it.
+GET {{host}}/api/analysis/runs/latest
+
+###############################################################################################
+### The Owner page — a queue, not a report
+###############################################################################################
+
+### ANALYSER-VIEW-FINDINGS-01 · Requires PIPELINE_RUN_START
+###
+### A report is read once; a queue is worked, and that distinction decides the whole shape.
+###
+### `groups`   — the five categories, always in the same order, so the sections do not move between
+###              visits. Sorted worst-first INSIDE each group and never across it (A14): reach counts
+###              templates for one analyser and brackets for another, so one global ordering weighs
+###              41 of one against 153 of the other and is arbitrary while looking authoritative
+### `priority` — comparable only within its group. Nobody is shown the number
+### `whyItRanks` — the number's reason, in one line: "High because it touches 41 of 63 and it is
+###              worse than last run." An opaque rank is the first thing an owner dismisses, and
+###              then the second
+### `timesSeen` — a finding shown past its grace and not acted on fades, floored so it never
+###              disappears, and says "Shown 6 times, unchanged." Worse than when you last looked
+###              resets that, because a finding that has just got worse must not arrive already faded
+### `standing` — including `nothingNew`. Eight of sixteen simulated weeks had nothing new; that is
+###              correct behaviour and a presentation problem, because a page that renders an
+###              unchanged list without saying so is indistinguishable from one that failed to load
+###
+### 204 where no analysis has ever been run.
+GET {{host}}/api/analysis/findings
+
+### ANALYSER-DISMISS-FINDING-01 · Requires PIPELINE_RUN_START
+###
+### "Not now" — and it survives the next run, which is the whole point. The analysers re-derive the
+### same finding from every snapshot, so without the record it would be back the next morning, and a
+### queue that re-asks a question you have already answered is a queue people stop opening.
+###
+### It comes back on exactly two conditions, neither of them a timer (A3): it reaches HALF AGAIN as
+### far as it did when you said no, or it stops being the same kind of problem — a MEDIUM suggestion
+### that has become CRITICAL is not the question anybody answered. It returns marked WORSENING rather
+### than NEW, so the page can say you dismissed this at 41 and it is 62 now.
+###
+### Half again is measured AGAINST THE DISMISSAL, never against the previous run. A finding creeping
+### up a fifth per run never grows by half in one step, so the other reading would hold the dismissal
+### forever while the finding nearly doubled — A3 defeated by arithmetic rather than by anybody
+### deciding.
+###
+### The identifier is the finding row on the run you were looking at, so what is dismissed is the
+### sighting you actually saw. Take it from `groups[].items[].id` above.
+###
+### 204 on success · 404 where the identifier names no finding of any run.
+POST {{host}}/api/analysis/findings/{{findingId}}/dismiss
+
+###############################################################################################
+### What is deliberately absent
+###############################################################################################
+
+### **The judgement is never written into `analysis_finding`.** What a run found is a fact about the
+### graph, and a person disagreeing about whether to act on it does not make the finding untrue. The
+### decision goes to `insight_decision`, which V51 built for exactly this and is append-only — so a
+### re-run cannot overwrite a judgement, and a finding dismissed, revived by growth and dismissed
+### again keeps all three rows.
+###
+### **No endpoint un-dismisses.** Nothing here is updated or deleted; the newest row about a finding
+### is its current state.
+###
+### **No finding is ranked across analysers.** `reach` counts nodes for one and templates for another,
+### so a single global sort would put 41 templates above 153 brackets on no principle at all. The owner
+### page groups by category first and sorts by reach inside the group.
+###
+### **A cumulative count is judged on its share.** Findings carry `reachOf`; where it is present the
+### lifecycle compares the ratio against five percentage points rather than the count against a
+### multiplier. Measured over sixteen simulated weeks, a count-only rule held one finding at the top of
+### the queue for ten of them while the underlying rate was improving.
+###
+### **No endpoint takes a confidence threshold.** Sweeping the thresholds changed zero decisions —
+### every real decision comes from a boolean gate — and a slider would imply control that does not
+### exist.
+###
+### **No endpoint runs one analyser.** Two analysers reading at different moments can disagree from
+### different eras, and an endpoint that ran one of them would be the supported way to produce exactly
+### that.
+###
+### **AI is off, and `flowops.ai.*` is consumed by nothing yet.** Seven of the nine analysers need none
+### at all. The configuration surface exists so that Phase 10 is a matter of reading it rather than of
+### touching every analyser — two switches, per analyser, because a global toggle cannot attribute a
+### regression to the one thing that changed.
+
+### ─────────────────────────────────────────────────────────────────────────────────────────────
+### What one finding rests on — every reference resolved
+### ─────────────────────────────────────────────────────────────────────────────────────────────
+###
+### Five subject kinds, not three. `nodes` and `templates` and `jobs` were the whole answer until
+### 2026-09-03, while EffortAnalyser and WaitingAnalyser had been writing BRACKET and WAIT evidence
+### all along — so opening `median_time_to_finish` or `wait_never_satisfied` returned three empty
+### lists, which this endpoint's own description says means the finding rests on engagements.
+###
+### `brackets[]` carries the close kind and the elapsed minutes, because only DELIVERED and DONE are
+### work finishing and a reader checking a duration needs to see which of the nine it was.
+### `waits[]` carries the kind, because CLIENT and SUPPLIER are outside the workspace's control and
+### never enter a performance figure (R7.5) — the same number means opposite things either side of it.
+###
+### 404 rather than five empty lists when the id names nothing.
+GET {{host}}/api/analysis/findings/{{findingId}}/evidence

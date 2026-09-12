@@ -1,0 +1,6635 @@
+{
+ "corpus": "messy-test",
+ "producedBy": "sim/v6.py match_node, AI off",
+ "config": {
+  "W_TEXT": 0.5,
+  "W_ROLE": 0.2,
+  "W_SHAPE": 0.2,
+  "W_OUTPUT": 0.1,
+  "SCORE_FLOOR": 0.7,
+  "CONF_FLOOR": 0.6,
+  "SEP_MIN": 0.06,
+  "TEXT_VETO": 0.45,
+  "TQ_MIN": 0.25,
+  "FINALISTS": 4,
+  "PLAUSIBLE_MIN": 0.5,
+  "UNIQ_MIN": 0.5,
+  "KW_CORROB": 0.3,
+  "shape_feature": true,
+  "output_map": true,
+  "keywords": true,
+  "intent_gate": true,
+  "boundary_gate": true,
+  "lapsed_gate": true,
+  "marker_address": true,
+  "post_close_gate": false,
+  "direction_gate": true,
+  "type_contradiction": true,
+  "semantic": false
+ },
+ "roleKinship": [
+  [
+   "Designer",
+   "Junior designer",
+   0.7
+  ],
+  [
+   "Content writer",
+   "Editor",
+   0.7
+  ],
+  [
+   "Account manager",
+   "Strategy",
+   0.6
+  ],
+  [
+   "Designer",
+   "Strategy",
+   0.2
+  ]
+ ],
+ "typeWords": {
+  "VIDEO": [
+   "video",
+   "teaser",
+   "promo video",
+   "reel",
+   "rough cut"
+  ],
+  "PHOTO": [
+   "photo",
+   "shoot",
+   "packshot",
+   "retouch"
+  ],
+  "WRITER": [
+   "caption",
+   "copy",
+   "article",
+   "newsletter"
+  ],
+  "DESIGN": [
+   "design",
+   "key visual",
+   "mood board",
+   "layout"
+  ],
+  "ADS": [
+   "ads",
+   "campaign",
+   "ad variants"
+  ],
+  "SCHEDULING": [
+   "schedule",
+   "publish",
+   "queue"
+  ],
+  "RESEARCH": [
+   "competitor",
+   "research",
+   "landscape"
+  ],
+  "REPORTING": [
+   "report",
+   "recap"
+  ]
+ },
+ "genericTokens": [
+  "asap",
+  "final",
+  "misc",
+  "new",
+  "ok",
+  "stuff",
+  "task",
+  "tbd",
+  "thanks",
+  "todo",
+  "update",
+  "urgent",
+  "v2",
+  "work"
+ ],
+ "tierCounts": {
+  "ABSTAIN": 35,
+  "NUDGE": 75
+ },
+ "templates": [
+  {
+   "id": "T-INTAKE",
+   "title": "Client intake",
+   "description": "Turn what the client asked for into something the team can start on",
+   "work_type": "ACCOUNTS",
+   "responsible_role": "ACCOUNTS",
+   "output_kind": "TEXT",
+   "expected_output": "a written brief",
+   "required_input": "the call or the message",
+   "completion_criteria": "the team can start",
+   "checklist": [
+    "capture what was asked",
+    "clarify",
+    "write it up"
+   ],
+   "status": "APPROVED",
+   "approved_at": "2026-01-01",
+   "keywords": [
+    "brief",
+    "kickoff",
+    "call",
+    "notes",
+    "write up",
+    "summarise",
+    "the ask",
+    "intake"
+   ],
+   "shape_preceding_role": null,
+   "shape_following_role": null,
+   "shape_position": null
+  },
+  {
+   "id": "T-RESEARCH",
+   "title": "Competitor look",
+   "description": "See what other companies in the client's space are doing",
+   "work_type": "REPORTING",
+   "responsible_role": "REPORTING",
+   "output_kind": "REPORT",
+   "expected_output": "a short doc",
+   "required_input": "a list of competitors",
+   "completion_criteria": "shared with the team",
+   "checklist": [
+    "gather",
+    "compare",
+    "write"
+   ],
+   "status": "APPROVED",
+   "approved_at": "2026-01-01",
+   "keywords": [
+    "competitor",
+    "competitors",
+    "market",
+    "landscape",
+    "who else",
+    "scan",
+    "space",
+    "others"
+   ],
+   "shape_preceding_role": null,
+   "shape_following_role": null,
+   "shape_position": null
+  },
+  {
+   "id": "T-CAPS",
+   "title": "Caption set",
+   "description": "Write the captions for a batch of social posts",
+   "work_type": "WRITER",
+   "responsible_role": "WRITER",
+   "output_kind": "TEXT",
+   "expected_output": "a caption document",
+   "required_input": "the post list",
+   "completion_criteria": "approved by the manager",
+   "checklist": [
+    "draft",
+    "review"
+   ],
+   "status": "APPROVED",
+   "approved_at": "2026-01-01",
+   "keywords": [
+    "captions",
+    "copy",
+    "words",
+    "lines",
+    "text",
+    "wording",
+    "draft"
+   ],
+   "shape_preceding_role": null,
+   "shape_following_role": null,
+   "shape_position": null
+  },
+  {
+   "id": "T-SHOOT",
+   "title": "Product shoot",
+   "description": "Photograph the client's products",
+   "work_type": "PHOTO",
+   "responsible_role": "PHOTO",
+   "output_kind": "DESIGN",
+   "expected_output": "an edited set of images",
+   "required_input": "products and a shot list",
+   "completion_criteria": "the client picks the finals",
+   "checklist": [
+    "shot list",
+    "shoot",
+    "retouch"
+   ],
+   "status": "APPROVED",
+   "approved_at": "2026-01-01",
+   "keywords": [
+    "shoot",
+    "photos",
+    "photography",
+    "studio",
+    "shots",
+    "images",
+    "retouch",
+    "shooting"
+   ],
+   "shape_preceding_role": null,
+   "shape_following_role": null,
+   "shape_position": null
+  },
+  {
+   "id": "T-DESIGN",
+   "title": "Post designs",
+   "description": "Design the visuals for a set of posts",
+   "work_type": "DESIGN",
+   "responsible_role": "DESIGN",
+   "output_kind": "DESIGN",
+   "expected_output": "exported designs",
+   "required_input": "photos and captions",
+   "completion_criteria": "approved",
+   "checklist": [
+    "lay out",
+    "export"
+   ],
+   "status": "APPROVED",
+   "approved_at": "2026-01-01",
+   "keywords": [
+    "design",
+    "designs",
+    "artwork",
+    "visuals",
+    "layout",
+    "laying out",
+    "tiles",
+    "directions",
+    "round"
+   ],
+   "shape_preceding_role": null,
+   "shape_following_role": null,
+   "shape_position": null
+  },
+  {
+   "id": "T-VIDEO",
+   "title": "Short video",
+   "description": "Edit a short-form video",
+   "work_type": "VIDEO",
+   "responsible_role": "VIDEO",
+   "output_kind": "DESIGN",
+   "expected_output": "an edited clip",
+   "required_input": "the footage",
+   "completion_criteria": "approved",
+   "checklist": [
+    "rough cut",
+    "edit",
+    "export"
+   ],
+   "status": "APPROVED",
+   "approved_at": "2026-01-01",
+   "keywords": [
+    "video",
+    "clip",
+    "edit",
+    "cut",
+    "film",
+    "footage",
+    "reel",
+    "piece"
+   ],
+   "shape_preceding_role": null,
+   "shape_following_role": null,
+   "shape_position": null
+  },
+  {
+   "id": "T-ADS",
+   "title": "Ad run",
+   "description": "Set up and run a paid campaign",
+   "work_type": "ADS",
+   "responsible_role": "ADS",
+   "output_kind": "REPORT",
+   "expected_output": "a live campaign",
+   "required_input": "budget and audience",
+   "completion_criteria": "live and tracked",
+   "checklist": [
+    "build",
+    "launch",
+    "monitor"
+   ],
+   "status": "APPROVED",
+   "approved_at": "2026-01-01",
+   "keywords": [
+    "ads",
+    "ad",
+    "campaign",
+    "paid",
+    "spend",
+    "meta",
+    "budget",
+    "creatives",
+    "run"
+   ],
+   "shape_preceding_role": null,
+   "shape_following_role": null,
+   "shape_position": null
+  },
+  {
+   "id": "T-SCHED",
+   "title": "Scheduling",
+   "description": "Put a set of posts into the publishing calendar",
+   "work_type": "SCHEDULING",
+   "responsible_role": "SCHEDULING",
+   "output_kind": "SCHEDULE",
+   "expected_output": "scheduled posts",
+   "required_input": "final assets and approval",
+   "completion_criteria": "scheduled",
+   "checklist": [
+    "queue",
+    "confirm"
+   ],
+   "status": "APPROVED",
+   "approved_at": "2026-01-01",
+   "keywords": [
+    "schedule",
+    "scheduled",
+    "queue",
+    "queueing",
+    "calendar",
+    "lined up",
+    "publishing"
+   ],
+   "shape_preceding_role": null,
+   "shape_following_role": null,
+   "shape_position": null
+  },
+  {
+   "id": "T-REPORT",
+   "title": "Monthly report",
+   "description": "Write the monthly performance summary for a client",
+   "work_type": "REPORTING",
+   "responsible_role": "REPORTING",
+   "output_kind": "REPORT",
+   "expected_output": "a client-ready summary",
+   "required_input": "the platform numbers",
+   "completion_criteria": "sent to the client",
+   "checklist": [
+    "pull the data",
+    "write",
+    "send"
+   ],
+   "status": "APPROVED",
+   "approved_at": "2026-01-01",
+   "keywords": [
+    "report",
+    "numbers",
+    "performance",
+    "summary",
+    "wrap",
+    "monthly",
+    "engagement",
+    "results"
+   ],
+   "shape_preceding_role": null,
+   "shape_following_role": null,
+   "shape_position": null
+  }
+ ],
+ "nodes": [
+  {
+   "id": "TEn0001",
+   "job_id": "TE00",
+   "text": "shot teh range this morning, retouching now",
+   "detail": null,
+   "creator_id": "tariq",
+   "marker_id": "tariq",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "PHOTO",
+   "created_at": "2026-07-06",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "PHOTO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SHOOT"
+  },
+  {
+   "id": "TEn0002",
+   "job_id": "TE00",
+   "text": "did another round on the tiles after the feedback",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "dana2",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-07-08",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0003",
+   "job_id": "TE01",
+   "text": "so the ask is: new range, live by the 1st, small budget. putting it in writing",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-02",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-INTAKE"
+  },
+  {
+   "id": "TEn0004",
+   "job_id": "TE01",
+   "text": "wrote the lines for the tiles this morning",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "sara",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-05-04",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0005",
+   "job_id": "TE01",
+   "text": "put the layouts together, the orange one is my favourite ta",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "dana2",
+   "marker_id": "dana2",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-05-06",
+   "state": "LAPSED",
+   "closure": "LAPSED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0006",
+   "job_id": "TE01",
+   "text": "scheduled — needs final copy, final artwork and their ok before it goes thx",
+   "detail": "not urgent but would be good to have before friday",
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-08",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SCHED"
+  },
+  {
+   "id": "TEn0007",
+   "job_id": "TE01",
+   "text": "final check on the set, found two typos pls",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-05-10",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0008",
+   "job_id": "TE01",
+   "text": "can we reuse the set from may or do we start fresh",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-12",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0009",
+   "job_id": "TE02",
+   "text": "ok so dana called, new range going out start of next month, wants the usual + a bit more",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "hala",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-06",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-INTAKE"
+  },
+  {
+   "id": "TEn0010",
+   "job_id": "TE02",
+   "text": "had a quick look at what the others in that space are doing few intresting things",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-05-08",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-RESEARCH"
+  },
+  {
+   "id": "TEn0011",
+   "job_id": "TE02",
+   "text": "captions drafted but i think 2 of them need another pass",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "yuki",
+   "marker_id": "yuki",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-05-10",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0012",
+   "job_id": "TE02",
+   "text": "we got the product shots yesterday, few need reshooting",
+   "detail": null,
+   "creator_id": "tariq",
+   "marker_id": "tariq",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "PHOTO",
+   "created_at": "2026-05-12",
+   "state": "COMPLETED",
+   "closure": "DROPPED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "PHOTO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0013",
+   "job_id": "TE02",
+   "text": "designs ready but dana wants the logo bigger. again.",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "karim",
+   "marker_id": "dana2",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-05-14",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0014",
+   "job_id": "TE02",
+   "text": "the 20 second piece is half done ta",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "nour",
+   "marker_id": "nour",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "VIDEO",
+   "created_at": "2026-05-16",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "VIDEO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-VIDEO"
+  },
+  {
+   "id": "TEn0015",
+   "job_id": "TE02",
+   "text": "pushed it to meta, two creatives running against eachother",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "zain",
+   "marker_id": "ali",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ADS",
+   "created_at": "2026-05-18",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "ADS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-ADS"
+  },
+  {
+   "id": "TEn0016",
+   "job_id": "TE02",
+   "text": "queueing them up now for the 1st",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-20",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SCHED"
+  },
+  {
+   "id": "TEn0017",
+   "job_id": "TE02",
+   "text": "put together the performance summary for them",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-05-22",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "TEn0018",
+   "job_id": "TE02",
+   "text": "dont bother with the newsletter this month",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-24",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0019",
+   "job_id": "TE03",
+   "text": "writing up the kickoff notes now, will share in a bit",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "hala",
+   "marker_id": "hala",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-07-02",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-INTAKE"
+  },
+  {
+   "id": "TEn0020",
+   "job_id": "TE03",
+   "text": "went through 5 of their competitors, none of them are doing video",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-07-04",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-RESEARCH"
+  },
+  {
+   "id": "TEn0021",
+   "job_id": "TE03",
+   "text": "words for teh posts are drafted, 6 of them, will send over",
+   "detail": null,
+   "creator_id": "yuki",
+   "marker_id": "yuki",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-07-06",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0022",
+   "job_id": "TE03",
+   "text": "shooting tuesday, booked the studio and the assistant",
+   "detail": null,
+   "creator_id": "tariq",
+   "marker_id": "tariq",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "PHOTO",
+   "created_at": "2026-07-08",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "PHOTO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SHOOT"
+  },
+  {
+   "id": "TEn0023",
+   "job_id": "TE03",
+   "text": "visuals done for the set waiting on the copy to finalise",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "dana2",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-07-10",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0024",
+   "job_id": "TE03",
+   "text": "the 20 second piece is half done",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "nour",
+   "marker_id": "nour",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "VIDEO",
+   "created_at": "2026-07-12",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "VIDEO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-VIDEO"
+  },
+  {
+   "id": "TEn0025",
+   "job_id": "TE03",
+   "text": "getting the spend live tomorrow if the budget lands",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "ali",
+   "marker_id": "zain",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ADS",
+   "created_at": "2026-07-14",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "ADS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-ADS"
+  },
+  {
+   "id": "TEn0026",
+   "job_id": "TE03",
+   "text": "scheduled — needs final copy, final artwork and their ok before it goes pls",
+   "detail": "not urgent but would be good to have before friday",
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-07-16",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SCHED"
+  },
+  {
+   "id": "TEn0027",
+   "job_id": "TE03",
+   "text": "numbers for the month are in engagement up 12%",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-07-18",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "TEn0028",
+   "job_id": "TE03",
+   "text": "final check on the set, found two typos",
+   "detail": "not urgent but would be good to have before friday",
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-07-20",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0029",
+   "job_id": "TE03",
+   "text": "asap pls",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-07-22",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0030",
+   "job_id": "TE04",
+   "text": "4 OF THE 6 DONE REST TOMORROW",
+   "detail": "not urgent but would be good to have before friday",
+   "creator_id": "sara",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-06-14",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0031",
+   "job_id": "TE04",
+   "text": "designs ready but dana wants the logo bigger. again.",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "karim",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-06-16",
+   "state": "COMPLETED",
+   "closure": "DROPPED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0032",
+   "job_id": "TE04",
+   "text": "everything is in the calendar, just need the final assets",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-18",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SCHED"
+  },
+  {
+   "id": "TEn0033",
+   "job_id": "TE04",
+   "text": "who is covering next week?",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-20",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0034",
+   "job_id": "TE05",
+   "text": "studio day went fine, 12 shots, picked the best 10",
+   "detail": null,
+   "creator_id": "tariq",
+   "marker_id": "tariq",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "PHOTO",
+   "created_at": "2026-07-11",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "PHOTO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SHOOT"
+  },
+  {
+   "id": "TEn0035",
+   "job_id": "TE05",
+   "text": "put the layouts together the orange one is my favourite",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "dana2",
+   "marker_id": "dana2",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-07-13",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0036",
+   "job_id": "TE05",
+   "text": "queueing them up now for the 1st",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-07-15",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SCHED"
+  },
+  {
+   "id": "TEn0037",
+   "job_id": "TE05",
+   "text": "can we reuse the set from may or do we start fresh",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-07-17",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0038",
+   "job_id": "TE06",
+   "text": "4 OF TEH 6 DONE, REST TOMORROW",
+   "detail": null,
+   "creator_id": "sara",
+   "marker_id": "yuki",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-07-07",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0039",
+   "job_id": "TE06",
+   "text": "laying out the tiles now, first pass by thursday",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "karim",
+   "marker_id": "dana2",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-07-09",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0040",
+   "job_id": "TE06",
+   "text": "SCHEDULED — NEEDS FINAL COPY, FINAL ARTWORK AND THEIR OK BEFORE IT GOES",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-07-11",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SCHED"
+  },
+  {
+   "id": "TEn0041",
+   "job_id": "TE07",
+   "text": "notes form the call are up, few things still unclear tbh",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "omar",
+   "marker_id": "hala",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-01",
+   "state": "LAPSED",
+   "closure": "LAPSED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0042",
+   "job_id": "TE07",
+   "text": "captions drafted but i think 2 of them need another pass",
+   "detail": null,
+   "creator_id": "yuki",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-06-03",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0043",
+   "job_id": "TE07",
+   "text": "visuals done for the set waiting on the copy to finalise",
+   "detail": null,
+   "creator_id": "dana2",
+   "marker_id": "dana2",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-06-05",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0044",
+   "job_id": "TE07",
+   "text": "queueing them up now for the 1st",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-07",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SCHED"
+  },
+  {
+   "id": "TEn0045",
+   "job_id": "TE07",
+   "text": "reading over everything before it goes out",
+   "detail": null,
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-06-09",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0046",
+   "job_id": "TE07",
+   "text": "numbers for the month are in, engagement up 12% !!",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-06-11",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "TEn0047",
+   "job_id": "TE07",
+   "text": "is this the right template to use",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "hala",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-13",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0048",
+   "job_id": "TE08",
+   "text": "ok so dana called new range going out start of next month wants the usual + a bit more",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-07-10",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-INTAKE"
+  },
+  {
+   "id": "TEn0049",
+   "job_id": "TE08",
+   "text": "looked at who else is out there. we're cheaper than 3 of the 4",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-07-12",
+   "state": "COMPLETED",
+   "closure": "DROPPED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0050",
+   "job_id": "TE08",
+   "text": "4 of the 6 done rest tomorrow",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "yuki",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-07-14",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0051",
+   "job_id": "TE08",
+   "text": "studio day went fine, 12 shots, picked the best 10",
+   "detail": null,
+   "creator_id": "tariq",
+   "marker_id": "tariq",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "PHOTO",
+   "created_at": "2026-07-16",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "PHOTO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SHOOT"
+  },
+  {
+   "id": "TEn0052",
+   "job_id": "TE08",
+   "text": "started on teh short film thing, its going to take longer than we said",
+   "detail": null,
+   "creator_id": "nour",
+   "marker_id": "nour",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "VIDEO",
+   "created_at": "2026-07-18",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "VIDEO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-VIDEO"
+  },
+  {
+   "id": "TEn0053",
+   "job_id": "TE08",
+   "text": "set up the paid run audiences are built",
+   "detail": null,
+   "creator_id": "zain",
+   "marker_id": "zain",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ADS",
+   "created_at": "2026-07-20",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "ADS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-ADS"
+  },
+  {
+   "id": "TEn0054",
+   "job_id": "TE08",
+   "text": "scheduled — needs final copy, final artwork and their ok before it goes",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-07-22",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SCHED"
+  },
+  {
+   "id": "TEn0055",
+   "job_id": "TE08",
+   "text": "writing up how it went, will send friday",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-07-24",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "TEn0056",
+   "job_id": "TE09",
+   "text": "PULLED TOGETHER WHAT THEY ASKED FOR ON THE CALL, ITS IN THE DOC",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "hala",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-09",
+   "state": "LAPSED",
+   "closure": "LAPSED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0057",
+   "job_id": "TE09",
+   "text": "4 of the 6 done, rest tomorrow",
+   "detail": null,
+   "creator_id": "sara",
+   "marker_id": "yuki",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-06-11",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0058",
+   "job_id": "TE09",
+   "text": "VISUALS DONE FOR THE SET WAITING ON THE COPY TO FINALISE",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "dana2",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-06-13",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0059",
+   "job_id": "TE09",
+   "text": "everything is in the calendar, just need the final assets",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-15",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SCHED"
+  },
+  {
+   "id": "TEn0060",
+   "job_id": "TE09",
+   "text": "final check on the set, found two typos",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-06-17",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0061",
+   "job_id": "TE09",
+   "text": "put together the performance summary for them",
+   "detail": "not urgent but would be good to have before friday",
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-06-19",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "TEn0062",
+   "job_id": "TE10",
+   "text": "NOTES FORM THE CALL ARE UP, FEW THINGS STILL UNCLEAR TBH ta",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "hala",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-03",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-INTAKE"
+  },
+  {
+   "id": "TEn0063",
+   "job_id": "TE10",
+   "text": "4 of the 6 done rest tomorrow",
+   "detail": "not urgent but would be good to have before friday",
+   "creator_id": "yuki",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-06-05",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0064",
+   "job_id": "TE10",
+   "text": "artwork is coming along, 3 directions to show them",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "karim",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-06-07",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0065",
+   "job_id": "TE10",
+   "text": "scheduled — needs final copy, final artwork and their ok before it goes",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-09",
+   "state": "COMPLETED",
+   "closure": "DROPPED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0066",
+   "job_id": "TE10",
+   "text": "reading over everything before it goes out !!",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-06-11",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0067",
+   "job_id": "TE10",
+   "text": "writing up how it went, will send friday",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-06-13",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "TEn0068",
+   "job_id": "TE11",
+   "text": "NOTES FORM THE CALL ARE UP, FEW THINGS STILL UNCLEAR TBH",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "hala",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-14",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-INTAKE"
+  },
+  {
+   "id": "TEn0069",
+   "job_id": "TE11",
+   "text": "did the landscape thing you asked for, its rough but usable ta",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-05-16",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-RESEARCH"
+  },
+  {
+   "id": "TEn0070",
+   "job_id": "TE11",
+   "text": "words for the posts are drafted, 6 of them, will send over",
+   "detail": null,
+   "creator_id": "sara",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-05-18",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0071",
+   "job_id": "TE11",
+   "text": "photos done — link in teh drive. lighting was a nightmare",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "tariq",
+   "marker_id": "tariq",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "PHOTO",
+   "created_at": "2026-05-20",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "PHOTO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SHOOT"
+  },
+  {
+   "id": "TEn0072",
+   "job_id": "TE11",
+   "text": "DESIGNS READY BUT DANA WANTS THE LOGO BIGGER. AGAIN.",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "dana2",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-05-22",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0073",
+   "job_id": "TE11",
+   "text": "started on the short film thing, its going to take longer than we said",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "nour",
+   "marker_id": "nour",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "VIDEO",
+   "created_at": "2026-05-24",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "VIDEO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-VIDEO"
+  },
+  {
+   "id": "TEn0074",
+   "job_id": "TE11",
+   "text": "campaign is up. cpm is horrible but ctr looks ok ta",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "zain",
+   "marker_id": "zain",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ADS",
+   "created_at": "2026-05-26",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "ADS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-ADS"
+  },
+  {
+   "id": "TEn0075",
+   "job_id": "TE11",
+   "text": "lined up for next week, waiting on approval thx",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-28",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SCHED"
+  },
+  {
+   "id": "TEn0076",
+   "job_id": "TE11",
+   "text": "writing up how it went, will send friday",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-05-28",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "TEn0077",
+   "job_id": "TE12",
+   "text": "TEXT FOR THE POSTS — WENT A BIT LONGER THAN USUAL BECUASE THE PRODUCT NEEDS EXPLAINING",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "sara",
+   "marker_id": "yuki",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-06-06",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0078",
+   "job_id": "TE12",
+   "text": "designs ready but dana wants the logo bigger. again.",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "dana2",
+   "marker_id": "dana2",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-06-08",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0079",
+   "job_id": "TE12",
+   "text": "lined up for next week, waiting on approval",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-10",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SCHED"
+  },
+  {
+   "id": "TEn0080",
+   "job_id": "TE13",
+   "text": "4 of the 6 done, rest tomorrow",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "sara",
+   "marker_id": "yuki",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-07-10",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0081",
+   "job_id": "TE13",
+   "text": "artwork is coming along, 3 directions to show them",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "dana2",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-07-12",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0082",
+   "job_id": "TE13",
+   "text": "queueing them up now for the 1st",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-07-14",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SCHED"
+  },
+  {
+   "id": "TEn0083",
+   "job_id": "TE13",
+   "text": "final check on the set, found two typos",
+   "detail": null,
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-07-16",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0084",
+   "job_id": "TE14",
+   "text": "captions drafted but i think 2 of them need another pass pls",
+   "detail": null,
+   "creator_id": "yuki",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-07-10",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0085",
+   "job_id": "TE14",
+   "text": "visuals done for the set, waiting on the copy to finalise",
+   "detail": null,
+   "creator_id": "dana2",
+   "marker_id": "dana2",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-07-12",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0086",
+   "job_id": "TE14",
+   "text": "walking them through the work on thursday",
+   "detail": "not urgent but would be good to have before friday",
+   "creator_id": "hala",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-07-14",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0087",
+   "job_id": "TE14",
+   "text": "who is covering next week?",
+   "detail": "not urgent but would be good to have before friday",
+   "creator_id": "hala",
+   "marker_id": "hala",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-07-16",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0088",
+   "job_id": "TE15",
+   "text": "writing up the kickoff notes now, will share in a bit",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "hala",
+   "marker_id": "hala",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-02",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-INTAKE"
+  },
+  {
+   "id": "TEn0089",
+   "job_id": "TE15",
+   "text": "WROTE THE LINES FOR THE TILES THIS MORNING",
+   "detail": null,
+   "creator_id": "sara",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-05-04",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0090",
+   "job_id": "TE15",
+   "text": "did anotehr round on the tiles after the feedback",
+   "detail": null,
+   "creator_id": "dana2",
+   "marker_id": "dana2",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-05-06",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0091",
+   "job_id": "TE15",
+   "text": "everything is in the calendar, just need the final assets",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-08",
+   "state": "LAPSED",
+   "closure": "LAPSED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0092",
+   "job_id": "TE15",
+   "text": "final check on the set, found two typos !!",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-05-10",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0093",
+   "job_id": "TE15",
+   "text": "put together the performance summary for them",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-05-12",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "TEn0094",
+   "job_id": "TE16",
+   "text": "wrote teh lines for the tiles this morning",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "yuki",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-07-11",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0095",
+   "job_id": "TE16",
+   "text": "VISUALS DONE FOR THE SET, WAITING ON THE COPY TO FINALISE",
+   "detail": "flagging that the budget is smaller than last time so we should keep it tight",
+   "creator_id": "dana2",
+   "marker_id": "dana2",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-07-13",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0096",
+   "job_id": "TE16",
+   "text": "lined up for next week, waiting on approval",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-07-15",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SCHED"
+  },
+  {
+   "id": "TEn0097",
+   "job_id": "TE16",
+   "text": "reading over everything before it goes out",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-07-17",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0098",
+   "job_id": "TE17",
+   "text": "photos done — link in the drive. lighting was a nightmare thx",
+   "detail": "not urgent but would be good to have before friday",
+   "creator_id": "tariq",
+   "marker_id": "tariq",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "PHOTO",
+   "created_at": "2026-05-04",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "PHOTO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SHOOT"
+  },
+  {
+   "id": "TEn0099",
+   "job_id": "TE17",
+   "text": "designs ready but dana wants the logo bigger. again.",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-05-06",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0100",
+   "job_id": "TE18",
+   "text": "writing up the kickoff notes now will share in a bit",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "hala",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-10",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-INTAKE"
+  },
+  {
+   "id": "TEn0101",
+   "job_id": "TE18",
+   "text": "captions drafted but i think 2 of them need another pass",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "sara",
+   "marker_id": "yuki",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-06-12",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "TEn0102",
+   "job_id": "TE18",
+   "text": "did another round on the tiles after the feedback",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "dana2",
+   "marker_id": "dana2",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-06-14",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0103",
+   "job_id": "TE18",
+   "text": "queueing them up now for the 1st",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-16",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SCHED"
+  },
+  {
+   "id": "TEn0104",
+   "job_id": "TE18",
+   "text": "final check on the set, found two typos",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-06-18",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0105",
+   "job_id": "TE18",
+   "text": "NUMBERS FOR THE MONTH ARE IN, ENGAGEMENT UP 12%",
+   "detail": "not urgent but would be good to have before friday",
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-06-20",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "TEn0106",
+   "job_id": "TE18",
+   "text": "reminder to invoice them",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-22",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  },
+  {
+   "id": "TEn0107",
+   "job_id": "TE19",
+   "text": "shot the range this morning, retouching now",
+   "detail": "this one is a bit different from the usual because they want it to match the in-store stuff, which we havent seen yet, so there may be a second round once that lands",
+   "creator_id": "tariq",
+   "marker_id": "tariq",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "PHOTO",
+   "created_at": "2026-07-02",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "PHOTO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SHOOT"
+  },
+  {
+   "id": "TEn0108",
+   "job_id": "TE19",
+   "text": "visuals done fro the set, waiting on the copy to finalise thx",
+   "detail": null,
+   "creator_id": "dana2",
+   "marker_id": "dana2",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-07-04",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-DESIGN"
+  },
+  {
+   "id": "TEn0109",
+   "job_id": "TE19",
+   "text": "lined up for next week waiting on approval",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-07-06",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": "T-SCHED"
+  },
+  {
+   "id": "TEn0110",
+   "job_id": "TE19",
+   "text": "can we reuse the set from may or do we start fresh",
+   "detail": "dana was quite specific about the colours, see the thread",
+   "creator_id": "hala",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-07-08",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": null,
+   "shape_preceding_dir": null,
+   "shape_following_role": null,
+   "shape_position": null,
+   "truth": null
+  }
+ ],
+ "expected": [
+  {
+   "id": "TEn0001",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SHOOT",
+   "score": 0.803,
+   "conf": 1.0,
+   "sep": 0.56,
+   "cov": 1.0,
+   "txt": 0.61,
+   "address": "tariq",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.803
+    ],
+    [
+     "T-VIDEO",
+     0.243
+    ],
+    [
+     "T-DESIGN",
+     0.208
+    ],
+    [
+     "T-INTAKE",
+     0.048
+    ]
+   ]
+  },
+  {
+   "id": "TEn0002",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.807,
+   "conf": 1.0,
+   "sep": 0.583,
+   "cov": 1.0,
+   "txt": 0.61,
+   "address": "dana2",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.807
+    ],
+    [
+     "T-VIDEO",
+     0.224
+    ],
+    [
+     "T-SHOOT",
+     0.224
+    ],
+    [
+     "T-RESEARCH",
+     0.052
+    ]
+   ]
+  },
+  {
+   "id": "TEn0003",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-INTAKE",
+   "score": 0.95,
+   "conf": 1.0,
+   "sep": 0.638,
+   "cov": 1.0,
+   "txt": 0.9,
+   "address": "omar",
+   "finalists": [
+    [
+     "T-INTAKE",
+     0.95
+    ],
+    [
+     "T-RESEARCH",
+     0.312
+    ],
+    [
+     "T-DESIGN",
+     0.289
+    ],
+    [
+     "T-ADS",
+     0.28
+    ]
+   ]
+  },
+  {
+   "id": "TEn0004",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.85,
+   "conf": 1.0,
+   "sep": 0.2,
+   "cov": 1.0,
+   "txt": 0.7,
+   "address": "sara",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.85
+    ],
+    [
+     "T-INTAKE",
+     0.65
+    ],
+    [
+     "T-DESIGN",
+     0.326
+    ],
+    [
+     "T-RESEARCH",
+     0.309
+    ]
+   ]
+  },
+  {
+   "id": "TEn0005",
+   "tier": "ABSTAIN",
+   "why": "gate:lapsed",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "dana2",
+   "finalists": []
+  },
+  {
+   "id": "TEn0006",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SCHED",
+   "score": 0.803,
+   "conf": 0.97,
+   "sep": 0.472,
+   "cov": 0.9,
+   "txt": 0.64,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SCHED",
+     0.803
+    ],
+    [
+     "T-CAPS",
+     0.33
+    ],
+    [
+     "T-DESIGN",
+     0.327
+    ],
+    [
+     "T-INTAKE",
+     0.327
+    ]
+   ]
+  },
+  {
+   "id": "TEn0007",
+   "tier": "ABSTAIN",
+   "why": "below_floor",
+   "top": "T-ADS",
+   "score": 0.329,
+   "conf": 0.85,
+   "sep": 0.247,
+   "cov": 0.9,
+   "txt": 0.59,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-ADS",
+     0.329
+    ],
+    [
+     "T-DESIGN",
+     0.082
+    ],
+    [
+     "T-SCHED",
+     0.056
+    ],
+    [
+     "T-CAPS",
+     0.047
+    ]
+   ]
+  },
+  {
+   "id": "TEn0008",
+   "tier": "ABSTAIN",
+   "why": "gate:intent:meta",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  },
+  {
+   "id": "TEn0009",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-INTAKE",
+   "score": 0.95,
+   "conf": 1.0,
+   "sep": 0.631,
+   "cov": 1.0,
+   "txt": 0.9,
+   "address": "hala",
+   "finalists": [
+    [
+     "T-INTAKE",
+     0.95
+    ],
+    [
+     "T-DESIGN",
+     0.319
+    ],
+    [
+     "T-ADS",
+     0.284
+    ],
+    [
+     "T-CAPS",
+     0.254
+    ]
+   ]
+  },
+  {
+   "id": "TEn0010",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-RESEARCH",
+   "score": 0.86,
+   "conf": 1.0,
+   "sep": 0.329,
+   "cov": 1.0,
+   "txt": 0.72,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-RESEARCH",
+     0.86
+    ],
+    [
+     "T-REPORT",
+     0.531
+    ],
+    [
+     "T-ADS",
+     0.481
+    ],
+    [
+     "T-INTAKE",
+     0.45
+    ]
+   ]
+  },
+  {
+   "id": "TEn0011",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.842,
+   "conf": 1.0,
+   "sep": 0.341,
+   "cov": 1.0,
+   "txt": 0.68,
+   "address": "yuki",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.842
+    ],
+    [
+     "T-INTAKE",
+     0.502
+    ],
+    [
+     "T-ADS",
+     0.294
+    ],
+    [
+     "T-SHOOT",
+     0.287
+    ]
+   ]
+  },
+  {
+   "id": "TEn0012",
+   "tier": "ABSTAIN",
+   "why": "gate:dropped",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "tariq",
+   "finalists": []
+  },
+  {
+   "id": "TEn0013",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.844,
+   "conf": 1.0,
+   "sep": 0.563,
+   "cov": 1.0,
+   "txt": 0.69,
+   "address": "dana2",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.844
+    ],
+    [
+     "T-ADS",
+     0.281
+    ],
+    [
+     "T-SHOOT",
+     0.229
+    ],
+    [
+     "T-VIDEO",
+     0.21
+    ]
+   ]
+  },
+  {
+   "id": "TEn0014",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-VIDEO",
+   "score": 0.775,
+   "conf": 0.88,
+   "sep": 0.484,
+   "cov": 1.0,
+   "txt": 0.55,
+   "address": "nour",
+   "finalists": [
+    [
+     "T-VIDEO",
+     0.775
+    ],
+    [
+     "T-ADS",
+     0.291
+    ],
+    [
+     "T-DESIGN",
+     0.234
+    ],
+    [
+     "T-SHOOT",
+     0.227
+    ]
+   ]
+  },
+  {
+   "id": "TEn0015",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-ADS",
+   "score": 0.791,
+   "conf": 0.88,
+   "sep": 0.552,
+   "cov": 1.0,
+   "txt": 0.58,
+   "address": "ali",
+   "finalists": [
+    [
+     "T-ADS",
+     0.791
+    ],
+    [
+     "T-RESEARCH",
+     0.239
+    ],
+    [
+     "T-REPORT",
+     0.227
+    ],
+    [
+     "T-SCHED",
+     0.036
+    ]
+   ]
+  },
+  {
+   "id": "TEn0016",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SCHED",
+   "score": 0.788,
+   "conf": 0.97,
+   "sep": 0.719,
+   "cov": 0.9,
+   "txt": 0.62,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SCHED",
+     0.788
+    ],
+    [
+     "T-INTAKE",
+     0.069
+    ],
+    [
+     "T-DESIGN",
+     0.063
+    ],
+    [
+     "T-CAPS",
+     0.056
+    ]
+   ]
+  },
+  {
+   "id": "TEn0017",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-REPORT",
+   "score": 0.95,
+   "conf": 1.0,
+   "sep": 0.408,
+   "cov": 1.0,
+   "txt": 0.9,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.95
+    ],
+    [
+     "T-RESEARCH",
+     0.542
+    ],
+    [
+     "T-ADS",
+     0.213
+    ],
+    [
+     "T-SCHED",
+     0.06
+    ]
+   ]
+  },
+  {
+   "id": "TEn0018",
+   "tier": "ABSTAIN",
+   "why": "gate:intent:negated",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  },
+  {
+   "id": "TEn0019",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-INTAKE",
+   "score": 0.95,
+   "conf": 1.0,
+   "sep": 0.65,
+   "cov": 1.0,
+   "txt": 0.9,
+   "address": "hala",
+   "finalists": [
+    [
+     "T-INTAKE",
+     0.95
+    ],
+    [
+     "T-ADS",
+     0.3
+    ],
+    [
+     "T-DESIGN",
+     0.298
+    ],
+    [
+     "T-CAPS",
+     0.259
+    ]
+   ]
+  },
+  {
+   "id": "TEn0020",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-RESEARCH",
+   "score": 0.855,
+   "conf": 1.0,
+   "sep": 0.326,
+   "cov": 1.0,
+   "txt": 0.71,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-RESEARCH",
+     0.855
+    ],
+    [
+     "T-REPORT",
+     0.529
+    ],
+    [
+     "T-VIDEO",
+     0.312
+    ],
+    [
+     "T-ADS",
+     0.219
+    ]
+   ]
+  },
+  {
+   "id": "TEn0021",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.851,
+   "conf": 1.0,
+   "sep": 0.621,
+   "cov": 1.0,
+   "txt": 0.7,
+   "address": "yuki",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.851
+    ],
+    [
+     "T-INTAKE",
+     0.231
+    ],
+    [
+     "T-DESIGN",
+     0.101
+    ],
+    [
+     "T-SCHED",
+     0.069
+    ]
+   ]
+  },
+  {
+   "id": "TEn0022",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SHOOT",
+   "score": 0.808,
+   "conf": 1.0,
+   "sep": 0.57,
+   "cov": 1.0,
+   "txt": 0.62,
+   "address": "tariq",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.808
+    ],
+    [
+     "T-VIDEO",
+     0.238
+    ],
+    [
+     "T-DESIGN",
+     0.221
+    ],
+    [
+     "T-INTAKE",
+     0.076
+    ]
+   ]
+  },
+  {
+   "id": "TEn0023",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.86,
+   "conf": 1.0,
+   "sep": 0.548,
+   "cov": 1.0,
+   "txt": 0.72,
+   "address": "karim",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.86
+    ],
+    [
+     "T-CAPS",
+     0.312
+    ],
+    [
+     "T-ADS",
+     0.294
+    ],
+    [
+     "T-SHOOT",
+     0.229
+    ]
+   ]
+  },
+  {
+   "id": "TEn0024",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-VIDEO",
+   "score": 0.775,
+   "conf": 0.88,
+   "sep": 0.484,
+   "cov": 1.0,
+   "txt": 0.55,
+   "address": "nour",
+   "finalists": [
+    [
+     "T-VIDEO",
+     0.775
+    ],
+    [
+     "T-ADS",
+     0.291
+    ],
+    [
+     "T-DESIGN",
+     0.236
+    ],
+    [
+     "T-SHOOT",
+     0.229
+    ]
+   ]
+  },
+  {
+   "id": "TEn0025",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-ADS",
+   "score": 0.795,
+   "conf": 0.88,
+   "sep": 0.289,
+   "cov": 1.0,
+   "txt": 0.59,
+   "address": "zain",
+   "finalists": [
+    [
+     "T-ADS",
+     0.795
+    ],
+    [
+     "T-RESEARCH",
+     0.506
+    ],
+    [
+     "T-REPORT",
+     0.232
+    ],
+    [
+     "T-SCHED",
+     0.048
+    ]
+   ]
+  },
+  {
+   "id": "TEn0026",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SCHED",
+   "score": 0.802,
+   "conf": 0.97,
+   "sep": 0.47,
+   "cov": 0.9,
+   "txt": 0.64,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SCHED",
+     0.802
+    ],
+    [
+     "T-DESIGN",
+     0.332
+    ],
+    [
+     "T-CAPS",
+     0.33
+    ],
+    [
+     "T-INTAKE",
+     0.327
+    ]
+   ]
+  },
+  {
+   "id": "TEn0027",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-REPORT",
+   "score": 0.852,
+   "conf": 1.0,
+   "sep": 0.295,
+   "cov": 1.0,
+   "txt": 0.7,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.852
+    ],
+    [
+     "T-RESEARCH",
+     0.557
+    ],
+    [
+     "T-INTAKE",
+     0.319
+    ],
+    [
+     "T-ADS",
+     0.237
+    ]
+   ]
+  },
+  {
+   "id": "TEn0028",
+   "tier": "ABSTAIN",
+   "why": "below_floor",
+   "top": "T-INTAKE",
+   "score": 0.339,
+   "conf": 0.97,
+   "sep": 0.263,
+   "cov": 0.9,
+   "txt": 0.61,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-INTAKE",
+     0.339
+    ],
+    [
+     "T-DESIGN",
+     0.076
+    ],
+    [
+     "T-SCHED",
+     0.058
+    ],
+    [
+     "T-CAPS",
+     0.051
+    ]
+   ]
+  },
+  {
+   "id": "TEn0029",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-INTAKE",
+   "score": 0.467,
+   "conf": 0.68,
+   "sep": 0.412,
+   "cov": 0.9,
+   "txt": 0.04,
+   "address": "omar",
+   "finalists": [
+    [
+     "T-INTAKE",
+     0.467
+    ],
+    [
+     "T-ADS",
+     0.056
+    ],
+    [
+     "T-DESIGN",
+     0.014
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "TEn0030",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.542,
+   "conf": 0.704,
+   "sep": 0.045,
+   "cov": 1.0,
+   "txt": 0.08,
+   "address": "sara",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.542
+    ],
+    [
+     "T-INTAKE",
+     0.497
+    ],
+    [
+     "T-DESIGN",
+     0.048
+    ],
+    [
+     "T-REPORT",
+     0.047
+    ]
+   ]
+  },
+  {
+   "id": "TEn0031",
+   "tier": "ABSTAIN",
+   "why": "gate:dropped",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "karim",
+   "finalists": []
+  },
+  {
+   "id": "TEn0032",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SCHED",
+   "score": 0.844,
+   "conf": 0.97,
+   "sep": 0.477,
+   "cov": 0.9,
+   "txt": 0.72,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SCHED",
+     0.844
+    ],
+    [
+     "T-INTAKE",
+     0.367
+    ],
+    [
+     "T-ADS",
+     0.319
+    ],
+    [
+     "T-RESEARCH",
+     0.066
+    ]
+   ]
+  },
+  {
+   "id": "TEn0033",
+   "tier": "ABSTAIN",
+   "why": "gate:intent:question",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  },
+  {
+   "id": "TEn0034",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SHOOT",
+   "score": 0.807,
+   "conf": 1.0,
+   "sep": 0.569,
+   "cov": 1.0,
+   "txt": 0.61,
+   "address": "tariq",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.807
+    ],
+    [
+     "T-VIDEO",
+     0.238
+    ],
+    [
+     "T-DESIGN",
+     0.221
+    ],
+    [
+     "T-INTAKE",
+     0.044
+    ]
+   ]
+  },
+  {
+   "id": "TEn0035",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.799,
+   "conf": 0.88,
+   "sep": 0.349,
+   "cov": 1.0,
+   "txt": 0.6,
+   "address": "dana2",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.799
+    ],
+    [
+     "T-INTAKE",
+     0.45
+    ],
+    [
+     "T-RESEARCH",
+     0.3
+    ],
+    [
+     "T-ADS",
+     0.275
+    ]
+   ]
+  },
+  {
+   "id": "TEn0036",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SCHED",
+   "score": 0.788,
+   "conf": 0.97,
+   "sep": 0.719,
+   "cov": 0.9,
+   "txt": 0.62,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SCHED",
+     0.788
+    ],
+    [
+     "T-INTAKE",
+     0.069
+    ],
+    [
+     "T-DESIGN",
+     0.063
+    ],
+    [
+     "T-CAPS",
+     0.056
+    ]
+   ]
+  },
+  {
+   "id": "TEn0037",
+   "tier": "ABSTAIN",
+   "why": "gate:intent:meta",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  },
+  {
+   "id": "TEn0038",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.517,
+   "conf": 0.88,
+   "sep": 0.304,
+   "cov": 1.0,
+   "txt": 0.03,
+   "address": "yuki",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.517
+    ],
+    [
+     "T-INTAKE",
+     0.213
+    ],
+    [
+     "T-DESIGN",
+     0.018
+    ],
+    [
+     "T-SHOOT",
+     0.017
+    ]
+   ]
+  },
+  {
+   "id": "TEn0039",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.95,
+   "conf": 1.0,
+   "sep": 0.727,
+   "cov": 1.0,
+   "txt": 0.9,
+   "address": "dana2",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.95
+    ],
+    [
+     "T-SHOOT",
+     0.223
+    ],
+    [
+     "T-VIDEO",
+     0.211
+    ],
+    [
+     "T-SCHED",
+     0.04
+    ]
+   ]
+  },
+  {
+   "id": "TEn0040",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SCHED",
+   "score": 0.805,
+   "conf": 0.97,
+   "sep": 0.474,
+   "cov": 0.9,
+   "txt": 0.65,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SCHED",
+     0.805
+    ],
+    [
+     "T-CAPS",
+     0.331
+    ],
+    [
+     "T-DESIGN",
+     0.328
+    ],
+    [
+     "T-RESEARCH",
+     0.04
+    ]
+   ]
+  },
+  {
+   "id": "TEn0041",
+   "tier": "ABSTAIN",
+   "why": "gate:lapsed",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "hala",
+   "finalists": []
+  },
+  {
+   "id": "TEn0042",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.842,
+   "conf": 1.0,
+   "sep": 0.341,
+   "cov": 1.0,
+   "txt": 0.68,
+   "address": "sara",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.842
+    ],
+    [
+     "T-INTAKE",
+     0.502
+    ],
+    [
+     "T-SHOOT",
+     0.287
+    ],
+    [
+     "T-SCHED",
+     0.045
+    ]
+   ]
+  },
+  {
+   "id": "TEn0043",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.86,
+   "conf": 1.0,
+   "sep": 0.548,
+   "cov": 1.0,
+   "txt": 0.72,
+   "address": "dana2",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.86
+    ],
+    [
+     "T-CAPS",
+     0.312
+    ],
+    [
+     "T-SHOOT",
+     0.229
+    ],
+    [
+     "T-VIDEO",
+     0.216
+    ]
+   ]
+  },
+  {
+   "id": "TEn0044",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SCHED",
+   "score": 0.788,
+   "conf": 0.97,
+   "sep": 0.719,
+   "cov": 0.9,
+   "txt": 0.62,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SCHED",
+     0.788
+    ],
+    [
+     "T-INTAKE",
+     0.069
+    ],
+    [
+     "T-DESIGN",
+     0.063
+    ],
+    [
+     "T-CAPS",
+     0.056
+    ]
+   ]
+  },
+  {
+   "id": "TEn0045",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-DESIGN",
+   "score": 0.047,
+   "conf": 0.606,
+   "sep": 0.004,
+   "cov": 0.9,
+   "txt": 0.08,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.047
+    ],
+    [
+     "T-INTAKE",
+     0.043
+    ],
+    [
+     "T-RESEARCH",
+     0.037
+    ],
+    [
+     "T-SCHED",
+     0.034
+    ]
+   ]
+  },
+  {
+   "id": "TEn0046",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-REPORT",
+   "score": 0.849,
+   "conf": 1.0,
+   "sep": 0.3,
+   "cov": 1.0,
+   "txt": 0.7,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.849
+    ],
+    [
+     "T-RESEARCH",
+     0.548
+    ],
+    [
+     "T-ADS",
+     0.234
+    ],
+    [
+     "T-DESIGN",
+     0.051
+    ]
+   ]
+  },
+  {
+   "id": "TEn0047",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-INTAKE",
+   "score": 0.505,
+   "conf": 0.85,
+   "sep": 0.454,
+   "cov": 0.9,
+   "txt": 0.11,
+   "address": "omar",
+   "finalists": [
+    [
+     "T-INTAKE",
+     0.505
+    ],
+    [
+     "T-REPORT",
+     0.051
+    ],
+    [
+     "T-CAPS",
+     0.046
+    ],
+    [
+     "T-SCHED",
+     0.036
+    ]
+   ]
+  },
+  {
+   "id": "TEn0048",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-INTAKE",
+   "score": 0.95,
+   "conf": 1.0,
+   "sep": 0.63,
+   "cov": 1.0,
+   "txt": 0.9,
+   "address": "omar",
+   "finalists": [
+    [
+     "T-INTAKE",
+     0.95
+    ],
+    [
+     "T-DESIGN",
+     0.32
+    ],
+    [
+     "T-REPORT",
+     0.311
+    ],
+    [
+     "T-ADS",
+     0.284
+    ]
+   ]
+  },
+  {
+   "id": "TEn0049",
+   "tier": "ABSTAIN",
+   "why": "gate:dropped",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "rana",
+   "finalists": []
+  },
+  {
+   "id": "TEn0050",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.542,
+   "conf": 0.88,
+   "sep": 0.267,
+   "cov": 1.0,
+   "txt": 0.08,
+   "address": "sara",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.542
+    ],
+    [
+     "T-ADS",
+     0.275
+    ],
+    [
+     "T-INTAKE",
+     0.226
+    ],
+    [
+     "T-DESIGN",
+     0.048
+    ]
+   ]
+  },
+  {
+   "id": "TEn0051",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SHOOT",
+   "score": 0.807,
+   "conf": 1.0,
+   "sep": 0.569,
+   "cov": 1.0,
+   "txt": 0.61,
+   "address": "tariq",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.807
+    ],
+    [
+     "T-VIDEO",
+     0.238
+    ],
+    [
+     "T-DESIGN",
+     0.221
+    ],
+    [
+     "T-INTAKE",
+     0.044
+    ]
+   ]
+  },
+  {
+   "id": "TEn0052",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-VIDEO",
+   "score": 0.815,
+   "conf": 1.0,
+   "sep": 0.588,
+   "cov": 1.0,
+   "txt": 0.63,
+   "address": "nour",
+   "finalists": [
+    [
+     "T-VIDEO",
+     0.815
+    ],
+    [
+     "T-SHOOT",
+     0.227
+    ],
+    [
+     "T-DESIGN",
+     0.217
+    ],
+    [
+     "T-INTAKE",
+     0.093
+    ]
+   ]
+  },
+  {
+   "id": "TEn0053",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-ADS",
+   "score": 0.86,
+   "conf": 1.0,
+   "sep": 0.59,
+   "cov": 1.0,
+   "txt": 0.72,
+   "address": "zain",
+   "finalists": [
+    [
+     "T-ADS",
+     0.86
+    ],
+    [
+     "T-RESEARCH",
+     0.27
+    ],
+    [
+     "T-REPORT",
+     0.238
+    ],
+    [
+     "T-SCHED",
+     0.052
+    ]
+   ]
+  },
+  {
+   "id": "TEn0054",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SCHED",
+   "score": 0.805,
+   "conf": 0.97,
+   "sep": 0.474,
+   "cov": 0.9,
+   "txt": 0.65,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SCHED",
+     0.805
+    ],
+    [
+     "T-CAPS",
+     0.331
+    ],
+    [
+     "T-DESIGN",
+     0.328
+    ],
+    [
+     "T-RESEARCH",
+     0.04
+    ]
+   ]
+  },
+  {
+   "id": "TEn0055",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-REPORT",
+   "score": 0.561,
+   "conf": 0.632,
+   "sep": 0.001,
+   "cov": 1.0,
+   "txt": 0.12,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.561
+    ],
+    [
+     "T-RESEARCH",
+     0.559
+    ],
+    [
+     "T-ADS",
+     0.505
+    ],
+    [
+     "T-INTAKE",
+     0.113
+    ]
+   ]
+  },
+  {
+   "id": "TEn0056",
+   "tier": "ABSTAIN",
+   "why": "gate:lapsed",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "hala",
+   "finalists": []
+  },
+  {
+   "id": "TEn0057",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.541,
+   "conf": 0.88,
+   "sep": 0.315,
+   "cov": 1.0,
+   "txt": 0.08,
+   "address": "yuki",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.541
+    ],
+    [
+     "T-INTAKE",
+     0.226
+    ],
+    [
+     "T-DESIGN",
+     0.047
+    ],
+    [
+     "T-REPORT",
+     0.046
+    ]
+   ]
+  },
+  {
+   "id": "TEn0058",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.86,
+   "conf": 1.0,
+   "sep": 0.41,
+   "cov": 1.0,
+   "txt": 0.72,
+   "address": "karim",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.86
+    ],
+    [
+     "T-INTAKE",
+     0.45
+    ],
+    [
+     "T-RESEARCH",
+     0.325
+    ],
+    [
+     "T-CAPS",
+     0.312
+    ]
+   ]
+  },
+  {
+   "id": "TEn0059",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SCHED",
+   "score": 0.844,
+   "conf": 0.97,
+   "sep": 0.477,
+   "cov": 0.9,
+   "txt": 0.72,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SCHED",
+     0.844
+    ],
+    [
+     "T-INTAKE",
+     0.367
+    ],
+    [
+     "T-RESEARCH",
+     0.066
+    ],
+    [
+     "T-CAPS",
+     0.049
+    ]
+   ]
+  },
+  {
+   "id": "TEn0060",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-DESIGN",
+   "score": 0.076,
+   "conf": 0.63,
+   "sep": 0.018,
+   "cov": 0.9,
+   "txt": 0.14,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.076
+    ],
+    [
+     "T-SCHED",
+     0.058
+    ],
+    [
+     "T-CAPS",
+     0.051
+    ],
+    [
+     "T-REPORT",
+     0.042
+    ]
+   ]
+  },
+  {
+   "id": "TEn0061",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-REPORT",
+   "score": 0.95,
+   "conf": 1.0,
+   "sep": 0.408,
+   "cov": 1.0,
+   "txt": 0.9,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.95
+    ],
+    [
+     "T-RESEARCH",
+     0.542
+    ],
+    [
+     "T-INTAKE",
+     0.316
+    ],
+    [
+     "T-ADS",
+     0.213
+    ]
+   ]
+  },
+  {
+   "id": "TEn0062",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-INTAKE",
+   "score": 0.824,
+   "conf": 1.0,
+   "sep": 0.575,
+   "cov": 1.0,
+   "txt": 0.65,
+   "address": "hala",
+   "finalists": [
+    [
+     "T-INTAKE",
+     0.824
+    ],
+    [
+     "T-CAPS",
+     0.249
+    ],
+    [
+     "T-RESEARCH",
+     0.058
+    ],
+    [
+     "T-SCHED",
+     0.049
+    ]
+   ]
+  },
+  {
+   "id": "TEn0063",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.542,
+   "conf": 0.704,
+   "sep": 0.045,
+   "cov": 1.0,
+   "txt": 0.08,
+   "address": "sara",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.542
+    ],
+    [
+     "T-INTAKE",
+     0.497
+    ],
+    [
+     "T-DESIGN",
+     0.048
+    ],
+    [
+     "T-REPORT",
+     0.047
+    ]
+   ]
+  },
+  {
+   "id": "TEn0064",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.786,
+   "conf": 0.88,
+   "sep": 0.503,
+   "cov": 1.0,
+   "txt": 0.57,
+   "address": "karim",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.786
+    ],
+    [
+     "T-ADS",
+     0.284
+    ],
+    [
+     "T-VIDEO",
+     0.225
+    ],
+    [
+     "T-SHOOT",
+     0.224
+    ]
+   ]
+  },
+  {
+   "id": "TEn0065",
+   "tier": "ABSTAIN",
+   "why": "gate:dropped",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "maya",
+   "finalists": []
+  },
+  {
+   "id": "TEn0066",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-DESIGN",
+   "score": 0.044,
+   "conf": 0.606,
+   "sep": 0.003,
+   "cov": 0.9,
+   "txt": 0.08,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.044
+    ],
+    [
+     "T-INTAKE",
+     0.041
+    ],
+    [
+     "T-RESEARCH",
+     0.035
+    ],
+    [
+     "T-SCHED",
+     0.032
+    ]
+   ]
+  },
+  {
+   "id": "TEn0067",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-REPORT",
+   "score": 0.561,
+   "conf": 0.632,
+   "sep": 0.001,
+   "cov": 1.0,
+   "txt": 0.12,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.561
+    ],
+    [
+     "T-RESEARCH",
+     0.559
+    ],
+    [
+     "T-ADS",
+     0.236
+    ],
+    [
+     "T-INTAKE",
+     0.113
+    ]
+   ]
+  },
+  {
+   "id": "TEn0068",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-INTAKE",
+   "score": 0.825,
+   "conf": 1.0,
+   "sep": 0.574,
+   "cov": 1.0,
+   "txt": 0.65,
+   "address": "hala",
+   "finalists": [
+    [
+     "T-INTAKE",
+     0.825
+    ],
+    [
+     "T-CAPS",
+     0.251
+    ],
+    [
+     "T-RESEARCH",
+     0.059
+    ],
+    [
+     "T-SCHED",
+     0.051
+    ]
+   ]
+  },
+  {
+   "id": "TEn0069",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-RESEARCH",
+   "score": 0.797,
+   "conf": 0.88,
+   "sep": 0.261,
+   "cov": 1.0,
+   "txt": 0.59,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-RESEARCH",
+     0.797
+    ],
+    [
+     "T-REPORT",
+     0.536
+    ],
+    [
+     "T-ADS",
+     0.492
+    ],
+    [
+     "T-INTAKE",
+     0.45
+    ]
+   ]
+  },
+  {
+   "id": "TEn0070",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.859,
+   "conf": 1.0,
+   "sep": 0.628,
+   "cov": 1.0,
+   "txt": 0.72,
+   "address": "sara",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.859
+    ],
+    [
+     "T-INTAKE",
+     0.231
+    ],
+    [
+     "T-DESIGN",
+     0.113
+    ],
+    [
+     "T-SCHED",
+     0.086
+    ]
+   ]
+  },
+  {
+   "id": "TEn0071",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SHOOT",
+   "score": 0.805,
+   "conf": 1.0,
+   "sep": 0.319,
+   "cov": 1.0,
+   "txt": 0.61,
+   "address": "tariq",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.805
+    ],
+    [
+     "T-DESIGN",
+     0.486
+    ],
+    [
+     "T-INTAKE",
+     0.45
+    ],
+    [
+     "T-ADS",
+     0.281
+    ]
+   ]
+  },
+  {
+   "id": "TEn0072",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.844,
+   "conf": 1.0,
+   "sep": 0.615,
+   "cov": 1.0,
+   "txt": 0.69,
+   "address": "dana2",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.844
+    ],
+    [
+     "T-SHOOT",
+     0.229
+    ],
+    [
+     "T-VIDEO",
+     0.21
+    ],
+    [
+     "T-REPORT",
+     0.04
+    ]
+   ]
+  },
+  {
+   "id": "TEn0073",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-VIDEO",
+   "score": 0.816,
+   "conf": 1.0,
+   "sep": 0.586,
+   "cov": 1.0,
+   "txt": 0.63,
+   "address": "nour",
+   "finalists": [
+    [
+     "T-VIDEO",
+     0.816
+    ],
+    [
+     "T-DESIGN",
+     0.23
+    ],
+    [
+     "T-SHOOT",
+     0.227
+    ],
+    [
+     "T-INTAKE",
+     0.101
+    ]
+   ]
+  },
+  {
+   "id": "TEn0074",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-ADS",
+   "score": 0.838,
+   "conf": 1.0,
+   "sep": 0.563,
+   "cov": 1.0,
+   "txt": 0.68,
+   "address": "zain",
+   "finalists": [
+    [
+     "T-ADS",
+     0.838
+    ],
+    [
+     "T-RESEARCH",
+     0.275
+    ],
+    [
+     "T-REPORT",
+     0.21
+    ],
+    [
+     "T-CAPS",
+     0.025
+    ]
+   ]
+  },
+  {
+   "id": "TEn0075",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SCHED",
+   "score": 0.944,
+   "conf": 0.97,
+   "sep": 0.617,
+   "cov": 0.9,
+   "txt": 0.9,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SCHED",
+     0.944
+    ],
+    [
+     "T-ADS",
+     0.328
+    ],
+    [
+     "T-INTAKE",
+     0.058
+    ],
+    [
+     "T-CAPS",
+     0.037
+    ]
+   ]
+  },
+  {
+   "id": "TEn0076",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-REPORT",
+   "score": 0.561,
+   "conf": 0.632,
+   "sep": 0.001,
+   "cov": 1.0,
+   "txt": 0.12,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.561
+    ],
+    [
+     "T-RESEARCH",
+     0.559
+    ],
+    [
+     "T-ADS",
+     0.236
+    ],
+    [
+     "T-INTAKE",
+     0.113
+    ]
+   ]
+  },
+  {
+   "id": "TEn0077",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.841,
+   "conf": 1.0,
+   "sep": 0.191,
+   "cov": 1.0,
+   "txt": 0.68,
+   "address": "yuki",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.841
+    ],
+    [
+     "T-INTAKE",
+     0.65
+    ],
+    [
+     "T-DESIGN",
+     0.342
+    ],
+    [
+     "T-ADS",
+     0.28
+    ]
+   ]
+  },
+  {
+   "id": "TEn0078",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.844,
+   "conf": 1.0,
+   "sep": 0.615,
+   "cov": 1.0,
+   "txt": 0.69,
+   "address": "dana2",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.844
+    ],
+    [
+     "T-SHOOT",
+     0.229
+    ],
+    [
+     "T-VIDEO",
+     0.21
+    ],
+    [
+     "T-REPORT",
+     0.04
+    ]
+   ]
+  },
+  {
+   "id": "TEn0079",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SCHED",
+   "score": 0.944,
+   "conf": 0.97,
+   "sep": 0.444,
+   "cov": 0.9,
+   "txt": 0.9,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SCHED",
+     0.944
+    ],
+    [
+     "T-INTAKE",
+     0.5
+    ],
+    [
+     "T-ADS",
+     0.329
+    ],
+    [
+     "T-DESIGN",
+     0.327
+    ]
+   ]
+  },
+  {
+   "id": "TEn0080",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.541,
+   "conf": 0.88,
+   "sep": 0.266,
+   "cov": 1.0,
+   "txt": 0.08,
+   "address": "yuki",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.541
+    ],
+    [
+     "T-ADS",
+     0.275
+    ],
+    [
+     "T-INTAKE",
+     0.226
+    ],
+    [
+     "T-DESIGN",
+     0.047
+    ]
+   ]
+  },
+  {
+   "id": "TEn0081",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.786,
+   "conf": 0.88,
+   "sep": 0.562,
+   "cov": 1.0,
+   "txt": 0.57,
+   "address": "dana2",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.786
+    ],
+    [
+     "T-VIDEO",
+     0.225
+    ],
+    [
+     "T-SHOOT",
+     0.224
+    ],
+    [
+     "T-RESEARCH",
+     0.042
+    ]
+   ]
+  },
+  {
+   "id": "TEn0082",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SCHED",
+   "score": 0.788,
+   "conf": 0.97,
+   "sep": 0.464,
+   "cov": 0.9,
+   "txt": 0.62,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SCHED",
+     0.788
+    ],
+    [
+     "T-ADS",
+     0.324
+    ],
+    [
+     "T-INTAKE",
+     0.069
+    ],
+    [
+     "T-DESIGN",
+     0.063
+    ]
+   ]
+  },
+  {
+   "id": "TEn0083",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-DESIGN",
+   "score": 0.076,
+   "conf": 0.63,
+   "sep": 0.018,
+   "cov": 0.9,
+   "txt": 0.14,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.076
+    ],
+    [
+     "T-SCHED",
+     0.058
+    ],
+    [
+     "T-CAPS",
+     0.051
+    ],
+    [
+     "T-REPORT",
+     0.042
+    ]
+   ]
+  },
+  {
+   "id": "TEn0084",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.84,
+   "conf": 1.0,
+   "sep": 0.339,
+   "cov": 1.0,
+   "txt": 0.68,
+   "address": "sara",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.84
+    ],
+    [
+     "T-INTAKE",
+     0.501
+    ],
+    [
+     "T-SHOOT",
+     0.292
+    ],
+    [
+     "T-SCHED",
+     0.043
+    ]
+   ]
+  },
+  {
+   "id": "TEn0085",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.86,
+   "conf": 1.0,
+   "sep": 0.548,
+   "cov": 1.0,
+   "txt": 0.72,
+   "address": "dana2",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.86
+    ],
+    [
+     "T-CAPS",
+     0.312
+    ],
+    [
+     "T-SHOOT",
+     0.229
+    ],
+    [
+     "T-VIDEO",
+     0.216
+    ]
+   ]
+  },
+  {
+   "id": "TEn0086",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-INTAKE",
+   "score": 0.797,
+   "conf": 0.97,
+   "sep": 0.732,
+   "cov": 0.9,
+   "txt": 0.63,
+   "address": "omar",
+   "finalists": [
+    [
+     "T-INTAKE",
+     0.797
+    ],
+    [
+     "T-VIDEO",
+     0.064
+    ],
+    [
+     "T-RESEARCH",
+     0.054
+    ],
+    [
+     "T-REPORT",
+     0.043
+    ]
+   ]
+  },
+  {
+   "id": "TEn0087",
+   "tier": "ABSTAIN",
+   "why": "gate:intent:question",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "hala",
+   "finalists": []
+  },
+  {
+   "id": "TEn0088",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-INTAKE",
+   "score": 0.95,
+   "conf": 1.0,
+   "sep": 0.65,
+   "cov": 1.0,
+   "txt": 0.9,
+   "address": "hala",
+   "finalists": [
+    [
+     "T-INTAKE",
+     0.95
+    ],
+    [
+     "T-ADS",
+     0.3
+    ],
+    [
+     "T-DESIGN",
+     0.298
+    ],
+    [
+     "T-CAPS",
+     0.259
+    ]
+   ]
+  },
+  {
+   "id": "TEn0089",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.85,
+   "conf": 1.0,
+   "sep": 0.524,
+   "cov": 1.0,
+   "txt": 0.7,
+   "address": "sara",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.85
+    ],
+    [
+     "T-DESIGN",
+     0.326
+    ],
+    [
+     "T-INTAKE",
+     0.265
+    ],
+    [
+     "T-REPORT",
+     0.087
+    ]
+   ]
+  },
+  {
+   "id": "TEn0090",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.806,
+   "conf": 1.0,
+   "sep": 0.583,
+   "cov": 1.0,
+   "txt": 0.61,
+   "address": "dana2",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.806
+    ],
+    [
+     "T-SHOOT",
+     0.223
+    ],
+    [
+     "T-VIDEO",
+     0.223
+    ],
+    [
+     "T-RESEARCH",
+     0.037
+    ]
+   ]
+  },
+  {
+   "id": "TEn0091",
+   "tier": "ABSTAIN",
+   "why": "gate:lapsed",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "maya",
+   "finalists": []
+  },
+  {
+   "id": "TEn0092",
+   "tier": "ABSTAIN",
+   "why": "below_floor",
+   "top": "T-INTAKE",
+   "score": 0.5,
+   "conf": 0.943,
+   "sep": 0.134,
+   "cov": 0.9,
+   "txt": 0.9,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-INTAKE",
+     0.5
+    ],
+    [
+     "T-DESIGN",
+     0.366
+    ],
+    [
+     "T-RESEARCH",
+     0.335
+    ],
+    [
+     "T-ADS",
+     0.329
+    ]
+   ]
+  },
+  {
+   "id": "TEn0093",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-REPORT",
+   "score": 0.95,
+   "conf": 1.0,
+   "sep": 0.408,
+   "cov": 1.0,
+   "txt": 0.9,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.95
+    ],
+    [
+     "T-RESEARCH",
+     0.542
+    ],
+    [
+     "T-ADS",
+     0.213
+    ],
+    [
+     "T-SCHED",
+     0.06
+    ]
+   ]
+  },
+  {
+   "id": "TEn0094",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.847,
+   "conf": 1.0,
+   "sep": 0.197,
+   "cov": 1.0,
+   "txt": 0.69,
+   "address": "sara",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.847
+    ],
+    [
+     "T-INTAKE",
+     0.65
+    ],
+    [
+     "T-DESIGN",
+     0.324
+    ],
+    [
+     "T-RESEARCH",
+     0.308
+    ]
+   ]
+  },
+  {
+   "id": "TEn0095",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.86,
+   "conf": 1.0,
+   "sep": 0.548,
+   "cov": 1.0,
+   "txt": 0.72,
+   "address": "dana2",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.86
+    ],
+    [
+     "T-CAPS",
+     0.312
+    ],
+    [
+     "T-ADS",
+     0.287
+    ],
+    [
+     "T-SHOOT",
+     0.229
+    ]
+   ]
+  },
+  {
+   "id": "TEn0096",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SCHED",
+   "score": 0.944,
+   "conf": 0.97,
+   "sep": 0.892,
+   "cov": 0.9,
+   "txt": 0.9,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SCHED",
+     0.944
+    ],
+    [
+     "T-INTAKE",
+     0.053
+    ],
+    [
+     "T-CAPS",
+     0.031
+    ],
+    [
+     "T-ADS",
+     0.028
+    ]
+   ]
+  },
+  {
+   "id": "TEn0097",
+   "tier": "ABSTAIN",
+   "why": "below_floor",
+   "top": "T-INTAKE",
+   "score": 0.5,
+   "conf": 0.97,
+   "sep": 0.164,
+   "cov": 0.9,
+   "txt": 0.9,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-INTAKE",
+     0.5
+    ],
+    [
+     "T-RESEARCH",
+     0.336
+    ],
+    [
+     "T-DESIGN",
+     0.313
+    ],
+    [
+     "T-ADS",
+     0.306
+    ]
+   ]
+  },
+  {
+   "id": "TEn0098",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SHOOT",
+   "score": 0.823,
+   "conf": 1.0,
+   "sep": 0.321,
+   "cov": 1.0,
+   "txt": 0.65,
+   "address": "tariq",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.823
+    ],
+    [
+     "T-DESIGN",
+     0.502
+    ],
+    [
+     "T-INTAKE",
+     0.45
+    ],
+    [
+     "T-ADS",
+     0.281
+    ]
+   ]
+  },
+  {
+   "id": "TEn0099",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.844,
+   "conf": 1.0,
+   "sep": 0.615,
+   "cov": 1.0,
+   "txt": 0.69,
+   "address": "karim",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.844
+    ],
+    [
+     "T-SHOOT",
+     0.229
+    ],
+    [
+     "T-VIDEO",
+     0.21
+    ],
+    [
+     "T-REPORT",
+     0.04
+    ]
+   ]
+  },
+  {
+   "id": "TEn0100",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-INTAKE",
+   "score": 0.95,
+   "conf": 1.0,
+   "sep": 0.649,
+   "cov": 1.0,
+   "txt": 0.9,
+   "address": "hala",
+   "finalists": [
+    [
+     "T-INTAKE",
+     0.95
+    ],
+    [
+     "T-ADS",
+     0.301
+    ],
+    [
+     "T-DESIGN",
+     0.298
+    ],
+    [
+     "T-CAPS",
+     0.26
+    ]
+   ]
+  },
+  {
+   "id": "TEn0101",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.842,
+   "conf": 1.0,
+   "sep": 0.192,
+   "cov": 1.0,
+   "txt": 0.68,
+   "address": "yuki",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.842
+    ],
+    [
+     "T-INTAKE",
+     0.65
+    ],
+    [
+     "T-RESEARCH",
+     0.299
+    ],
+    [
+     "T-DESIGN",
+     0.298
+    ]
+   ]
+  },
+  {
+   "id": "TEn0102",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.807,
+   "conf": 1.0,
+   "sep": 0.357,
+   "cov": 1.0,
+   "txt": 0.61,
+   "address": "dana2",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.807
+    ],
+    [
+     "T-INTAKE",
+     0.45
+    ],
+    [
+     "T-RESEARCH",
+     0.318
+    ],
+    [
+     "T-ADS",
+     0.296
+    ]
+   ]
+  },
+  {
+   "id": "TEn0103",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SCHED",
+   "score": 0.788,
+   "conf": 0.97,
+   "sep": 0.288,
+   "cov": 0.9,
+   "txt": 0.62,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SCHED",
+     0.788
+    ],
+    [
+     "T-INTAKE",
+     0.5
+    ],
+    [
+     "T-DESIGN",
+     0.358
+    ],
+    [
+     "T-RESEARCH",
+     0.339
+    ]
+   ]
+  },
+  {
+   "id": "TEn0104",
+   "tier": "ABSTAIN",
+   "why": "below_floor",
+   "top": "T-INTAKE",
+   "score": 0.5,
+   "conf": 0.938,
+   "sep": 0.131,
+   "cov": 0.9,
+   "txt": 0.9,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-INTAKE",
+     0.5
+    ],
+    [
+     "T-DESIGN",
+     0.369
+    ],
+    [
+     "T-RESEARCH",
+     0.336
+    ],
+    [
+     "T-ADS",
+     0.33
+    ]
+   ]
+  },
+  {
+   "id": "TEn0105",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-REPORT",
+   "score": 0.851,
+   "conf": 1.0,
+   "sep": 0.301,
+   "cov": 1.0,
+   "txt": 0.7,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.851
+    ],
+    [
+     "T-RESEARCH",
+     0.55
+    ],
+    [
+     "T-INTAKE",
+     0.318
+    ],
+    [
+     "T-ADS",
+     0.236
+    ]
+   ]
+  },
+  {
+   "id": "TEn0106",
+   "tier": "ABSTAIN",
+   "why": "gate:intent:meta",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  },
+  {
+   "id": "TEn0107",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SHOOT",
+   "score": 0.803,
+   "conf": 1.0,
+   "sep": 0.309,
+   "cov": 1.0,
+   "txt": 0.61,
+   "address": "tariq",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.803
+    ],
+    [
+     "T-DESIGN",
+     0.494
+    ],
+    [
+     "T-INTAKE",
+     0.45
+    ],
+    [
+     "T-RESEARCH",
+     0.308
+    ]
+   ]
+  },
+  {
+   "id": "TEn0108",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-DESIGN",
+   "score": 0.853,
+   "conf": 1.0,
+   "sep": 0.553,
+   "cov": 1.0,
+   "txt": 0.71,
+   "address": "dana2",
+   "finalists": [
+    [
+     "T-DESIGN",
+     0.853
+    ],
+    [
+     "T-CAPS",
+     0.3
+    ],
+    [
+     "T-SHOOT",
+     0.228
+    ],
+    [
+     "T-VIDEO",
+     0.211
+    ]
+   ]
+  },
+  {
+   "id": "TEn0109",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SCHED",
+   "score": 0.944,
+   "conf": 0.97,
+   "sep": 0.891,
+   "cov": 0.9,
+   "txt": 0.9,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SCHED",
+     0.944
+    ],
+    [
+     "T-INTAKE",
+     0.053
+    ],
+    [
+     "T-CAPS",
+     0.031
+    ],
+    [
+     "T-ADS",
+     0.029
+    ]
+   ]
+  },
+  {
+   "id": "TEn0110",
+   "tier": "ABSTAIN",
+   "why": "gate:intent:meta",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  }
+ ]
+}

@@ -1,0 +1,192 @@
+### FEATURE_DISCOVERY — the shapes the work keeps taking, and the two answers only the owner can give
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects. The demo backend runs on 8081 — Tomcat9 owns 8080
+### on this machine.
+###
+### **This is where the feature pays for itself, and the arithmetic is the argument.** A type is
+### reusable across engagements: *content production* is the same internal process whether the client is
+### Aurora or Northwind. So it is discovered from forty threads rather than eight jobs — five times the
+### evidence, and five times sooner. Everything in `discovery.http` and `discovery-tracks.http` exists
+### to make the four requests below possible.
+###
+### **Nothing in this file names anything by itself.** The product notices; a person decides. That is
+### invariant I7's neighbour and it is why `POST .../name` exists at all rather than a confidence score.
+###
+### There is nothing to curate until five threads of one shape have been ended. Seed the workspace in
+### discovery mode, mark and end work with the other two files, and come back:
+###   ./mvnw spring-boot:run -Dspring-boot.run.arguments="--discovery"
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@manager = ionut@atelier.ro
+@employee = andrei@atelier.ro
+@password = a-long-enough-passphrase
+
+### Copy a real identifier out of the curation queue's response into this.
+@typeId = 00000000-0000-0000-0000-000000000000
+
+### Sign in as the owner. Curation is hers alone — DISCOVERY_TYPE_CURATE is granted to OWNER only,
+### because naming a shape of work fixes a word the whole workspace will then use.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{owner}}",
+  "password": "{{password}}"
+}
+
+###############################################################################
+### DISCOVERY-PROPOSE-TYPE-01 — five completed threads of a shape, and a question
+###############################################################################
+
+### 200. Every live type, strongest evidence first.
+###
+### The catalogue is reconciled against every closed thread the workspace holds *before* it answers, so
+### what comes back includes this morning's work rather than the state of the last sweep.
+###
+### **Watch `occurrenceCount`, because it is the number most likely to be read wrongly.** It is counter
+### C2 and it counts **completed threads** — never nodes, never messages, and never cycles. A design that
+### went through three revision rounds is ONE occurrence with a cycle count of three. Getting that
+### backwards makes revision-heavy work look three times as common as it is and inflates every type it
+### belongs to. It also **never decays**: a count answers *how often* and a weight answers *how current*,
+### and conflating them causes two opposite bugs — a decaying count makes history evaporate, a
+### non-decaying weight keeps dead patterns at the top of the queue forever.
+###
+### **Watch `status` move.** CANDIDATE at three similar threads, PROPOSED at five completed ones. Below
+### the first floor a shape is not tracked at all, because every pair becoming a candidate fills the
+### queue with noise. Between the floors the product has noticed something, which is not the same as
+### having something to say.
+###
+### **Both floors are workspace configuration, not constants** — `discovery_tracks_to_form_candidate`
+### and `discovery_tracks_to_propose_type` on `workspace_settings`. Not one of this feature's eleven
+### thresholds was chosen by measurement, and a wrong one does not fail: it produces a proposal slightly
+### too early, or a pattern that never surfaces, and both look exactly like the system working. There is
+### no test that goes red for a wrong one, which is precisely why the value has to move without a
+### deployment.
+###
+### **No row carries a person.** A type is a hand-over between two ROLES — `fromRoleName` and
+### `toRoleName`. Invariant I5 is kept by the field not existing, not by a permission: a figure a
+### permission hides has already been computed.
+GET {{host}}/api/discovery/types
+
+###############################################################################
+### DISCOVERY-NAME-TYPE-01 — ten seconds, once, forever
+###############################################################################
+
+### 200. One field, and nothing beside it.
+###
+### A description box or a category select would turn the single interaction this feature asks of an
+### owner into a form, and a form is what people postpone. Ten seconds is the whole budget.
+POST {{host}}/api/discovery/types/{{typeId}}/name
+Content-Type: application/json
+
+{
+  "name": "Content production"
+}
+
+### 409 TYPE_NAME_TAKEN. The same name again, in different case.
+###
+### **Two types called *content production* is two vocabularies for one process**, and it divides every
+### count between two rows nobody can tell apart — the whole value of naming a discovered shape is that
+### the workspace ends up with one word for one thing. The check is case-insensitive, because *Content
+### Production* and *content production* are the same word to everybody except a database.
+###
+### A type that already carries a name is found by its own name, so pressing the button twice — a double
+### click, a stale tab, a second person in the same account — meets this same refusal rather than a
+### silent success or a second row.
+POST {{host}}/api/discovery/types/{{typeId}}/name
+Content-Type: application/json
+
+{
+  "name": "content PRODUCTION"
+}
+
+### 422 UNKNOWN_TRACK_TYPE. A type that is not a live proposal.
+###
+### Three statuses reach here and are not PROPOSED, and all three answer identically. A CANDIDATE has
+### not earned the owner's attention and was never in their queue; a REJECTED one they have already
+### answered, and I10 says it never returns; a SUPERSEDED one was merged away. **A refusal that told
+### them apart would let a caller learn the shape of a catalogue they were not looking at** — the same
+### reason MESSAGE_NOT_MARKABLE covers three situations with one answer.
+POST {{host}}/api/discovery/types/00000000-0000-0000-0000-000000000000/name
+Content-Type: application/json
+
+{
+  "name": "Something nobody proposed"
+}
+
+### 200. Dismissed — and this is invariant I10 in one request.
+###
+### **A dismissed suggestion never returns unchanged.** What actually keeps it away is not the row's
+### status: it is that the five threads go on pointing at this type in `track.track_type_id`, so the next
+### sweep recognises the shape as one the owner has answered rather than as one it has never seen.
+### Without that, I10 would hold on the row and fail in the owner's week — they would meet the same
+### question next Monday and learn that dismissing it does nothing.
+###
+### Run the curation queue again afterwards: the shape is gone, the five threads are still there, and no
+### second row has opened for them.
+POST {{host}}/api/discovery/types/{{typeId}}/dismiss
+
+###############################################################################
+### The weekly digest — DISCOVERY_04 §6, and it never grows
+###############################################################################
+
+### 200. Three tiles and at most three decisions.
+###
+### **Three a week, maximum. Everything else waits SILENTLY.** The owner's attention is the scarcest
+### resource this feature spends, and a number that goes up is a number people stop opening — so there is
+### no badge, no unread count, no mark-all-read, and **no field on this response a screen could render as
+### one**. A total of everything pending would be a growing indicator under a different name.
+###
+### **Ranked by `occurrenceCount × total work time`** — value consumed rather than recency or count, so a
+### pattern occurring forty times and eating a third of the week outranks one occurring five. The work
+### time itself never appears: it is a sorting key, and invariant I9 forbids presenting a duration
+### without its phase.
+###
+### **`PROVISIONAL` is a label on a type and never a row here.** A type at its evidence floor oscillates
+### week to week as threads are corrected, and announcing each crossing would spend the whole
+### three-decision budget on a type whose real status never changed. The ONE exception is
+### `A_ROLE_STOPPED_CLICKING` — a demotion caused by *coverage* falling below its floor, which is
+### genuinely actionable because a role has stopped clicking — and it is **keyed to the role and never to
+### a person**.
+###
+### **Read the response with that last sentence in hand.** Andrei did every piece of work behind these
+### figures and Maria asked for all of it; neither appears anywhere in the body, as a name or as an
+### identifier. That is invariant I5, enforced in the adapter's `select` lists rather than by a
+### permission.
+###
+### Managers see this too: the read is DISCOVERY_CANVAS_VIEW rather than DISCOVERY_TYPE_CURATE.
+GET {{host}}/api/discovery/digest
+
+### 403 NOT_PERMITTED. The same digest, asked for by an employee.
+###
+### Sign in as Andrei first and run it again: WORK_NODE_MARK goes to every role on purpose — this zone
+### has nothing to analyse unless the people doing the work click — but reading what the week added up to
+### is a manager's. The gate is on the reading, never on the clicking.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{employee}}",
+  "password": "{{password}}"
+}
+
+###
+GET {{host}}/api/discovery/digest
+
+### 403 NOT_PERMITTED. And the curation queue, asked for by a manager.
+###
+### Sign in as Ionuț and run it: he holds DISCOVERY_CANVAS_VIEW and sees the digest, and he does not hold
+### DISCOVERY_TYPE_CURATE. Naming a shape of work fixes a word the whole workspace will use, and that is
+### the owner's alone.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{manager}}",
+  "password": "{{password}}"
+}
+
+###
+GET {{host}}/api/discovery/types

@@ -1,0 +1,190 @@
+### FEATURE_DISCOVERY — the work canvas, where the business first sees itself
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects. The demo backend runs on 8081 — Tomcat9 owns 8080
+### on this machine.
+###
+### **A list answers *what is open*. This answers *what shape is our work*, and you cannot see a shape in
+### a list.** `discovery.http` is the circle — the click every employee makes all day, and the whole of
+### this zone's supply of evidence. `discovery-tracks.http` is the sparse deliberate answer. This file is
+### the read: the one endpoint in the zone that writes nothing.
+###
+### **Everything worth demonstrating here is something the response does NOT contain.** Read the bodies
+### rather than the statuses. There is no person identifier and no person name anywhere in them, there is
+### no total duration, and no lane and no card belongs to any engagement but the one asked for. Each of
+### those three is a wall in the SQL rather than a filter in the mapping, for the reason DISCOVERY_03 §5
+### gives in one line: *a wall a confidence score can cross is not a wall, and a figure a permission hides
+### has already been computed.*
+###
+### Seed the workspace in discovery mode, then use `discovery.http` to open an engagement and mark two
+### requests to two different people. There is nothing to draw until something has been marked:
+###   ./mvnw spring-boot:run -Dspring-boot.run.arguments="--discovery"
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@manager = ionut@atelier.ro
+@employee = andrei@atelier.ro
+@password = a-long-enough-passphrase
+
+### Copy a real engagement identifier out of `discovery.http`'s responses into this.
+@jobId = 00000000-0000-0000-0000-000000000000
+
+### Sign in as the owner.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{owner}}",
+  "password": "{{password}}"
+}
+
+###############################################################################
+### DISCOVERY-VIEW-CANVAS-01 — lanes are threads, and never people
+###############################################################################
+
+### 200. The engagement, drawn.
+###
+### **Read the lane headers first.** `fromRoleName` and `toRoleName` are a ROLE PAIR —
+### *Account manager ↔ Content writer* — and there is no third field naming who actually did it. A lane
+### labelled with a name is a performance dashboard wearing a different hat, and it breaks invariant I5
+### by construction. The refusal is in the query: `CanvasReadAdapter` selects no `performer_id`, no
+### `creator_id`, no `opened_by` and joins `auth_user` nowhere, so there is no person for a serialiser to
+### leak. Search the response body for anybody's name and you will not find one.
+###
+### **Then count the lanes against the threads you marked.** One lane per thread, and that is the load-
+### bearing idea in the whole feature: one engagement runs several threads at once — content, ads,
+### reporting — and without a level between the job and the unit of work all three share one case
+### identifier. The product would then read *ad account ready → copy done* from two events minutes apart
+### and unrelated in fact, and because that parallelism repeats on every client the false edge would
+### accumulate evidence rather than wash out. It would become confidently wrong, which is worse than
+### silence because nothing downstream could detect it.
+###
+### **`weaklyKeyed` is a disclosure rather than a warning.** True means the thread was keyed on its
+### performer alone — nobody had stated what either party does — which is the rung of last resort, the one
+### that exists for a new starter in week one. Everything discovered over such a thread is weaker
+### evidence, and a reader has to be able to see that from the response rather than infer it from two
+### nulls.
+GET {{host}}/api/discovery/canvas?jobId={{jobId}}
+
+### The same request, read for what is not in it.
+###
+### **`phases` is a list of rows and there is NO total field** — invariant I9, a duration is never
+### presented without its phase. Each row says WORK, EXTERNAL_WAIT, INTERNAL_WAIT or REVIEW and how long
+### that one stretch lasted. The split is not decoration: external wait is the client's silence, invariant
+### I4 says it never enters a performance figure, and **no arithmetic can take a wait back out of a sum it
+### was added to**. One convenience total on this response would destroy that permanently, on the screen
+### where somebody would most reasonably read it as the time the work took.
+###
+### **A phase still running does not appear.** It has no length yet, and measuring it against the clock
+### would produce a figure that changed on every refresh and that a person would read as recorded fact.
+### Absence is not zero, and zero is a duration.
+###
+### **A repeated cycle is ONE entry in `loops` with a counter**, never one card per cycle. A design that
+### went through three revision rounds is one occurrence with `cycleCount: 3`. Six cards would say the
+### work had six steps; it had one thing three times, and getting that backwards makes revision-heavy work
+### look more common than it is and inflates every type it belongs to.
+GET {{host}}/api/discovery/canvas?jobId={{jobId}}
+
+### The same request again, read for the two identifiers on every card.
+###
+### **`conversationId` and `messageId` are the address of the sentence the card was made from.** A card
+### carries the words somebody said and nothing around them — you can read the sentence and not see what
+### it answered, what followed it, or which client was being discussed. These two come from the unit of
+### work's `PRIMARY` evidence, joined to CHAT's `message` in the same statement that reads the cards, so
+### the whole engagement still costs one query rather than one per card.
+###
+### **`title` is still the copy made at capture and these do not replace it.** Editing or deleting the
+### message changes neither the card nor the evidence behind it. What the two identifiers buy is a way to
+### *look*, never the source the card is drawn from.
+###
+### **Both are null together, and that is an ordinary state.** Evidence is a row that can be absent — a
+### split moved it, a node was placed by hand — and the card is still drawn, because the work happened
+### whether or not the pointer to the sentence survived. The screen renders no control at all rather than
+### a dead one.
+###
+### **Neither is a figure keyed to a person, so I5 is untouched.** An identifier is not a figure: this one
+### names a conversation, which is a place work was discussed. `message.author_id` sits in the joined row
+### and is not selected. Search the body for a name and you will still not find one.
+###
+### **And this response does not check whether you may see that thread.** An owner reading the canvas may
+### hold the identifier of a conversation they are not in. CHAT refuses it on arrival, exactly as it
+### refuses every other door into one — `GET /api/conversations/{id}/messages` answers on its own
+### participation join. Pre-checking here would put CHAT's rule in two places, and the copy is the one
+### that goes stale.
+GET {{host}}/api/discovery/canvas?jobId={{jobId}}
+
+### 422 UNKNOWN_JOB. **Change one character of the identifier above and this is the answer.**
+###
+### An engagement that does not exist is refused rather than answered with an empty canvas — and the two
+### have to differ, because an empty canvas is an ordinary state. A job somebody opened this morning has
+### no work in it yet. Answering a typo the same way would send a person looking for their work rather
+### than for their mistake.
+GET {{host}}/api/discovery/canvas?jobId=00000000-0000-0000-0000-000000000000
+
+###############################################################################
+### The permission, and why this one is the manager's
+###############################################################################
+
+### Sign in as the employee whose clicks produced everything above.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{employee}}",
+  "password": "{{password}}"
+}
+
+### 403 NOT_PERMITTED. Andrei is refused, and the reason is not seniority.
+###
+### **`WORK_NODE_MARK` is the one permission in this product deliberately granted to everybody** — nothing
+### exists to analyse unless the people doing the work click, and the design's largest recorded risk is
+### that they stop. Andrei marks work all day. He is still refused this screen.
+###
+### DISCOVERY_02 §3 is the rule the whole permission table falls out of: **ask an employee only what they
+### can answer by RECOGNITION, and a manager anything requiring CLASSIFICATION.** Every question this zone
+### puts to Andrei — which engagement is this, what did the work produce, who are you waiting on — he
+### answers in a second because he already knows. *What shape does our work have* is a reading of the
+### business rather than of a task.
+###
+### And this is the screen where R1 would land. Adoption collapses in week two if people stop clicking,
+### and nothing would stop them faster than a canvas of their own work that they could read as being read
+### about them. The permission is what keeps the circle a tool rather than a monitor.
+GET {{host}}/api/discovery/canvas?jobId={{jobId}}
+
+### Sign in as the manager who runs the client work.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{manager}}",
+  "password": "{{password}}"
+}
+
+### 200. The same engagement, and Ionuț sees exactly what Maria saw.
+###
+### **The split is between roles, not a blanket closure**, and the two requests one after the other are
+### what show it. `DISCOVERY_CANVAS_VIEW` is granted to OWNER and MANAGER in V65 — declared and granted in
+### the same migration, because V2's blanket owner grant ran once and a permission declared afterwards is
+### granted to nobody, leaving its endpoint answering 403 to every caller including the owner while every
+### unit test stays green.
+GET {{host}}/api/discovery/canvas?jobId={{jobId}}
+
+###############################################################################
+### End this thread — from the lane header, and there is no second path
+###############################################################################
+
+### The canvas's lane header calls the endpoint slice D already ships, in `discovery-tracks.http`:
+###   POST {{host}}/api/discovery/tracks/{trackId}/end
+###
+### **This file adds no closure path and there must never be one.** A thread never reopens and never
+### closes twice; two closure events would make every sequence inferred from closure wrong, silently. Take
+### a `trackId` from any lane above and end it through that endpoint, then re-run the first request in
+### this file — the lane comes back CLOSED, with a `closeReason` of TERMINAL_OUTPUT and a `completeness`
+### nobody sent.
+###
+### **Watch `completeness` on the re-read, because it is the field that stops a lie.** It is computed at
+### the close and FROZEN — invariant I12, and there is no route that recomputes it. A thread started and
+### never completed carries whatever duration ran before it went quiet: **it does not look incomplete, it
+### looks efficient.** START_ONLY is excluded from discovery precisely so silence is never read as speed.
+### A lane still running carries null for both fields, because a thread that has not ended has no capture
+### quality to report and reporting one would be that recomputation arriving as a default.

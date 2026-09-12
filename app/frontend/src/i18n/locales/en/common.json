@@ -1,0 +1,3246 @@
+{
+  "guidance": {
+    "eyebrow": "WHAT THE PIPELINE FOUND",
+    "title": "How this work gets done",
+    "note": "Everything below was drawn out of the marked work rather than written by anybody. The guidance is written by a language model from those observations, and says so on every card.",
+    "loading": "Reading what the pipeline found…",
+    "nothingFound": "The pipeline has not proposed anything yet. Run it from the Board first.",
+    "templatesEyebrow": "KINDS OF WORK",
+    "templates": "{{count}} task templates it drew out",
+    "processesEyebrow": "SHAPES THAT REPEAT",
+    "processes": "{{count}} processes written down",
+    "explain": "Explain this to a new starter",
+    "writing": "Reading the observations…",
+    "writtenBy": "Written by {{model}} from the observations above",
+    "failed": "The model could not answer. Nothing was changed.",
+    "turnItOn": "Switch the model on to ask for guidance.",
+    "noModel": "No model configured",
+    "aiOn": "AI is on",
+    "aiOff": "AI is off",
+    "handbook": "Export a handbook (PDF)",
+    "handbookProgress": "Writing {{done}} of {{total}}…",
+    "printTitle": "How the work gets done",
+    "printLede": "Drawn from what people marked as work, not from anything anybody wrote down for this document. Each entry lists what was observed and, where a language model was asked, guidance written from those observations alone.",
+    "printSteps": "Steps people wrote down",
+    "printGuidance": "Guidance for somebody doing this the first time",
+    "printMissing": "No guidance was produced for this entry.",
+    "adoption": "{{share}}% of marks name an activity — {{naming}} of {{marks}}. A step is keyed on the activity somebody named, and falls back to the kind of work where nobody named one, so where this figure is low the shapes above are coarser than the work really is."
+  },
+  "app": {
+    "name": "FlowOps"
+  },
+  "auth": {
+    "checkingSession": "Checking your session…",
+    "field": {
+      "email": "Email address",
+      "password": "Password",
+      "passwordHint": "At least 12 characters. No symbols or capitals required.",
+      "passcode": "Code from your email"
+    },
+    "login": {
+      "heading": "Sign in",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "switchToSignup": "Create the workspace instead"
+    },
+    "signup": {
+      "heading": "Create the workspace",
+      "requestCode": "Send me a code",
+      "sending": "Sending…",
+      "codeSent": "If {{email}} can be used, a code is on its way. It expires shortly.",
+      "submit": "Create the workspace",
+      "submitting": "Creating…",
+      "switchToLogin": "I already have an account"
+    },
+    "logout": {
+      "submit": "Sign out",
+      "submitting": "Signing out…",
+      "failed": "We could not sign you out. You are still signed in — try again, and close this browser if you cannot."
+    },
+    "reauthenticate": {
+      "currentPassword": "Current password",
+      "why": "Confirm your password before making this change.",
+      "submit": "Confirm",
+      "submitting": "Confirming…"
+    },
+    "changePassword": {
+      "heading": "Change your password",
+      "otherSessionsWarning": "Changing your password signs you out everywhere except here.",
+      "newPassword": "New password",
+      "policyHint": "At least 12 characters, and not the one you are using now.",
+      "submit": "Change password",
+      "submitting": "Changing…",
+      "changed": "Your password has been changed and your other sessions have been signed out."
+    },
+    "sessions": {
+      "heading": "Where you are signed in",
+      "explanation": "Each device that is currently signed in to your account. If you do not recognise one, change your password — that signs out everywhere except here.",
+      "loading": "Looking up your sessions…",
+      "none": "There are no active sessions.",
+      "current": "This device",
+      "whereFrom": "From {{ipAddress}} · {{coarseLocation}}",
+      "lastActive": "Last active {{at}}",
+      "signedInAt": "Signed in {{at}}",
+      "terminate": "Sign this out",
+      "terminating": "Signing out…"
+    },
+    "sessionAdministration": {
+      "heading": "Sign out someone else",
+      "explanation": "See where a person's account is signed in and cut off a device. Only you can do this, and every attempt is recorded.",
+      "userId": "Person's identifier",
+      "userIdHint": "Choosing from a list of people arrives with the team features.",
+      "look": "Show their sessions",
+      "whyConfirm": "Confirm your password before signing anyone out.",
+      "terminated": "That session has been signed out. It cannot be used again."
+    },
+    "signedIn": {
+      "as": "Signed in as {{email}}."
+    },
+    "error": {
+      "loginRefused": "The email address or password is incorrect.",
+      "emailInvalid": "Enter a valid email address.",
+      "passcodeRejected": "That code is not valid. Request a new one if it has expired.",
+      "attemptLocked": "Too many incorrect codes. Request a new code to continue.",
+      "rateLimited": "Too many attempts. Please try again later.",
+      "reauthenticationRefused": "That password is not correct.",
+      "reauthenticationExpired": "That took a little too long. Please confirm your password again.",
+      "permissionDenied": "You do not have permission to do that.",
+      "userIdInvalid": "That is not a valid identifier.",
+      "unexpected": "Something went wrong. Please try again.",
+      "passwordRule": {
+        "MINIMUM_LENGTH": "Use at least 12 characters.",
+        "MAXIMUM_LENGTH": "Use no more than 128 characters.",
+        "NOT_EMAIL_LOCAL_PART": "Your password cannot be the first part of your email address.",
+        "NOT_CURRENT_PASSWORD": "Choose a password you are not already using.",
+        "UNKNOWN": "That password cannot be used."
+      },
+      "signupClosed": "This FlowOps installation already has an owner, so signing up is closed. If you already have an account, choose \"I already have an account\" below and sign in. Otherwise ask the owner to invite you — nothing is wrong with the email."
+    },
+    "account": {
+      "heading": "Your account",
+      "manage": "Your sessions and password"
+    },
+    "forgotPassword": {
+      "heading": "Reset your password",
+      "link": "I have forgotten my password",
+      "explain": "Enter your email address and we will send you a link to choose a new password.",
+      "submit": "Send reset link",
+      "sending": "Sending…",
+      "sent": "If {{email}} has an account here, a link is on its way. It can be used once and expires shortly.",
+      "backToLogin": "Back to sign in"
+    },
+    "resetPassword": {
+      "heading": "Choose a new password",
+      "explain": "Every device signed in to this account will be signed out when you finish.",
+      "checking": "Checking your link…",
+      "submit": "Set the new password",
+      "saving": "Saving…",
+      "deadHeading": "This link cannot be used",
+      "dead": "It may have expired, been used already, or never existed. Ask for a new one from the sign-in page.",
+      "askAgain": "Go to sign in",
+      "uncheckedHeading": "We could not check this link",
+      "unchecked": "Something went wrong on the way to the server. That says nothing about your link — try again in a moment.",
+      "retry": "Try again",
+      "saveFailed": "The new password could not be saved. Your link is still good — try again.",
+      "doneHeading": "Your password is set",
+      "done": "Every device signed in to this account has been signed out. Sign in with your new password.",
+      "signIn": "Sign in"
+    }
+  },
+  "ui": {
+    "personChip": {
+      "formerMember": "Former member"
+    },
+    "phase": {
+      "heading": "Time by phase",
+      "active": "{{duration}} work",
+      "blocked": "{{duration}} blocked",
+      "wait": "{{duration}} waiting",
+      "review": "{{duration}} in review",
+      "approval": "{{duration}} awaiting approval",
+      "none": "No time recorded yet"
+    },
+    "taskState": {
+      "Created": "Waiting to be accepted",
+      "Accepted": "Accepted",
+      "InProgress": "In progress",
+      "Blocked": "Blocked",
+      "Completed": "Waiting for review",
+      "Approved": "Approved",
+      "Closed": "Closed"
+    },
+    "deadline": {
+      "on-time": "Due {{when}}",
+      "at-risk": "At risk, due {{when}}",
+      "overdue": "Overdue by {{amount}}",
+      "blocked": "Blocked: {{reason}}"
+    },
+    "passwordRules": {
+      "met": "met",
+      "notMet": "not met yet"
+    },
+    "connection": {
+      "label": "Connection",
+      "connecting": "Connecting…",
+      "live": "Live",
+      "reconnecting": "Reconnecting…",
+      "offline": "Offline — last known state"
+    }
+  },
+  "workspace": {
+    "setup": {
+      "heading": "Set your workspace up",
+      "body": "Four things, once. Everything else can wait for settings.",
+      "loading": "Getting things ready…",
+      "unavailable": "We could not load this screen. Sign in again.",
+      "alreadyDone": "This workspace is already set up.",
+      "ownerName": {
+        "label": "Your name",
+        "hint": "What colleagues will see next to your work.",
+        "required": "Tell us what to call you."
+      },
+      "workspaceName": {
+        "label": "Workspace name",
+        "hint": "Your company, as people would say it out loud.",
+        "required": "Give the workspace a name."
+      },
+      "use": {
+        "label": "What is this workspace for?",
+        "WORK": "Work",
+        "PERSONAL": "Personal"
+      },
+      "timezone": {
+        "label": "Timezone",
+        "detected": "Detected from your browser. Every waiting time and deadline is measured against it, so it is worth a glance.",
+        "notDetected": "We could not detect this. Every waiting time and deadline is measured against it, so choose the one you work in.",
+        "unknown": "That is not a timezone we recognise. Choose one from the list."
+      },
+      "submit": "Start using FlowOps",
+      "submitting": "Setting up…",
+      "failed": "That could not be saved. Try again.",
+      "panel": {
+        "label": "Setup progress",
+        "kicker": "Getting set up",
+        "counted": "{{done}} of {{total}} ready",
+        "ready": "Everything's ready.",
+        "later": "Working hours, escalation timing and quiet hours wait in settings. Shipping defaults apply until you change them."
+      }
+    },
+    "role": {
+      "OWNER": "Owner",
+      "MANAGER": "Manager",
+      "EMPLOYEE": "Employee"
+    },
+    "people": {
+      "loading": "Loading the people…",
+      "treeLabel": "Who reports to whom",
+      "invite": "Invite someone",
+      "you": "You",
+      "deactivated": "Deactivated",
+      "notYetJoined": "Not yet joined",
+      "expires": "expires <when></when>",
+      "showDeactivated": "Show people who have been deactivated",
+      "alone": {
+        "heading": "It's just you.",
+        "body": "Invite someone and they will appear here once they accept."
+      },
+      "error": {
+        "heading": "We could not load the people.",
+        "body": "Sign in again, or try once more in a moment."
+      },
+      "deactivatedOn": "Deactivated {{when}}",
+      "invitationState": {
+        "SENT": "Not yet joined",
+        "AWAITING_APPROVAL": "Awaiting approval"
+      },
+      "updates": "Recent updates",
+      "dismiss": "Dismiss"
+    },
+    "invite": {
+      "title": "Invite someone",
+      "emailLabel": "Their email address",
+      "roleLabel": "Role",
+      "managerLabel": "They will report to",
+      "managerOnlyYou": "Only you so far — the first person to join can report to you.",
+      "send": "Send the invitation",
+      "sending": "Sending…",
+      "cancel": "Cancel",
+      "error": {
+        "ALREADY_MEMBER": "That person is already here. Open them from the list instead.",
+        "DEACTIVATED_MEMBER": "That person is a deactivated member of this workspace, so they cannot be invited again.",
+        "DUPLICATE_INVITATION": "That address already has an invitation waiting. Resend or withdraw that one rather than sending a second.",
+        "DECLINE_WINDOW": "That address declined an invitation recently. You can ask again later.",
+        "MANAGER_INACTIVE": "The person you chose as their manager is no longer active. Pick somebody else.",
+        "SELF_INVITATION": "That is your own address — you are already here.",
+        "RATE_LIMIT": "That is a lot of invitations in a short time. Try again a little later.",
+        "ROLE_CEILING": "You cannot invite somebody at that role.",
+        "malformed": "Check the address and try again.",
+        "notPermitted": "You are not allowed to invite people.",
+        "unexpected": "Something went wrong and the invitation was not sent.",
+        "MANAGER_NOT_ELIGIBLE": "Only an owner or a manager can have people reporting to them. Choose somebody else."
+      }
+    },
+    "revoke": {
+      "action": "Withdraw",
+      "title": "Withdraw this invitation?",
+      "heading": "Withdrawing the invitation to {{address}} will:",
+      "consequence": {
+        "cannotJoin": "Stop them joining this workspace.",
+        "linkStops": "Make the link in their invitation stop working immediately.",
+        "canInviteAgain": "Leave you free to invite the same address again later."
+      },
+      "confirm": "Withdraw the invitation",
+      "withdrawing": "Withdrawing…",
+      "cancel": "Keep the invitation",
+      "close": "Close",
+      "withdrawn": "The invitation to {{address}} was withdrawn. Their link no longer works.",
+      "error": {
+        "unexpected": "Something went wrong and the invitation was not withdrawn.",
+        "ALREADY_ACCEPTED": "{{name}} accepted this invitation and is now a member, so there is nothing left to withdraw. To end their access, deactivate them."
+      },
+      "somebody": "That person",
+      "actionFor": "Withdraw the invitation to {{address}}",
+      "alreadyGone": "The invitation to {{address}} was already beyond reach. Nothing changed."
+    },
+    "move": {
+      "action": "Move",
+      "actionFor": "Move {{name}} to a different manager",
+      "title": "Change who this person reports to",
+      "managerLabel": "They will report to",
+      "choose": "Choose someone…",
+      "loadingPreview": "Working out what would change…",
+      "previewFailed": "What would change could not be worked out, so there is nothing to agree to yet. Nobody has been moved. Close this and try again.",
+      "heading": "{{person}} moving under {{manager}} will:",
+      "consequence": {
+        "leaves": "Take them out of {{manager}}’s line, who will no longer see their work.",
+        "gainsAManager": "Put them under {{manager}} for the first time.",
+        "movesToo": "{{name}} moves with them and still reports to them afterwards.",
+        "visibility": "Give {{manager}} visibility over their work from that moment."
+      },
+      "alreadyTheirManager": "{{manager}} is already their manager. Nothing would change.",
+      "confirm": "Move them",
+      "moving": "Moving…",
+      "cancel": "Leave the line as it is",
+      "moved": "{{person}} now reports to {{manager}}.",
+      "cycle": {
+        "step": "{{person}} reports to {{manager}}.",
+        "conclusion": "So {{person}} cannot report to {{manager}} — the line would loop back on itself."
+      },
+      "error": {
+        "SELF_MANAGER": "Nobody can report to themselves.",
+        "OWNER_HAS_NO_MANAGER": "The owner is the top of the reporting line and has no manager.",
+        "MANAGER_INACTIVE": "That person is no longer active. Choose somebody else.",
+        "MANAGER_NOT_ELIGIBLE": "Only an owner or a manager can have people reporting to them.",
+        "MEMBERSHIP_NOT_FOUND": "That person is no longer in this workspace.",
+        "unexpected": "Something went wrong and nobody was moved."
+      }
+    },
+    "invitation": {
+      "loading": "Opening your invitation…",
+      "heading": "You have been invited",
+      "intro": "{{inviter}} has invited you to join {{workspace}}.",
+      "role": {
+        "label": "You would join as",
+        "MANAGER": "a manager",
+        "EMPLOYEE": "an employee"
+      },
+      "manager": {
+        "label": "You would report to"
+      },
+      "reassigned": "{{manager}} is shown because the person named in your invitation has since left. You would report to {{manager}} instead.",
+      "consent": {
+        "heading": "What FlowOps records about you",
+        "regionLabel": "What FlowOps records about you — scroll to read all of it",
+        "version": "Version {{version}}"
+      },
+      "unusable": {
+        "heading": "This invitation cannot be used.",
+        "body": "It may have been withdrawn, already used, or it may have expired. Ask whoever invited you to send a new one."
+      },
+      "unchecked": {
+        "heading": "We could not check this invitation",
+        "body": "Something went wrong on the way to the server. That says nothing about your invitation — try again in a moment.",
+        "retry": "Try again"
+      },
+      "join": {
+        "name": {
+          "label": "The name colleagues will see",
+          "hint": "Your invitation carries your address, not your name, so this is the only place we can learn it."
+        },
+        "password": {
+          "label": "Choose a password"
+        },
+        "agree": "I agree to what FlowOps records about me, as set out above.",
+        "submit": "Agree and join",
+        "submitting": "Joining…",
+        "decline": "Decline",
+        "error": {
+          "heading": "You have not joined",
+          "DISPLAY_NAME_REQUIRED": "Please give the name colleagues will see.",
+          "ALREADY_MEMBER": "That address already has an account here. Sign in instead.",
+          "CONSENT_VERSION_STALE": "The text above changed while you were reading it. Please read it again and agree to the current version.",
+          "INVITATION_NOT_USABLE": "This invitation cannot be used any more. Ask whoever invited you to send a new one.",
+          "UNKNOWN": "We could not confirm what happened. Reload this page before trying again — if you already joined, you are in.",
+          "CONSENT_REQUIRED": "You have not agreed to what FlowOps records about you, so no account was created."
+        }
+      },
+      "declined": {
+        "heading": "Nothing was created",
+        "body": "Your invitation has been declined. No account was made and nothing about you was kept. You can close this page."
+      }
+    },
+    "deactivate": {
+      "action": "End access",
+      "actionFor": "End {{name}}'s access",
+      "title": "End {{name}}'s access?",
+      "heading": "Ending {{name}}'s access will:",
+      "accessEnds": "Stop {{name}} signing in or being assigned anything.",
+      "sessionsEnd": "Sign them out of every device immediately, with no grace period.",
+      "noReports": "Change nobody else's manager — they have no direct reports.",
+      "reportsMove_one": "Move {{names}} to report to {{manager}}.",
+      "reportsMove_other": "Move {{count}} people — {{names}} — to report to {{manager}}.",
+      "workIsKept": "Keep everything they did, unchanged and still in their name.",
+      "confirm": "End access",
+      "working": "Ending access…",
+      "cancel": "Cancel",
+      "close": "Close",
+      "done": "{{name}} no longer has access.",
+      "onlyOwner": "This is the last owner. Ending their access would leave nobody able to run this workspace, and there is no way back — so it cannot be done.",
+      "failed": "Their access could not be ended. Nothing was changed."
+    },
+    "erase": {
+      "action": "Erase",
+      "actionFor": "Erase {{name}} permanently",
+      "title": "Erase {{name}} permanently?",
+      "heading": "Erasing {{name}} will:",
+      "destroys": {
+        "NAME": "Destroy their name, so everything they did reads as Former member.",
+        "EMAIL_ADDRESS": "Destroy their email address everywhere it is held.",
+        "CREDENTIAL": "Destroy their password, so this account can never be signed into again.",
+        "SESSIONS": "Remove the devices and places their sign-ins were recorded from."
+      },
+      "survives": {
+        "AUTHORED_WORK": "Keep everything they did, in the same order, credited to Former member.",
+        "REPORTING_HISTORY": "Keep who reported to whom, and when, without naming them.",
+        "CONSENT_RECORD": "Keep the fact that they agreed, the date, and the version they agreed to."
+      },
+      "freeTextIsNotRewritten": "Anything typed in words is left as it was. A comment reading “ask Maria about the invoice” will still say Maria afterwards — we cannot edit somebody else’s writing.",
+      "passwordLabel": "Your password",
+      "typedNameLabel": "Type {{name}} to confirm",
+      "confirm": "Erase permanently",
+      "working": "Erasing…",
+      "cancel": "Cancel",
+      "close": "Close",
+      "loading": "Checking what would be erased…",
+      "done": "{{name}} has been erased. Their work now reads as Former member.",
+      "stillActive": "{{name}} is still working here. End their access first — erasing somebody is two deliberate steps, and this is the first.",
+      "onlyOwner": "This is the last owner. Erasing them would leave nobody able to run this workspace, and there is no way back — so it cannot be done.",
+      "nameMismatch": "That is not their name. Nothing has been erased. Check you have the right person.",
+      "passwordWrong": "That password was not right. Nothing has been erased.",
+      "previewFailed": "We could not check what erasing this person would do, so we have not offered to do it.",
+      "failed": "We could not erase this person. Nothing was destroyed."
+    },
+    "myData": {
+      "title": "What we hold about you",
+      "loading": "Gathering everything held about you…",
+      "error": {
+        "heading": "We could not open your file",
+        "body": "Something went wrong reading what we hold about you. Try again in a moment."
+      },
+      "account": "Your account",
+      "role": "What you can do here",
+      "manager": "Who you report to",
+      "noManager": "Nobody — you are the owner",
+      "reportingLine": "Who you reported to, and when",
+      "noReportingLine": "You have always reported to nobody, because you are the owner.",
+      "reportedTo": "You reported to {{manager}} from",
+      "stillNow": "still now",
+      "formerMember": "someone who has since been erased",
+      "consent": "What you agreed to",
+      "noConsent": "There is no agreement on file for you.",
+      "agreedTo": "You agreed to version {{version}} on",
+      "sessions": "Where you are signed in",
+      "noSessions": "You are not signed in anywhere right now.",
+      "unknownDevice": "an unrecognised device",
+      "unknownPlace": "somewhere we could not place",
+      "authored": "What you have done here",
+      "authoredCounts": "{{tasks}} pieces of work and {{comments}} comments. We show you what exists and where — the work itself lives in the product, because most of it belongs to other people as well as to you.",
+      "export": "Take a copy",
+      "takeACopy": "Download everything",
+      "exporting": "Preparing your copy…",
+      "copiesLeft_one": "You can take one more copy today.",
+      "copiesLeft_other": "You can take {{count}} more copies today.",
+      "exportLimit": "You have taken several copies already today. Try again tomorrow — this is a limit on how often, not on your right to a copy.",
+      "exportFailed": "We could not prepare your copy. Nothing has changed.",
+      "producedForSomebodyElse": "This copy was produced by the owner of this workspace on your behalf, because your access here has ended.",
+      "updates": "Changes to your details"
+    },
+    "myProfile": {
+      "title": "Your name",
+      "nameLabel": "The name colleagues see",
+      "addressIsFixed": "Your email address is {{address}}, and it cannot be changed here. It is what your invitation, your agreement and your password are tied to.",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Saved. Everyone sees the new name from now on, including on things you did before.",
+      "alreadyYourName": "That is already your name, so nothing changed.",
+      "nameRequired": "Give a name. There is nothing better to fall back on than the one you had.",
+      "failed": "We could not save that. Your name is unchanged."
+    },
+    "settings": {
+      "title": "How your business is measured",
+      "loading": "Opening your settings…",
+      "identity": "Your workspace",
+      "name": "What this workspace is called",
+      "time": "Your working time",
+      "timeExplains": "Everything the product measures — how long something waited, whether it is late, when to chase — is counted against these. A wrong value here produces no error, only numbers that are quietly wrong.",
+      "timezone": "Time zone",
+      "workingDays": "Days you work",
+      "workingHoursStart": "Work starts at",
+      "workingHoursEnd": "Work ends at",
+      "day": {
+        "MONDAY": "Monday",
+        "TUESDAY": "Tuesday",
+        "WEDNESDAY": "Wednesday",
+        "THURSDAY": "Thursday",
+        "FRIDAY": "Friday",
+        "SATURDAY": "Saturday",
+        "SUNDAY": "Sunday"
+      },
+      "thresholds": "When work is called late",
+      "atRiskWindow": "Hours before a deadline when work starts being flagged",
+      "escalation": "Chase after (hours)",
+      "escalationHint": "In order, longest last — for example 24, 72, 168. Each step waits longer than the one before it.",
+      "quietHours": "Quiet hours",
+      "quietHoursExplains": "Nobody is chased between these times. A range that runs past midnight — from 22:00 to 06:00 — is the ordinary one and is exactly what you want.",
+      "quietHoursStart": "Quiet from",
+      "quietHoursEnd": "Quiet until",
+      "invitations": "Invitations",
+      "approvalRequired": "A manager's invitation waits for my approval",
+      "approvalExplains": "With this off, a manager can invite somebody without asking you. Turning it off is giving away that decision, which is why only you can change it and why the change is recorded.",
+      "appliesFromNow": "Changes apply from now. Anything already measured keeps the values that were in force when it happened.",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved_one": "Saved. One setting changed.",
+      "saved_other": "Saved. {{count}} settings changed.",
+      "nothingChanged": "Nothing changed, so nothing was recorded.",
+      "updates": "Changes to your settings",
+      "error": {
+        "heading": "We could not open your settings",
+        "body": "Something went wrong reading how your business is measured. Try again in a moment.",
+        "ladderUnordered": "Each chase must wait longer than the one before it. Put the hours in order, smallest first.",
+        "atRiskWindow": "The flagging window must be more than zero hours. At zero, everything is flagged, which is the same as nothing being flagged.",
+        "quietHoursCoverTheDay": "Quiet hours cannot cover the whole day, or nobody would ever be chased.",
+        "noWorkingDays": "Choose at least one working day, or nothing can be measured.",
+        "timezone": "That is not a time zone we recognise.",
+        "couldNotSave": "We could not save your settings. Nothing has changed."
+      },
+      "analysis": "Analysis",
+      "analysisExplains": "These decide how the product judges your own history. They change what it says, never what it does.",
+      "closureCoverage": "Closure coverage threshold (%)",
+      "closureCoverageHint": "When less than this share of the work behind a finding actually finished, the finding says so. Work that stalls is not a random sample, so a figure that quietly leaves it out reads as good news.",
+      "idleWindow": "Idle template window (days)",
+      "idleWindowHint": "How long a template goes unused before it is offered for retirement. Templates used on a regular rhythm are judged against that rhythm instead.",
+      "approvalNotYet": "Only you can invite people at the moment, so this has nothing to govern yet. When managers can invite, this decides whether their invitations wait for you."
+    }
+  },
+  "shell": {
+    "chat": {
+      "pickOne": "Pick a conversation on the left to read it, and to see the work it produced."
+    },
+    "navigation": "Sections",
+    "nav": {
+      "today": "Today",
+      "canvas": "Canvas",
+      "people": "People",
+      "settings": "Settings",
+      "account": "Account",
+      "processes": "Processes",
+      "chat": "Chat",
+      "tasks": "Tasks",
+      "reports": "Reports",
+      "timeline": "Timeline",
+      "myWork": "My work",
+      "templates": "Templates",
+      "pipeline": "Pipeline",
+      "discovery": "Discovery",
+      "work": "Work"
+    },
+    "pending": {
+      "timeline": "Work laid out over time — when each step starts and when it is due. It arrives with the per-step dates a run does not yet carry.",
+      "today": "Your queue and what is waiting on you will live here. It arrives with the task features.",
+      "settings": "Working days and hours, the at-risk window, escalation timing and quiet hours. Shipping defaults apply until then."
+    },
+    "promise": {
+      "heading": "Decided by a person",
+      "body": "Never by software."
+    },
+    "updatedJustNow": "Updated just now",
+    "newProcess": "+ New process",
+    "identity": {
+      "online": "Online"
+    },
+    "view": {
+      "name": "View",
+      "today": "Today",
+      "allWork": "All work",
+      "myWork": "My work",
+      "runs": "Runs",
+      "templates": "Templates",
+      "board": "Board",
+      "canvas": "Canvas",
+      "engagement": "Engagement",
+      "weekly": "Weekly",
+      "reports": "Reports",
+      "chat": "Chat",
+      "people": "People",
+      "settings": "Settings",
+      "account": "Account",
+      "pipeline": "Pipeline",
+      "processes": "Processes",
+      "discovery": "Discovery",
+      "work": "Work",
+      "timeline": "Your work",
+      "findings": "Findings",
+      "guidance": "Guidance",
+      "organisation": "Organisation"
+    },
+    "notices": "Notices",
+    "dismissNotice": "Dismiss"
+  },
+  "task": {
+    "section": {
+      "heading": "Your work",
+      "subtitle": "Work you have given out, and the reviews waiting on you."
+    },
+    "loading": "Loading your work",
+    "loadFailed": "We could not load this task just now. Close this and try again.",
+    "formerMember": "Former member",
+    "empty": {
+      "heading": "Nothing waiting on you.",
+      "body": "Work given to you appears here the moment somebody assigns it."
+    },
+    "table": {
+      "caption": "Work you can see",
+      "title": "Task",
+      "assignee": "Assigned to",
+      "state": "State",
+      "deadline": "Due",
+      "phase": "Waiting",
+      "action": "Action"
+    },
+    "phase": {
+      "WAIT": "Waiting since",
+      "ACTIVE": "Worked on since",
+      "BLOCKED": "Blocked since",
+      "REVIEW": "In review since",
+      "APPROVAL": "Approved since",
+      "none": "Finished"
+    },
+    "priority": {
+      "LOW": "Low",
+      "NORMAL": "Normal",
+      "HIGH": "High",
+      "URGENT": "Urgent"
+    },
+    "accept": {
+      "action": "Accept",
+      "submitting": "Accepting",
+      "failed": "We could not record that just now. Refresh the page and try again."
+    },
+    "create": {
+      "open": "Give someone work",
+      "title": "Give someone work",
+      "submit": "Give the work",
+      "submitting": "Saving",
+      "cancel": "Cancel",
+      "choosePerson": "Choose a person",
+      "given": "{{name}} has been given the work.",
+      "field": {
+        "title": "What needs doing",
+        "description": "Any detail that helps",
+        "assignee": "Who it is for",
+        "deadline": "When it is needed by",
+        "priority": "How urgent",
+        "process": "Part of a process?"
+      },
+      "hint": {
+        "description": "Optional.",
+        "deadline": "In your own time zone.",
+        "deadlineOptional": "Optional. The person doing the work sets it after accepting.",
+        "process": "Optional. Adding it here puts the task in that process as well as in this person's queue."
+      },
+      "error": {
+        "DEADLINE_IN_THE_PAST": "That date has already passed. Choose one in the future.",
+        "ASSIGNEE_NOT_ACTIVE": "That person no longer has access here. Choose somebody else.",
+        "ASSIGNEE_OUT_OF_SCOPE": "You can only give work to people who report to you. Ask their manager instead.",
+        "REQUEST_INVALID": "Something on this form is not filled in yet.",
+        "NOT_PERMITTED": "You are not able to give work to people.",
+        "UNKNOWN": "We could not save that just now. Try again in a moment."
+      },
+      "noProcess": "Not part of a process",
+      "kindLegend": "What kind of work is this?",
+      "kindTask": "A task",
+      "kindTicket": "Just a ticket",
+      "kindTaskHint": "Worth writing down. Start it from a template if one already fits.",
+      "kindTicketHint": "Too small to file — a name and a person is all it needs."
+    },
+    "updates": "What just happened",
+    "dismiss": "Dismiss",
+    "start": {
+      "action": "Start work",
+      "submitting": "Starting"
+    },
+    "block": {
+      "action": "I am stuck",
+      "title": "What is this waiting on?",
+      "submit": "Stop my clock",
+      "submitting": "Saving",
+      "cancel": "Cancel",
+      "field": {
+        "reason": "What is the work waiting on?"
+      },
+      "hint": {
+        "reason": "Enough for your manager to act on. This stops time counting against you; it is not an excuse."
+      },
+      "error": {
+        "REQUEST_INVALID": "Say what the work is waiting on.",
+        "ILLEGAL_TRANSITION": "This task has moved on since your screen was loaded. Refresh to see where it is.",
+        "NOT_THE_ASSIGNEE": "This work is somebody else's.",
+        "UNKNOWN": "We could not save that just now. Try again in a moment."
+      }
+    },
+    "unblock": {
+      "action": "I can carry on",
+      "submitting": "Saving"
+    },
+    "complete": {
+      "action": "Submit as done",
+      "title": "Submit your work",
+      "submit": "Send for review",
+      "submitting": "Sending",
+      "cancel": "Cancel",
+      "field": {
+        "note": "What did you do?",
+        "link": "A link, if there is one"
+      },
+      "hint": {
+        "note": "Enough for whoever reviews it to judge the result without asking you.",
+        "link": "Optional. It is stored as text and never opened by the system."
+      },
+      "error": {
+        "REQUEST_INVALID": "Say what you did, so somebody can judge the result.",
+        "ILLEGAL_TRANSITION": "This task has moved on since your screen was loaded. Refresh to see where it is.",
+        "NOT_THE_ASSIGNEE": "This work is somebody else's.",
+        "UNKNOWN": "We could not send that just now. Try again in a moment."
+      }
+    },
+    "moved": {
+      "started": "Your clock has started.",
+      "blocked": "Your clock has stopped. Waiting is not working.",
+      "unblocked": "Your clock has resumed.",
+      "completed": "Sent for review. Your clock has stopped.",
+      "failed": "We could not record that just now. Refresh the page and try again.",
+      "approved": "Approved. The work is finished and waiting to be closed.",
+      "returned": "Sent back, with your note.",
+      "closed": "Closed. Nothing further is expected.",
+      "rejected": "Sent back to whoever gave it out.",
+      "deadlineProposed": "Asked for a different date. The task stays with you while they answer.",
+      "deadlineDecided": "Your answer has been sent.",
+      "edited": "Saved.",
+      "deadlineSet": "The date is set",
+      "reassigned": "The work has moved, and the new person has been asked to accept it.",
+      "overridden": "The state was forced, and it is marked as an override on the record."
+    },
+    "review": {
+      "action": "Review",
+      "title": "Review the work",
+      "cancel": "Close",
+      "approve": "Approve",
+      "approving": "Approving",
+      "return": "Send it back",
+      "returning": "Sending it back",
+      "switchToReturn": "It is not right yet",
+      "switchToApprove": "It is fine after all",
+      "loading": "Opening the work",
+      "loadFailed": "We could not open this just now. Refresh the page to try again.",
+      "delivered": "What was delivered",
+      "noProof": "Nothing was written.",
+      "linkNotFollowable": "A reference was given, and it is not a web address we can open: {{link}}",
+      "deadline": "The deadline",
+      "onTime": "Submitted before the deadline.",
+      "late": "Submitted after the deadline.",
+      "notSubmitted": "Not submitted yet.",
+      "time": "Where the time went",
+      "field": {
+        "score": "How was the work?",
+        "comment": "Anything you want to say about it",
+        "reason": "What needs to change"
+      },
+      "hint": {
+        "score": "This describes this piece of work. It is never added up against the person.",
+        "comment": "Optional.",
+        "reason": "The person picks the work back up from here, so say what is missing."
+      },
+      "score": {
+        "1": "1 — needed rework",
+        "2": "2 — some way off",
+        "3": "3 — acceptable",
+        "4": "4 — good",
+        "5": "5 — exactly right"
+      },
+      "error": {
+        "CANNOT_REVIEW_OWN_WORK": "This is your own work, so somebody else has to judge it.",
+        "TASK_OUT_OF_SCOPE": "This task belongs to somebody outside your team. Their own manager or the owner can act on it.",
+        "ILLEGAL_TRANSITION": "This task has moved on since your screen was loaded. Refresh the page.",
+        "REQUEST_INVALID": "Something on this form is not filled in yet.",
+        "NOT_PERMITTED": "You are not able to review work here.",
+        "UNKNOWN": "We could not record that just now. Try again in a moment."
+      }
+    },
+    "reviewQueue": {
+      "heading": "Waiting on you",
+      "caption": "Work waiting on your judgement, longest first",
+      "waiting": "Waiting",
+      "open": "Open",
+      "loading": "Loading the work waiting on you",
+      "loadFailed": "We could not load this just now. Refresh the page to try again.",
+      "empty": {
+        "heading": "Nothing is waiting on you.",
+        "body": "Work appears here the moment somebody submits it for review."
+      }
+    },
+    "close": {
+      "action": "Close it",
+      "submitting": "Closing"
+    },
+    "reject": {
+      "action": "Not mine to do",
+      "title": "Send this back",
+      "submit": "Send it back",
+      "submitting": "Sending back",
+      "cancel": "Cancel",
+      "field": {
+        "reason": "Why is this not yours?"
+      },
+      "hint": {
+        "reason": "It goes back to whoever gave it out, so say enough for them to send it to the right person. Nobody is judged for this."
+      },
+      "error": {
+        "REQUEST_INVALID": "Say why this is not yours to do.",
+        "ILLEGAL_TRANSITION": "You have already accepted this one. Ask for it to be reassigned instead.",
+        "NOT_THE_ASSIGNEE": "This work is somebody else's.",
+        "UNKNOWN": "We could not send that back just now. Try again in a moment."
+      }
+    },
+    "proposeDeadline": {
+      "action": "Propose a different date",
+      "title": "Propose a different date",
+      "submit": "Ask for this date",
+      "submitting": "Asking",
+      "cancel": "Cancel",
+      "field": {
+        "date": "The date you can meet",
+        "reason": "Why the current date cannot be met"
+      },
+      "hint": {
+        "date": "Earlier is fine too, if the work turned out to be quicker.",
+        "reason": "They decide, not you — so give them what they need to decide with."
+      },
+      "note": "The task stays with you while they answer, and its clock keeps running.",
+      "error": {
+        "REQUEST_INVALID": "Give a date and say why the current one cannot be met.",
+        "DEADLINE_IN_THE_PAST": "That date has already passed. Choose one in the future.",
+        "PROPOSAL_ALREADY_OPEN": "You have already asked for a different date, and nobody has answered yet.",
+        "ILLEGAL_TRANSITION": "This task has moved on since your screen was loaded.",
+        "NOT_THE_ASSIGNEE": "This work is somebody else's.",
+        "UNKNOWN": "We could not send that just now. Try again in a moment."
+      }
+    },
+    "decideDeadline": {
+      "action": "Answer the date request",
+      "title": "They have asked for a different date",
+      "asked": "Asked for",
+      "because": "Because",
+      "accept": "Agree to this date",
+      "decline": "Keep the current date",
+      "submit": "Send my answer",
+      "submitting": "Sending",
+      "cancel": "Cancel",
+      "field": {
+        "reason": "Why the date cannot move"
+      },
+      "hint": {
+        "reason": "They raised a real constraint, so they are owed a real answer."
+      },
+      "error": {
+        "REQUEST_INVALID": "Say why the date cannot move.",
+        "NO_OPEN_PROPOSAL": "There is nothing waiting for an answer on this task any more.",
+        "PROPOSAL_IS_STALE": "The date they asked for has already passed. Ask them to propose another.",
+        "NOT_THE_CREATOR": "Only the person who assigned this work can answer this.",
+        "UNKNOWN": "We could not send your answer just now. Try again in a moment."
+      }
+    },
+    "edit": {
+      "action": "Edit",
+      "title": "Edit this task",
+      "submit": "Save changes",
+      "submitting": "Saving",
+      "cancel": "Cancel",
+      "field": {
+        "deadline": "Deadline",
+        "priority": "Priority",
+        "description": "What is being asked for"
+      },
+      "preview": {
+        "title": "What will change",
+        "from": "from",
+        "to": "to",
+        "none": "Nothing here is different yet.",
+        "deadline": "Deadline",
+        "priority": "Priority",
+        "description": "Description"
+      },
+      "notice": {
+        "deadline": "Moving the deadline tells the assignee, and cannot be turned off.",
+        "locked": "The title and who it is assigned to cannot be changed here."
+      },
+      "error": {
+        "REQUEST_INVALID": "Give a deadline and a priority.",
+        "DEADLINE_IN_THE_PAST": "That date has already passed. Choose one in the future.",
+        "NOTHING_CHANGED": "Nothing here is different from what the task already says.",
+        "TASK_IS_CLOSED": "This task is closed, and a closed task is a record.",
+        "NOT_THE_CREATOR": "Only the person who assigned this work can change it.",
+        "UNKNOWN": "We could not save that just now. Try again in a moment."
+      }
+    },
+    "unassigned": "Waiting to be given to somebody",
+    "atRisk": "At risk",
+    "setDeadline": {
+      "action": "Set the deadline",
+      "submitting": "Setting…",
+      "startNeedsADate": "Set a date to start",
+      "title": "When will this be done?",
+      "confirm": "Set",
+      "cancel": "Cancel",
+      "noticesHeading": "Dates your assignees set",
+      "acknowledge": "Understood",
+      "change": "Change",
+      "setBy": "{{name}} · {{title}}",
+      "error": {
+        "REQUEST_INVALID": "Choose a date.",
+        "DEADLINE_IN_THE_PAST": "That date has already passed. Choose one in the future.",
+        "USE_A_PROPOSAL_INSTEAD": "Work that has started keeps its date. Ask for a different one instead.",
+        "ILLEGAL_TRANSITION": "This task has moved on since your screen was loaded.",
+        "NOT_THE_ASSIGNEE": "This work is somebody else's.",
+        "TASK_NOT_FOUND": "This task is no longer here.",
+        "UNKNOWN": "We could not set that just now. Try again in a moment."
+      },
+      "acknowledgeFailed": "That was not recorded. The date still needs your acknowledgement."
+    },
+    "noDeadline": "No deadline",
+    "material": {
+      "role": {
+        "INPUT": "Inputs",
+        "OUTPUT": "Results",
+        "REFERENCE": "References"
+      },
+      "title": "Links and steps",
+      "progress": "{{done}} of {{total}}",
+      "attach": "Attach a link",
+      "detach": "Remove",
+      "addStep": "Add a step",
+      "removeStep": "Remove",
+      "field": {
+        "url": "Address",
+        "label": "What to call it",
+        "role": "What it is",
+        "step": "Next step"
+      },
+      "open": "Open",
+      "cancel": "Cancel",
+      "loading": "Loading the links and steps",
+      "loadFailed": "The links and steps could not be loaded. Close this and open it again.",
+      "error": {
+        "scheme": "Only web addresses beginning http:// or https:// can be attached.",
+        "invalid": "That cannot be saved as it is. Check the address and the wording.",
+        "closed": "This work is closed, so its links and steps can no longer be changed.",
+        "notYours": "This is not your work and you did not give it out.",
+        "gone": "That is no longer there. Close this and open it again.",
+        "unknown": "That did not save. Try again."
+      },
+      "closed": "This task is closed, so its links and steps are a record and can no longer be changed.",
+      "notYours": "The links and steps belong to whoever holds this work."
+    },
+    "drawer": {
+      "loading": "Loading the task…",
+      "close": "Close",
+      "facts": "What this task is",
+      "status": "Status",
+      "assignee": "Assignee",
+      "deadline": "Deadline",
+      "priority": "Priority",
+      "category": "Group",
+      "description": "Description",
+      "timeline": "Timeline",
+      "phase": {
+        "WAIT": "Waiting",
+        "ACTIVE": "Worked on",
+        "BLOCKED": "Blocked",
+        "REVIEW": "In review",
+        "APPROVAL": "In approval"
+      }
+    },
+    "activity": {
+      "title": "Activity",
+      "empty": "Nothing has happened to this task yet.",
+      "loadFailed": "The activity could not be loaded.",
+      "compose": "Leave a note",
+      "placeholder": "Add what somebody reading this later would need to know.",
+      "post": "Post",
+      "posting": "Posting…",
+      "created": "created this task",
+      "moved": "moved it from {{from}} to {{to}}",
+      "forced": "Forced"
+    },
+    "reassign": {
+      "action": "Reassign",
+      "submitting": "Moving…",
+      "title": "Move this work to somebody else",
+      "cancel": "Cancel",
+      "submit": "Reassign",
+      "consequence": "The task returns to Created and the new person is asked to accept it. Hours already worked stay with whoever worked them.",
+      "field": {
+        "person": "Give it to",
+        "choose": "Choose a person",
+        "reason": "Why it is moving"
+      },
+      "hint": {
+        "reason": "The person who has it now will read this."
+      },
+      "error": {
+        "ASSIGNEE_OUT_OF_SCOPE": "That person is not yours to direct.",
+        "ASSIGNEE_NOT_ACTIVE": "That person cannot be given work.",
+        "NOTHING_CHANGED": "They already have this task.",
+        "TASK_IS_CLOSED": "This task is closed, and a closed task is a record.",
+        "UNKNOWN": "The work could not be moved."
+      }
+    },
+    "override": {
+      "action": "Override",
+      "submitting": "Forcing…",
+      "title": "Force a state",
+      "cancel": "Cancel",
+      "submit": "Force it",
+      "warning": "This sets aside the usual rules. It stays on the record as an override, with your reason, and both the assignee and whoever gave the work out are told.",
+      "field": {
+        "state": "Move it to",
+        "choose": "Choose a state",
+        "reason": "Why the rules are being set aside"
+      },
+      "hint": {
+        "reason": "Anybody reading this task later will see it."
+      },
+      "consequence": {
+        "both": "The {{from}} interval closes and a {{to}} interval opens.",
+        "closesOnly": "The {{from}} interval closes and nothing opens — the work is finished.",
+        "opensOnly": "A {{to}} interval opens; nothing was running."
+      },
+      "error": {
+        "NOTHING_CHANGED": "The task is already in that state.",
+        "UNKNOWN": "The state could not be forced."
+      }
+    },
+    "state": {
+      "CREATED": "Created",
+      "ACCEPTED": "Accepted",
+      "IN_PROGRESS": "In progress",
+      "BLOCKED": "Blocked",
+      "COMPLETED": "Completed",
+      "APPROVED": "Approved",
+      "CLOSED": "Closed"
+    },
+    "phaseName": {
+      "WAIT": "waiting",
+      "ACTIVE": "working",
+      "BLOCKED": "blocked",
+      "REVIEW": "review",
+      "APPROVAL": "approval"
+    },
+    "band": {
+      "needs-you": "Needs you",
+      "overdue": "Overdue",
+      "due-soon": "Due this week",
+      "in-progress": "In progress",
+      "waiting": "Waiting on others",
+      "not-started": "Not started",
+      "archive": "Archive"
+    },
+    "sort": {
+      "deadline": "Soonest first",
+      "priority": "Most urgent first",
+      "recent": "Recently moved"
+    },
+    "pager": {
+      "previous": "Previous",
+      "next": "Next",
+      "status": "Page {{page}} of {{of}}"
+    },
+    "filter": {
+      "search": "Search tasks",
+      "searchPlaceholder": "Search by keyword…",
+      "presets": "Saved views",
+      "clear": "Clear filters",
+      "priority": "Filter by priority",
+      "anyPriority": "Any priority",
+      "category": "Filter by group",
+      "anyCategory": "Any group",
+      "sort": "Sort by",
+      "noMatches": "No tasks match these filters.",
+      "preset": {
+        "needsYou": "Needs me",
+        "overdue": "Overdue",
+        "thisWeek": "This week"
+      }
+    },
+    "category": {
+      "region": "Task groups",
+      "label": "Groups",
+      "none": "No groups yet.",
+      "uncategorised": "Ungrouped",
+      "filedUnder": "The group this task is filed under",
+      "newLabel": "Name a new group",
+      "placeholder": "New group…",
+      "add": "Add",
+      "remove": "Remove {{name}}",
+      "confirmRemove": "Remove, unfiling {{count}}",
+      "taken": "There is already a group with that name."
+    },
+    "ticket": {
+      "mark": "Ticket",
+      "explain": "Work too small to file. It behaves like any other task."
+    },
+    "selection": {
+      "column": "Choose",
+      "choose": "Choose {{title}}",
+      "count_one": "1 task selected",
+      "count_other": "{{count}} tasks selected",
+      "needMore_one": "Choose 1 more to make a process — a process of one is a task.",
+      "needMore_other": "Choose {{count}} more to make a process — a process of one is a task.",
+      "clear": "Clear",
+      "createProcess": "Create a process"
+    }
+  },
+  "process": {
+    "section": {
+      "heading": "Processes",
+      "runs": "Runs",
+      "templates": "How we do things",
+      "steps": "Steps",
+      "library": "Processes recorded",
+      "view": "What to look at",
+      "subtitle": "How the business does things, and what is running right now."
+    },
+    "loading": "Loading processes",
+    "loadFailed": "Those processes could not be loaded. Try again.",
+    "empty": {
+      "heading": "No process has been recorded yet.",
+      "body": "A process is how your business does a recurring thing, written down once. Record one and it can be run whenever it is needed."
+    },
+    "emptyRuns": {
+      "heading": "Nothing is running.",
+      "body": "Start a process and its first steps appear here, waiting to be given to somebody."
+    },
+    "awaiting": {
+      "heading": "Waiting for you",
+      "assign": "Give it to somebody",
+      "ready_one": "One step is ready and nobody is doing it.",
+      "ready_other": "{{count}} steps are ready and nobody is doing them."
+    },
+    "canvas": {
+      "open": "Open the canvas"
+    },
+    "step": {
+      "pickWork": "Choose the work…",
+      "waitsFor": "Waits for",
+      "waitsForNothing": "Can start straight away",
+      "blocked": "Held up: {{reason}}",
+      "due": "Due {{when}}",
+      "duration": "About {{hours}}h"
+    },
+    "condition": {
+      "PENDING": "Waiting on other steps",
+      "REACHABLE": "Awaiting assignment",
+      "ASSIGNED": "With somebody",
+      "ASSIGNED_TO": "With {{name}}",
+      "CLOSED": "Done"
+    },
+    "state": {
+      "RUNNING": "Running",
+      "COMPLETE": "Complete",
+      "ABANDONED": "Stopped"
+    },
+    "progress": {
+      "label": "{{closed}} of {{total}} done"
+    },
+    "bottleneck": {
+      "label": "Slowest step",
+      "waiting_one": "waiting {{count}} hour",
+      "waiting_other": "waiting {{count}} hours"
+    },
+    "assign": {
+      "title": "Give “{{step}}” to somebody",
+      "person": "Who does it",
+      "deadline": "Due by",
+      "confirm": "Give it to them",
+      "cancel": "Cancel",
+      "given": "{{step}} is now with {{name}}.",
+      "submitting": "Giving it to them…",
+      "choosePerson": "Choose somebody",
+      "peopleFailed": "The list of people could not be loaded. Close this and try again.",
+      "hint": {
+        "deadline": "When it should be finished by.",
+        "deadlineOptional": "Optional. You may suggest a date; whoever accepts the task sets it."
+      },
+      "error": {
+        "STEP_NOT_REACHABLE": "That step is waiting on others again — somebody changed this run while this was open. Close this and look at it again.",
+        "ILLEGAL_STEP_TRANSITION": "Somebody else has already given this step to a person.",
+        "ASSIGNEE_OUT_OF_SCOPE": "That person is not in the part of the team this process can give work to. Choose somebody else.",
+        "ASSIGNEE_NOT_ACTIVE": "That person no longer has access. Choose somebody else.",
+        "STEP_NOT_FOUND": "That step is no longer part of this run — somebody changed it while this was open.",
+        "UNKNOWN": "That step could not be given to anybody. Try again."
+      }
+    },
+    "start": {
+      "title": "Start a process",
+      "template": "Which process",
+      "name": "What to call this run",
+      "owner": "Who steers it",
+      "confirm": "Start it",
+      "cancel": "Cancel",
+      "nameHint": "Something that tells this run apart from the others — a person's name, or a date.",
+      "ownerHint": "They decide who does each step. It can be anybody, including somebody who reports to you.",
+      "choosePerson": "Choose somebody",
+      "submitting": "Starting it…",
+      "error": {
+        "PROCESS_OWNER_NOT_ACTIVE": "That person no longer has access, so they cannot steer a process. Choose somebody else.",
+        "GRAPH_CYCLE": "This process has been changed since you opened this, and its steps now wait for each other. Nothing was started — open the process and look at what waits for what.",
+        "GRAPH_STEP_STRANDED": "This process has been changed since you opened this, and a step is now left that nothing ever reaches. Nothing was started.",
+        "TEMPLATE_NOT_FOUND": "That process no longer exists.",
+        "UNKNOWN": "That process could not be started. Try again."
+      }
+    },
+    "startFromTasks": {
+      "open": "New process",
+      "title": "Start a process from tasks",
+      "name": "What to call it",
+      "nameHint": "Something that tells this process apart from the others — a month, a client, a person's name.",
+      "owner": "Who steers it",
+      "ownerHint": "They decide who does each piece of work. It can be anybody, including somebody who reports to you.",
+      "choosePerson": "Choose somebody",
+      "tasks": "Which work goes in",
+      "tasksHint": "Only tasks you can see that belong to no process. Nothing about them changes — same person, same date, same state.",
+      "loadingTasks": "Looking for work…",
+      "tasksLoadFailed": "That list of tasks could not be loaded. Try again.",
+      "noTasks": {
+        "heading": "There is no work to build a process from.",
+        "body": "Every task you can see is already in a process. Create a task, and you can start one with it."
+      },
+      "order": "In this order",
+      "orderHint": "This is the order they read in. It does not make one wait for another — say what waits for what on the process itself.",
+      "up": "Move {{title}} up",
+      "down": "Move {{title}} down",
+      "confirm": "Start it",
+      "cancel": "Cancel",
+      "submitting": "Starting it…",
+      "error": {
+        "TASK_ALREADY_IN_A_PROCESS": "One of these tasks is already in a process, and a task belongs to one at a time. Nothing was started — take it out of the list and try again.",
+        "TASK_NOT_FOUND": "One of these tasks is no longer there. Nothing was started — close this and pick again.",
+        "PROCESS_OWNER_NOT_ACTIVE": "That person no longer has access, so they cannot steer a process. Choose somebody else.",
+        "REQUEST_INVALID": "A process needs a name and at least one task.",
+        "UNKNOWN": "That process could not be started. Try again."
+      },
+      "alreadyFinished": "already finished",
+      "allFinished": "Everything you have chosen is already finished, so this process will be complete the moment you start it. Add something unfinished if you want it to carry on.",
+      "missing": {
+        "name": "Give the process a name.",
+        "owner": "Choose who steers it.",
+        "tasks": "Choose at least one task.",
+        "taken_one": "{{titles}} has joined a run since you chose it. Untick it to continue.",
+        "taken_other": "{{titles}} have joined a run since you chose them. Untick them to continue."
+      },
+      "tally_one": "1 step",
+      "tally_other": "{{count}} steps",
+      "lastLands": "the last lands {{date}}",
+      "undated_one": "1 has no date yet",
+      "undated_other": "{{count}} have no date yet",
+      "rowDue": "due {{date}}",
+      "rowNoDeadline": "no date yet",
+      "rowTaken": "already in a run"
+    },
+    "author": {
+      "title": "Record a process",
+      "name": "What it is called",
+      "overview": "What it is for",
+      "addStep": "Add a step",
+      "stepTitle": "Step {{position}}",
+      "confirm": "Record it",
+      "cancel": "Cancel",
+      "steps": "The steps",
+      "stepHours": "About how long",
+      "stepHoursHint": "In hours. Leave it blank if it varies.",
+      "submitting": "Recording it…",
+      "error": {
+        "TEMPLATE_NAME_TAKEN": "A process with that name already exists. Choose another name, or change the one that exists.",
+        "TEMPLATE_NEEDS_A_STEP": "A process with no work in it is not a process. Add at least one step.",
+        "STEP_TITLE_REQUIRED": "This step needs a name.",
+        "STEP_TASK_TEMPLATE_REQUIRED": "This step needs work from the library.",
+        "STEP_TEMPLATE_UNAVAILABLE": "This step points at work the library cannot show.",
+        "UNKNOWN": "That process could not be recorded. Try again."
+      }
+    },
+    "edit": {
+      "title": "Change this process",
+      "unaffected": "Runs already under way are not affected by this.",
+      "confirm": "Save the change",
+      "removeStep": "Remove this step",
+      "open": "Change this process",
+      "cancel": "Cancel",
+      "submitting": "Saving it…",
+      "stepDescription": "What the step involves",
+      "up": "Move {{title}} up",
+      "down": "Move {{title}} down",
+      "removeTakesEdges": "Removing a step removes what it waits for and what waits on it. Runs already under way keep the steps they were started with.",
+      "error": {
+        "TEMPLATE_NEEDS_A_STEP": "A process with no work in it is not a process. Keep at least one step.",
+        "STEP_TITLE_REQUIRED": "Every step needs a name.",
+        "STEP_TASK_TEMPLATE_REQUIRED": "Every step needs work chosen from the library.",
+        "GRAPH_STEP_STRANDED": "That change would leave a step nothing ever reaches. Nothing was saved — look at what waits for what before removing this one.",
+        "GRAPH_CYCLE": "Those steps would end up waiting for each other. Nothing was saved.",
+        "NOT_THE_AUTHOR": "This process was recorded by somebody else, so it is theirs to change.",
+        "NOT_PERMITTED": "Changing a recorded process is not yours to do.",
+        "TEMPLATE_NOT_FOUND": "That process no longer exists.",
+        "UNKNOWN": "That change could not be saved. Try again."
+      }
+    },
+    "dependency": {
+      "add": "Add something it waits for",
+      "remove": "No longer waits for this",
+      "cycle": "Those steps would end up waiting for each other.",
+      "error": {
+        "GRAPH_CYCLE": "Those steps would end up waiting for each other. The ones that would are marked below.",
+        "GRAPH_STEP_STRANDED": "That would leave a step nothing ever reaches.",
+        "CROSS_TEMPLATE_EDGE": "A step can only wait for another step of the same process.",
+        "UNKNOWN": "That change could not be saved. Try again."
+      }
+    },
+    "template": {
+      "stepCount_one": "{{count}} step",
+      "stepCount_other": "{{count}} steps"
+    },
+    "addTask": {
+      "open": "Add a task",
+      "title": "Add a task to this process",
+      "modes": "How to add a task",
+      "mode": {
+        "existing": "A task that exists",
+        "new": "A new task"
+      },
+      "field": {
+        "existing": "Which task",
+        "title": "What needs doing",
+        "description": "Any detail",
+        "assignee": "Who will do it",
+        "deadline": "Due",
+        "priority": "How urgent"
+      },
+      "chooseTask": "Choose a task",
+      "choosePerson": "Choose a person",
+      "hint": {
+        "deadlineOptional": "Optional. Whoever accepts it can set the date."
+      },
+      "attachChangesNothing": "This does not change the task's assignee, deadline or state. It only records that the work is part of this process.",
+      "noneAttachable": {
+        "heading": "Nothing left to add",
+        "body": "Every task you can see is already part of a process. Write a new one instead."
+      },
+      "runsAfter": "Runs after",
+      "runsAfterHint": "Tick the steps this one waits for. Leave them all clear and it may begin at once.",
+      "cancel": "Cancel",
+      "submit": "Add to the process",
+      "submitting": "Adding",
+      "error": {
+        "TASK_ALREADY_IN_A_PROCESS": "That task already belongs to another process. A task can be in one process at a time.",
+        "TASK_NOT_FOUND": "That task is no longer available.",
+        "INSTANCE_NOT_RUNNING": "This process has finished. Start another one.",
+        "UNKNOWN_STEP": "One of the steps you chose is no longer part of this process. Close this and look again.",
+        "ASSIGNEE_NOT_ACTIVE": "That person cannot be given work.",
+        "ASSIGNEE_OUT_OF_SCOPE": "That person is not yours to direct.",
+        "REQUEST_INVALID": "Choose a task that exists, or write a new one — not both.",
+        "UNKNOWN": "That did not work. Try again."
+      },
+      "attachableLoadFailed": "We could not load your tasks just now, so there is nothing to choose from yet. This says nothing about whether you have any — try again in a moment."
+    },
+    "removeTask": {
+      "open": "Remove {{title}} from this process",
+      "title": "Remove {{title}} from this process?",
+      "consequences": "Removing {{title}} from this process will:",
+      "taskSurvives": "Leave the task itself exactly as it is — same person, same date, same state. It simply stops being part of this process.",
+      "plannedStepGoes": "Remove a step nobody has started. No task exists for it, so nothing is lost.",
+      "nothingWaits": "Change nothing else — no step was waiting for it.",
+      "cancel": "Keep it",
+      "submit": "Remove from the process",
+      "submitting": "Removing",
+      "error": {
+        "INSTANCE_NEEDS_A_TASK": "This is the last task in the process. A process with no work in it is not a process.",
+        "INSTANCE_NOT_RUNNING": "This process has finished, so its shape cannot change.",
+        "UNKNOWN_STEP": "That step is no longer part of this process.",
+        "UNKNOWN": "That did not work. Try again."
+      },
+      "opens_one": "Let 1 step start now, which was waiting for it: {{titles}}.",
+      "opens_other": "Let {{count}} steps start now, which were waiting for it: {{titles}}."
+    },
+    "reorder": {
+      "up": "Move {{title}} up the reading order",
+      "down": "Move {{title}} down the reading order",
+      "error": {
+        "INSTANCE_NOT_RUNNING": "This process has finished, so its order cannot change.",
+        "UNKNOWN_STEP": "This process changed while you were looking at it. Reload and try again.",
+        "NOT_PERMITTED": "Changing the order of this process is not yours to do.",
+        "UNKNOWN": "The order could not be changed. Try again."
+      }
+    },
+    "retire": {
+      "action": "Retire",
+      "submitting": "Retiring…",
+      "retired": "This template has been retired. Runs already started from it are unaffected and keep working; it cannot be started again."
+    },
+    "abandon": {
+      "open": "Stop this run",
+      "title": "Stop {{name}}",
+      "cancel": "Keep it running",
+      "submit": "Stop the run",
+      "submitting": "Stopping…",
+      "field": {
+        "reason": "Why it is being stopped"
+      },
+      "hint": {
+        "reason": "Everybody who had a task in this run will read this."
+      },
+      "survivors_one": "One task is still with somebody. Stopping the run does not end it — you will need to close that task yourself.",
+      "survivors_other": "{{count}} tasks are still with somebody. Stopping the run does not end them — you will need to close each one yourself.",
+      "stopped": "This run was stopped: {{reason}}",
+      "stillHeld_one": "One task is still open and needs ending by hand.",
+      "stillHeld_other": "{{count}} tasks are still open and need ending by hand.",
+      "error": {
+        "INSTANCE_NOT_RUNNING": "This run has already ended.",
+        "UNKNOWN": "The run could not be stopped."
+      }
+    },
+    "optionalStep": {
+      "doesThisApply": "Does this step apply to this run?",
+      "yes": "Yes — assign it",
+      "skip": "Skip this step",
+      "skipped": "Skipped",
+      "skippedHint": "Decided against for this run. Nobody was given this work.",
+      "optional": "Optional",
+      "markOptional": "This step does not always apply",
+      "conditionNote": "When does it apply?",
+      "conditionHint": "In words, for whoever decides — “is the value above 5,000?”"
+    }
+  },
+  "canvas": {
+    "rail": {
+      "heading": "Other processes"
+    },
+    "index": {
+      "heading": "Canvas",
+      "explain": "Every process you can see, as a plane. Open one to watch its steps, who holds them and what is waiting.",
+      "open": "Open the canvas",
+      "loading": "Loading your processes",
+      "loadFailed": "Those processes could not be loaded. Try again.",
+      "empty": {
+        "heading": "Nothing is running.",
+        "body": "A canvas draws a process while it runs. Start one from Processes and it will appear here."
+      }
+    },
+    "condition": {
+      "Pending": "Planned",
+      "Reachable": "Ready",
+      "Assigned": "Assigned",
+      "Closed": "Closed"
+    },
+    "node": {
+      "step": "Step {{number}}",
+      "atRisk": "At risk",
+      "overdue": "Overdue",
+      "due": "Due",
+      "blockedOn": "Blocked on",
+      "assign": "Assign to…",
+      "seen": "Seen",
+      "notYet": "Not yet",
+      "unlocked": "Unlocked",
+      "waiting": "Waiting",
+      "waitsOn": "Waits on",
+      "waitsOnStep": "Step {{steps}}",
+      "waitsOnSteps": "Steps {{steps}}"
+    },
+    "gallery": {
+      "title": "Node states",
+      "lead": "Every condition the product can put a piece of work in, drawn side by side. The people and the work are invented; nothing here is read from or written to the application.",
+      "reference": "Visual contract: CANVAS_STYLE_GUIDE §7",
+      "unlockedBy": "8 Aug · step 1 closed",
+      "waitedDays": "4 days",
+      "waitsOnSteps": "Steps 3, 4",
+      "titles": {
+        "closed": "Prepare the contract",
+        "created": "Order the laptop",
+        "in-progress": "Sign the paperwork",
+        "at-risk": "Collect the signed annexes",
+        "blocked": "Create the IT accounts",
+        "overdue": "Return the equipment form",
+        "blocked-and-overdue": "Set up the payroll record",
+        "in-review": "Draft the induction plan",
+        "sent-back": "Draft the induction plan",
+        "ready": "Payroll enrolment",
+        "pending": "First-day briefing",
+        "former-member": "Archive the old contract"
+      },
+      "reasons": {
+        "licence": "Waiting on the licence renewal from the supplier",
+        "bank": "The bank has not confirmed the account details",
+        "rework": "Please add the safety briefing and the first-week checklist"
+      },
+      "notes": {
+        "closed": "Closed work stays on a process graph — a chain missing its finished links stops explaining itself.",
+        "created": "Nothing implies lateness before the person has even seen it.",
+        "in-progress": "Work in hand, with the clock running on the only phase that is the assignee’s.",
+        "at-risk": "At risk sits beside the state and replaces nothing. It is a warning, not yet a fact.",
+        "blocked": "The blocker reason is the one region allowed to grow. Amber border, full sentence, no ellipsis.",
+        "overdue": "Late, and nothing else wrong. The border and the due value carry it; the word Overdue says it.",
+        "blocked-and-overdue": "Blocked and overdue at once — the row this whole table exists for. Neither may mask the other.",
+        "in-review": "In review. The waiting number protects the assignee — it is time in somebody else’s hands.",
+        "sent-back": "Sent back. The blocker’s own strip, because §4 gives the region one tint — worded as iteration, and never the word Rejected.",
+        "ready": "The stall. A step nobody holds, and the only call to action anywhere on the plane.",
+        "pending": "Not yet work: dashed, on the plane rather than on a card, no clock and nobody’s name.",
+        "former-member": "Erasure must look complete rather than broken. The work stays; the identity does not."
+      },
+      "inert": "Nothing was assigned: the run on this page is invented, so the control shows what it looks like rather than doing what it does."
+    },
+    "instance": {
+      "titles": {
+        "1": "Prepare the contract",
+        "2": "Order the laptop",
+        "3": "Sign the paperwork",
+        "4": "Create the IT accounts",
+        "5": "Payroll enrolment",
+        "6": "First-day briefing",
+        "7": "Probation review"
+      },
+      "waitsOn6": "Steps 3, 4",
+      "waitsOn7": "Step 6",
+      "title": "Onboarding — Elena Dobre",
+      "lead": "One running process, drawn by dependency depth. Steps that can run at the same time share a column. The people and the work are invented.",
+      "empty": "No process is running.",
+      "loading": "Loading the process…",
+      "unavailable": "This process could not be opened. It may not exist, or it may not be one you can see.",
+      "awaiting_one": "1 step is ready and waiting for somebody to be given it.",
+      "awaiting_other": "{{count}} steps are ready and waiting for somebody to be given them.",
+      "progress": "{{closed}} of {{total}} steps closed."
+    },
+    "edge": {
+      "satisfied": "Closed",
+      "inProgress": "In progress",
+      "blocked": "Blocked",
+      "pending": "Not started"
+    },
+    "inspector": {
+      "close": "Close",
+      "openTask": "Open the task",
+      "phaseRule": "No total is shown: blocked and waiting time is not this person's working time."
+    },
+    "group": {
+      "new": "New group",
+      "newLabel": "Name a new group",
+      "add": "Add",
+      "taken": "There is already a group with that name.",
+      "none": "Uncategorised",
+      "fileLabel": "Put this process in a group",
+      "count": "{{name}} · {{count}}",
+      "SOLO": "One person's own",
+      "SHARED": "Work that changes hands",
+      "UNSTAFFED": "Nobody holds a step yet",
+      "DONE": "Finished",
+      "archive": "Put away",
+      "archiveLabel": "Put this finished run away",
+      "archived": "Put away",
+      "archiveRefused": "This run is still going, so it cannot be put away."
+    },
+    "board": {
+      "loading": "Reading the runs…",
+      "empty": "No processes yet. Start one and its work appears here as a flow.",
+      "state": {
+        "notStarted": "Not started",
+        "inProgress": "In progress",
+        "blocked": "Blocked",
+        "done": "Done"
+      },
+      "running": "On track",
+      "complete": "Complete",
+      "progress": "{{closed}} of {{total}} done",
+      "assignee": "Assignee",
+      "stateLabel": "State",
+      "formerMember": "Former member",
+      "start": "Start",
+      "addTask": "+ Add task",
+      "waited": "waited {{duration}}",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "fit": "Fit",
+      "reset": "Reset",
+      "summary_one": "1 active process",
+      "summary_other": "{{count}} active processes",
+      "hint": "Drag to move · scroll to zoom",
+      "overview": "Overview map",
+      "health": {
+        "onTrack": "On track",
+        "atRisk": "At risk",
+        "blocked": "Blocked"
+      },
+      "paused": "Set aside",
+      "stepOf": "Step {{at}} of {{of}}",
+      "needsSomebody": "Next step needs somebody: {{step}}",
+      "findPerson": "Find a person's work",
+      "foundNobody": "Nobody by that name holds work here",
+      "showingTheirWork": "Their work is highlighted",
+      "runCount_one": "1 process",
+      "runCount_other": "{{count}} processes",
+      "overviewOf": "Progress of {{name}}, step by step",
+      "tidy": "Tidy",
+      "unsequenced_one": "1 step is not sequenced",
+      "unsequenced_other": "{{count}} steps are not sequenced"
+    },
+    "tip": {
+      "assignee": "Assignee",
+      "deadline": "Deadline"
+    }
+  },
+  "person": {
+    "scopeNote": "What you can see of their work",
+    "holds": "Work they hold",
+    "steers": "Processes they steer",
+    "noTasks": "You do not see any open work of theirs.",
+    "noRuns": "You do not see any process they steer.",
+    "progress": "{{closed}} of {{total}} steps closed",
+    "planned": "not started",
+    "cannotRead": "Some of their work could not be read.",
+    "cannotReadBody": "What is shown below is incomplete. Reload the page to try again.",
+    "openRun": "Open {{name}}"
+  },
+  "chat": {
+    "resemblance": {
+      "region": "Suggestions about what you just said",
+      "looksLike": "This looks like {{title}}",
+      "preview": "Preview template"
+    },
+    "rail": {
+      "label": "Conversations",
+      "loading": "Loading your conversations…",
+      "empty": "No conversations yet. Message anybody in the workspace, or open a group.",
+      "announcements": "Announcements",
+      "formerMember": "Former member",
+      "unnamedRoom": "Untitled room",
+      "noMessagesYet": "No messages yet",
+      "deactivated": "No longer active",
+      "unread": "{{count}} unread",
+      "group": {
+        "announcements": "Pinned",
+        "channels": "Craft channels",
+        "groups": "Groups",
+        "direct": "Direct messages",
+        "joinable": "Rooms you can join"
+      },
+      "new": "New",
+      "newLabel": "What to open",
+      "newDirect": "Direct",
+      "newGroup": "Group",
+      "groupName": "Group name",
+      "groupNamePlaceholder": "What is this room for?",
+      "create": "Open",
+      "join": "Join",
+      "startWith": "Start a conversation with",
+      "choosePerson": "Choose somebody…",
+      "search": "Search rooms…",
+      "searchLabel": "Search conversations"
+    },
+    "message": {
+      "deleted": "Message deleted",
+      "edited": "edited",
+      "makeTask": "Make this a task",
+      "becameTask": "Became a task",
+      "cameFor": "the message you came for"
+    },
+    "selection": {
+      "start": "Build a process from messages",
+      "chosen_one": "{{count}} message chosen",
+      "chosen_other": "{{count}} messages chosen",
+      "build": "Build a process",
+      "cancel": "Cancel",
+      "tooMany": "A process can have at most {{count}} steps.",
+      "choose": "Choose the message: {{text}}",
+      "cannot": {
+        "ALREADY_WORK": "This already became a task.",
+        "WITHDRAWN": "This message was withdrawn.",
+        "NOT_SPOKEN": "Nobody said this."
+      }
+    },
+    "workMark": {
+      "gaveTask": "{{actor}} created a task from this conversation",
+      "startedRun": "{{actor}} started a process from this conversation",
+      "open": "Open"
+    },
+    "assign": {
+      "task": "Give a task",
+      "process": "Start a process",
+      "taskGlyph": "T",
+      "processGlyph": "P",
+      "noTemplates": "There are no processes to start yet.",
+      "authorOne": "Write one first",
+      "steeredBy": "Steered by {{name}}",
+      "fromThisConversation": "from this conversation",
+      "stepCount_one": "{{count}} step",
+      "stepCount_other": "{{count}} steps",
+      "chooseTemplate": "Choose a process",
+      "start": "Start",
+      "cancel": "Cancel"
+    },
+    "thread": {
+      "loading": "Loading…",
+      "empty": "Nothing has been said here yet.",
+      "nothingSelected": "Choose a conversation to read it.",
+      "readOnly": "This person is no longer active, so this conversation is read-only.",
+      "sendFailed": "That message was not sent. Your text is still here — try again.",
+      "composerLabel": "Write a message",
+      "placeholder": "Write a message…",
+      "send": "Send",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "hint": "Press Make this a task on any message to turn it into work"
+    },
+    "header": {
+      "back": "Back",
+      "kind": {
+        "DIRECT": "Direct message",
+        "ANNOUNCEMENT": "Everyone in the workspace",
+        "CHANNEL": "Team channel",
+        "GROUP": "Open group"
+      }
+    },
+    "origin": {
+      "open": "Open the message this came from"
+    }
+  },
+  "reports": {
+    "heading": "Reports",
+    "loading": "Reading the runs…",
+    "partial": "Some runs could not be read, so these figures are lower than the real ones. Reload to try again.",
+    "tile": {
+      "activeProcesses": "Active processes",
+      "ofVisible_one": "of {{count}} you can see",
+      "ofVisible_other": "of {{count}} you can see",
+      "workComplete": "Work complete",
+      "completeShare": "{{percent}}% of everything in view",
+      "needsAttention": "Needs attention",
+      "attentionSplit": "{{blocked}} blocked · {{unassigned}} unassigned",
+      "openEstimate": "Estimated, still open",
+      "openWorkOnly": "open work only",
+      "unestimated_one": "1 step not estimated",
+      "unestimated_other": "{{count}} steps not estimated"
+    },
+    "waiting": {
+      "heading": "Where work is waiting",
+      "empty": "Nothing is held up. Every live step is moving.",
+      "waited": "waited {{duration}}"
+    },
+    "distribution": {
+      "heading": "Status distribution"
+    },
+    "subtitle": "How the work is moving, across everything you can see.",
+    "throughput": {
+      "heading": "Work arriving and work finishing",
+      "lead": "Whether the business is keeping up, week by week.",
+      "span": "How far back to look",
+      "weeks_one": "{{count}} week",
+      "weeks_other": "{{count}} weeks",
+      "created": "Arrived",
+      "closed": "Finished",
+      "week": "Week"
+    }
+  },
+  "today": {
+    "title": "Today",
+    "cannotRead": "Today's work could not be read.",
+    "cannotReadBody": "What is shown below is incomplete. Reload the page to try again.",
+    "group": {
+      "attention": "Needs attention",
+      "dueToday": "Due today",
+      "stalled": "Stalled"
+    },
+    "empty": {
+      "attention": "Nothing needs attention right now.",
+      "dueToday": "Nothing is due today.",
+      "stalled": "Nothing has stalled."
+    },
+    "subtitle": "What needs answering, and the work you hold today."
+  },
+  "myWork": {
+    "title": "My work",
+    "cannotRead": "Your work could not be read.",
+    "cannotReadBody": "What is shown below is incomplete. Reload the page to try again.",
+    "filter": {
+      "state": "Filter by state",
+      "all": "All states"
+    },
+    "empty": {
+      "none": "Nothing is assigned to you.",
+      "filtered": "No work of yours is in that state."
+    },
+    "subtitle": "The work you hold, and where each piece stands."
+  },
+  "insight": {
+    "explain": "Explain",
+    "missingStep": {
+      "eyebrow": "Your template may be missing a step",
+      "claim_one": "{{added}} of {{count}} run added “{{step}}”",
+      "claim_other": "{{added}} of {{count}} runs added “{{step}}”",
+      "after": "after “{{step}}”.",
+      "atTheStart": "at the start of the run.",
+      "evidence_one": "Based on {{count}} completed run over {{months}} months.",
+      "evidence_other": "Based on {{count}} completed runs over {{months}} months.",
+      "none": "Nothing to report about this template yet."
+    },
+    "section": "What this template's history says",
+    "explaining": "Preparing the evidence…",
+    "explainFailed": "The evidence could not be fetched. The claim above is unverified.",
+    "slowStep": {
+      "eyebrow": "Where this process loses time",
+      "claim": "“{{step}}” is the slowest step in this process.",
+      "evidence_one": "Based on {{count}} completed run over {{months}} months.",
+      "evidence_other": "Based on {{count}} completed runs over {{months}} months."
+    },
+    "blockPattern": {
+      "eyebrow": "Work here keeps stopping for the same reason",
+      "claim_one": "Work at “{{step}}” blocked once, always for the same reason:",
+      "claim_other": "Work at “{{step}}” blocked {{count}} times, always for the same reason:",
+      "evidence_one": "Across {{count}} completed run.",
+      "evidence_other": "Across {{count}} completed runs."
+    },
+    "falseDependency": {
+      "eyebrow": "A dependency that never mattered",
+      "claim_one": "“{{dependent}}” never waited on “{{dependsOn}}” in the run we could check.",
+      "claim_other": "“{{dependent}}” never waited on “{{dependsOn}}” in any of {{count}} runs.",
+      "consider": "Consider removing the dependency so the two can run in parallel. There may be a reason for it that the runs cannot show — you would know.",
+      "evidence_one": "Based on 1 completed run where this edge could be judged.",
+      "evidence_other": "Based on {{count}} completed runs where this edge could be judged."
+    },
+    "apply": "Apply",
+    "dismiss": "Dismiss",
+    "unusedTemplate": {
+      "eyebrow": "Nobody has reached for this lately",
+      "claim": "“{{name}}” has not been used in {{count}} days.",
+      "claimNeverUsed": "“{{name}}” has never been used.",
+      "evidence_one": "Used once in total. Judged against a {{window}}-day window.",
+      "evidence_other": "Used {{count}} times in total. Judged against a {{window}}-day window.",
+      "seasonal": "Work that comes round once a year looks unused for most of it — you would know.",
+      "rhythm_one": "It has been used about every day, and this is the first time it has missed.",
+      "rhythm_other": "It has been used about every {{count}} days, so it is overdue rather than merely quiet.",
+      "evidenceByRhythm_one": "Used once in total.",
+      "evidenceByRhythm_other": "Used {{count}} times in total."
+    },
+    "refusal": {
+      "NOT_THE_AUTHOR": "That process is somebody else’s to change. Ask whoever wrote it, or the owner.",
+      "NOT_PERMITTED": "You do not have permission to do that.",
+      "TEMPLATE_NOT_FOUND": "That is not there any more.",
+      "TEMPLATE_IS_RETIRED": "This template has been retired. Runs already started from it are unaffected.",
+      "TEMPLATE_STATE_REFUSES": "The template’s own state refuses that.",
+      "GRAPH_CYCLE": "Those steps would end up waiting for each other.",
+      "STEP_STRANDED": "That would leave a step nothing can ever reach.",
+      "INSIGHT_NO_LONGER_HOLDS": "That finding is no longer current. It has been recalculated."
+    },
+    "evidence": {
+      "neverClosed_one": "1 further task was stamped from it and never closed.",
+      "neverClosed_other": "{{count}} further tasks were stamped from it and never closed."
+    },
+    "estimateDivergence": {
+      "eyebrow": "This estimate no longer matches the work",
+      "claim": "“{{name}}” estimates {{estimate}}; its tasks take about {{actual}} of work time.",
+      "claimNoEstimate": "“{{name}}” has no estimate; its tasks take about {{actual}} of work time.",
+      "spread": "The middle of the sample runs from {{fastest}} to {{slowest}}, so this may be one template doing more than one kind of work.",
+      "evidence_one": "Based on {{count}} closed task over {{months}} months.",
+      "evidence_other": "Based on {{count}} closed tasks over {{months}} months."
+    }
+  },
+  "tasklib": {
+    "preview": {
+      "title": "Template",
+      "close": "Close",
+      "loading": "Reading the template…",
+      "assignTo": "Assign to {{name}}",
+      "assigning": "Assigning…",
+      "failed": "This template could not be read.",
+      "responsible": "Normally done by {{role}}.",
+      "steps": "{{count}} step",
+      "steps_other": "{{count}} steps",
+      "assigned": "Assigned to {{name}}"
+    },
+    "heading": "Task templates",
+    "newTemplate": "New template",
+    "loading": "Loading the library…",
+    "loadFailed": "The library could not be loaded.",
+    "updates": "Template updates",
+    "approved": "Template approved.",
+    "approvedMany": "{{count}} templates approved.",
+    "rejected": "Sent back to its author as a draft.",
+    "retired": "Template retired. It stays readable and is no longer offered.",
+    "copied": "Copied as your own draft.",
+    "saved": "Saved as a draft.",
+    "submitted": "Submitted for approval.",
+    "status": {
+      "DRAFT": "Draft",
+      "PROPOSED": "Awaiting approval",
+      "APPROVED": "Approved",
+      "RETIRED": "Retired"
+    },
+    "sort": {
+      "MOST_USED": "Most used",
+      "NEWEST": "Newest",
+      "ALPHABETICAL": "A–Z"
+    },
+    "card": {
+      "use": "Use template",
+      "copy": "Copy as my own draft",
+      "edit": "Edit this template",
+      "retire": "Retire this template",
+      "fromThePipeline": "Found in your work",
+      "estimate": "{{hours}}h est.",
+      "used": "Used {{count}}×",
+      "usedRelative": "{{percent}}% of the most used template on this page",
+      "checklist": "{{count}} checklist items",
+      "notApproved": "Only an approved template can be used.",
+      "convert": "This is really a process",
+      "openUsage": "See how {{title}} has actually gone"
+    },
+    "queue": {
+      "heading": "Waiting for approval",
+      "count": "{{count}} proposed",
+      "approve": "Approve",
+      "reject": "Send back",
+      "approveSelected": "Approve {{count}} selected",
+      "select": "Select {{title}}",
+      "review": "Review",
+      "collapse": "Close",
+      "confirmSendBack": "Send back",
+      "reasonLabel": "Why is it going back?",
+      "reasonHint": "The author sees this, so say what would make it approvable.",
+      "reasonPlaceholder": "e.g. the last step needs somebody else — make it a process"
+    },
+    "filter": {
+      "search": "Search templates",
+      "searchPlaceholder": "Search templates…",
+      "presets": "Filter by type",
+      "clear": "Clear filters",
+      "sort": "Sort by",
+      "all": "All",
+      "mine": "My templates"
+    },
+    "form": {
+      "newTitle": "New task template",
+      "editTitle": "Edit template",
+      "essentials": "Essentials",
+      "advanced": "Advanced",
+      "title": "Title",
+      "titlePlaceholder": "What is this work called?",
+      "type": "Type",
+      "typeHint": "Suggested from what this workspace already uses. Anything else is fine.",
+      "typePlaceholder": "e.g. Invoicing",
+      "priority": "Priority",
+      "description": "Description",
+      "estimate": "Estimated hours",
+      "checklist": "Checklist",
+      "checklistHint": "Press Enter to add each item.",
+      "checklistPlaceholder": "Add a checklist item…",
+      "removeItem": "Remove {{item}}",
+      "cancel": "Cancel",
+      "saveDraft": "Save as draft",
+      "submit": "Submit for approval",
+      "sentBackBecause": "Sent back: {{reason}}"
+    },
+    "empty": {
+      "heading": "No templates yet.",
+      "body": "Work you do more than once is worth writing down once. The first template can be written from here.",
+      "filtered": "No templates match these filters.",
+      "filteredBody": "Try a different type, or clear the filters to see the whole library."
+    },
+    "converted": "{{title}} is now a process.",
+    "shape": {
+      "lead": "This may be a process rather than a task.",
+      "handover-language": "\"{{evidence}}\" needs a different person - that is a process step, not a checklist item.",
+      "checklist-length": "{{evidence}} checklist items reads more like a plan than a reminder.",
+      "convert": "Make it a process",
+      "dismiss": "It is one person's work"
+    },
+    "kind": {
+      "title": "What kind of work is this?",
+      "lead": "Templates and processes are different things, and picking the right one now saves rewriting it later.",
+      "taskTitle": "One person, start to finish",
+      "taskBody": "A task template. Its checklist is that person's own reminder - ticked as they go, in one sitting.",
+      "taskExample": "e.g. Check the monthly invoice",
+      "processTitle": "It changes hands",
+      "processBody": "A process template. Each step gets its own owner, its own deadline and its own place in somebody’s queue.",
+      "processExample": "e.g. Onboard a new client"
+    },
+    "convert": {
+      "title": "Move \"{{title}}\" into a process",
+      "lead": "Work that changes hands belongs in a process, where each step can have an owner and a deadline.",
+      "whereLegend": "Where does this work go?",
+      "asNew": "A process of its own",
+      "asNewHint": "Its checklist becomes the steps.",
+      "intoExisting": "A step inside a process you already run",
+      "intoExistingHint": "The whole template becomes one step of that flow.",
+      "noProcesses": "There are no process templates yet.",
+      "whichProcess": "Which process?",
+      "choose": "Choose a process…",
+      "processName": "Name the process",
+      "split": "Make each of the {{count}} checklist items a step",
+      "splitHint": "Turn this off to keep the template together as a single step.",
+      "retiredNotDeleted": "The task template is retired, never deleted - it stays the provenance of every task already created from it.",
+      "confirm": "Convert",
+      "staysUsable": "The task template stays in the library and can still be used on its own — it simply records that its work now also runs as a step of that process."
+    },
+    "suggest": {
+      "lead": "You may already have this one:",
+      "use": "Use it",
+      "open": "Open ↗"
+    },
+    "stamped": "Created \"{{title}}\" and assigned it.",
+    "stamp": {
+      "title": "Use \"{{title}}\"",
+      "lead": "This creates a real task from the template. Only the person is required.",
+      "assignee": "Who is it for",
+      "choosePerson": "Choose a person",
+      "taskTitle": "Call it",
+      "titleHint": "Prefilled from the template. Change it to tell this one from the last.",
+      "deadline": "When it is needed by",
+      "deadlineHint": "Optional. The person doing the work sets it after accepting.",
+      "priority": "How urgent",
+      "confirm": "Create the task",
+      "willCarry": "The task will start with"
+    },
+    "metadata": {
+      "optional": "Optional. Leave it empty and nothing happens.",
+      "skip": "Skip this",
+      "ask": {
+        "RESPONSIBLE_ROLE": "Who normally does this?",
+        "TRIGGER_NOTE": "What causes this work to start?",
+        "REQUIRED_INPUT": "What has to exist before someone can start?",
+        "EXPECTED_OUTPUT": "What exists once it is done?",
+        "OUTPUT_KIND": "What kind of thing is that?",
+        "COMPLETION_CRITERIA": "How does someone know it is finished?"
+      },
+      "placeholder": {
+        "TRIGGER_NOTE": "A client signs · the month ends · someone asks",
+        "REQUIRED_INPUT": "The brief, the previous month's figures…",
+        "EXPECTED_OUTPUT": "A signed-off caption set",
+        "COMPLETION_CRITERIA": "The client has replied approving it"
+      },
+      "role": {
+        "OWNER": "The owner",
+        "MANAGER": "A manager",
+        "EMPLOYEE": "An employee"
+      },
+      "outputKind": {
+        "TEXT": "Something written",
+        "DESIGN": "Something visual",
+        "REPORT": "An analysis",
+        "SCHEDULE": "A plan or a booking",
+        "DECISION": "A decision",
+        "PHYSICAL": "Something in the world",
+        "NONE": "Nothing lasting"
+      },
+      "recorded": "Recorded",
+      "notRecorded": "Not recorded",
+      "heading": "What this template says about the work"
+    },
+    "usage": {
+      "back": "Back to the library",
+      "loading": "Reading how this template has gone",
+      "notFound": "This template is not here.",
+      "notFoundBody": "It may have been removed, or it may belong to a part of the workspace you cannot see.",
+      "live": {
+        "heading": "What its tasks are doing now",
+        "inReview": "In review",
+        "showing": "The {{count}} tasks counted as {{band}}",
+        "movedOn": "None now — this work moved while the page was open.",
+        "openTask": "Open {{title}}",
+        "openCanvas": "Open the process {{title}} runs in"
+      },
+      "duration": {
+        "heading": "What it claims, and what it takes",
+        "estimated": "Estimated",
+        "actual": "Actually recorded",
+        "estimateValue": "{{hours}}h of work",
+        "noEstimate": "No estimate was written on this template.",
+        "nothingMeasured": "Nothing finished yet, so there is nothing to measure.",
+        "to": "to",
+        "varyWidely": "These vary too widely for one figure to describe them.",
+        "middleValue": "Middle value:",
+        "middleHalf": "Middle half:",
+        "tooFew": "From {{count}} finished tasks — too few to average, so read these as examples rather than as a rate.",
+        "measuredFrom": "From {{count}} finished tasks."
+      },
+      "approval": {
+        "heading": "Passing review first time",
+        "counts": "{{passed}} of {{reviewed}} passed on the first attempt",
+        "noneReviewed": "Nothing from this template has been through review yet.",
+        "notAboutPeople": "Counted for the template. Nothing on this page is recorded against the people who did the work."
+      },
+      "neverUsed": {
+        "heading": "Not yet used",
+        "body": "No work has been created from this template, so there is nothing to report. A template nobody reaches for is one worth retiring."
+      }
+    },
+    "alsoRuns": "{{title}} now also runs as a step of a process, and stays in the library.",
+    "schedule": {
+      "heading": "Raise this work automatically",
+      "lead": "A template with a schedule creates its own tasks. The work is raised as you, so it stops the day you can no longer direct that person — nothing is created quietly on somebody else's behalf.",
+      "add": "Add a schedule",
+      "none": "No schedule. Work from this template is created when somebody presses Use template.",
+      "notUsable": "Only an approved template can raise work on a schedule.",
+      "loading": "Loading schedules",
+      "loadFailed": "We could not load the schedules just now.",
+      "setFailed": "That schedule was not set. Check the person is still yours to direct and try again.",
+      "assignee": "Who does it",
+      "cadenceLabel": "How often",
+      "dayOfWeek": "Which day",
+      "dayOfMonth": "Which date",
+      "monthEndHint": "In a shorter month this lands on the last day — the 28th in February — rather than being skipped.",
+      "confirm": "Set the schedule",
+      "pause": "Pause",
+      "resume": "Resume",
+      "paused": "Paused",
+      "someone": "Former member",
+      "to": "to {{name}}",
+      "next": "Next on {{date}}",
+      "everyDay": "Every day",
+      "everyWeek": "Every {{day}}",
+      "everyMonth": "Day {{day}} of every month",
+      "neverRaised": "Has not raised anything yet",
+      "raised_one": "Raised once, last on {{date}}",
+      "raised_other": "Raised {{count}} times, last on {{date}}",
+      "cadence": {
+        "DAILY": "Every day",
+        "WEEKLY": "Every week",
+        "MONTHLY": "Every month"
+      },
+      "day": {
+        "1": "Monday",
+        "2": "Tuesday",
+        "3": "Wednesday",
+        "4": "Thursday",
+        "5": "Friday",
+        "6": "Saturday",
+        "7": "Sunday"
+      }
+    },
+    "lineage": {
+      "heading": "Where this work is used",
+      "nothingUsesThis": "No process plans this work yet, and no run has used it.",
+      "openTask": "Open this work",
+      "plannedIn_one": "Planned in {{count}} process",
+      "plannedIn_other": "Planned in {{count}} processes",
+      "atStep": "step {{position}}",
+      "retired": "retired",
+      "cutIn_one": "Used by {{count}} run",
+      "cutIn_other": "Used by {{count}} runs",
+      "noTaskYet": "not started",
+      "showingSome": "Showing {{shown}} of {{total}}."
+    },
+    "candidates": {
+      "heading": "Work people keep typing",
+      "explain": "The library has no entry for these yet.",
+      "typed_one": "typed once",
+      "typed_other": "typed {{count}} times",
+      "firstSeen": "first",
+      "lastSeen": "most recent",
+      "alsoTyped": "Also typed as:"
+    },
+    "subtitle": "Work worth writing down once and using many times."
+  },
+  "aiassist": {
+    "shape": {
+      "heading": "Does this change hands?",
+      "lead": "Reading your checklist, this may be work that passes between people rather than one person's job. If it is, these are the steps.",
+      "basedOn_one": "Based on 1 checklist item.",
+      "basedOn_other": "Based on {{count}} checklist items.",
+      "partial": "part of this template was not read",
+      "caveat": "This is a question, not a verdict — the product is not sure, and you are. Nothing has been changed. If you agree, convert it to a process; if not, ignore this.",
+      "thinking": "Reading this template"
+    }
+  },
+  "chatAssist": {
+    "ask": "Does this describe work?",
+    "asking": "Reading the conversation…",
+    "failed": "That could not be read just now.",
+    "nothingHere": "Nothing in this conversation looks like a process.",
+    "draftIntro_one": "This conversation seems to describe one step:",
+    "draftIntro_other": "This conversation seems to describe {{count}} steps:",
+    "checkIt": "These are quoted from what was said. Read them before creating anything — the product is often wrong about this.",
+    "useDraft": "Turn this into work",
+    "notNow": "Not now",
+    "source": {
+      "FROM_CONVERSATION": "from the conversation",
+      "FROM_HISTORY": "from what has been done before",
+      "SUGGESTED": "a suggestion"
+    },
+    "form": {
+      "taskTitle": "Create a task from this conversation",
+      "processTitle": "Create a process from this conversation",
+      "readItFirst": "Everything below is filled in. What was quoted from the conversation is marked; the rest the product suggested. Change anything before you create it.",
+      "taskName": "Task",
+      "runName": "Name",
+      "doneBy": "Done by",
+      "steeredBy": "Steered by",
+      "choosePerson": "Choose somebody",
+      "by": "By",
+      "steps_one": "Step",
+      "steps_other": "Steps ({{count}})",
+      "checklist_one": "Checklist",
+      "checklist_other": "Checklist ({{count}})",
+      "stepTitle": "Step {{number}}",
+      "stepAssignee": "Who does step {{number}}",
+      "stepDeadline": "When step {{number}} is due",
+      "removeStep": "Remove step {{number}}",
+      "remove": "Remove",
+      "cancel": "Cancel",
+      "create": "Create",
+      "creating": "Creating…",
+      "shape": "This is",
+      "shapeTask": "One person’s task, with a checklist",
+      "shapeProcess": "A process — the work changes hands"
+    }
+  },
+  "pipeline": {
+    "heading": "How this work came about",
+    "stuck": {
+      "title": "Looked at, and nothing said",
+      "summary": "{{count}} pieces of work the run read and did not act on. That is normal — most of a run is silence.",
+      "none": "Everything the run read reached a conclusion. Nothing was dropped."
+    },
+    "birth": {
+      "TYPED": "typed by hand",
+      "STAMPED": "stamped from the library",
+      "FROM_MESSAGE": "converted from a message"
+    },
+    "stage": {
+      "MESSAGE": "Message",
+      "TASK": "Task",
+      "TEMPLATE": "Template",
+      "ANALYSIS": "Analysis",
+      "PLANNED_IN": "Planned in",
+      "OBSERVATIONS": "Observations",
+      "notRun": "This stage did not run.",
+      "nothing": "Nothing found here."
+    },
+    "said": {
+      "body": "Somebody asked for this in a conversation."
+    },
+    "task": {
+      "body": "{{title}}"
+    },
+    "template": {
+      "draft": "{{title}} — a draft this task proposed, waiting to be curated",
+      "approved": "{{title}} — an approved library entry"
+    },
+    "analysis": {
+      "body_one": "This work has been done once",
+      "body_other": "This work has been done {{count}} times"
+    },
+    "plannedIn": {
+      "body_one": "{{name}} — {{count}} run",
+      "body_other": "{{name}} — {{count}} runs"
+    },
+    "observations": {
+      "body_one": "The product has noticed 1 thing about this work",
+      "body_other": "The product has noticed {{count}} things about this work"
+    },
+    "page": {
+      "heading": "Work pipeline",
+      "lead": "Where a piece of work started, and what it has become since.",
+      "pick": "Choose a task",
+      "search": "Search the work",
+      "searchPlaceholder": "Search by title",
+      "clear": "Clear the search",
+      "loading": "Reading the work…",
+      "cannotList": "The work could not be listed",
+      "cannotListBody": "The queue did not answer. Reload the page to try again.",
+      "noWork": "No work matches that",
+      "noWorkBody": "Change the search, or clear it to see everything.",
+      "nothingChosen": "Choose a task on the left",
+      "nothingChosenBody": "Its chain appears here: the message it started from, the library entry it carries, the evidence that has gathered, and the processes it reached.",
+      "cannotRead": "That task could not be read",
+      "cannotReadBody": "It may have been deleted, or it may not be yours to see.",
+      "openTask": "Open the task",
+      "evidence": "See the evidence"
+    },
+    "run": "Run the analysis",
+    "running": "Reading the graph…",
+    "loading": "Reading what the last run found…",
+    "failed": "The analysis did not load. Reload the page to try again.",
+    "outcomes": {
+      "title": "What the last run decided",
+      "read": "{{count}} piece read",
+      "read_other": "{{count}} pieces read",
+      "readOfWindow": "{{read}} of {{held}} pieces read",
+      "capped": "The rest are older and were not looked at. Every count below is out of the {{read}}."
+    },
+    "runs": {
+      "title": "Past runs",
+      "pick": "Choose two runs to see what moved between them.",
+      "loading": "Reading the run history…",
+      "failed": "The run history did not load.",
+      "none": "No run has been recorded yet. Run the node pipeline above and it will appear here.",
+      "read": "{{count}} piece read",
+      "read_other": "{{count}} pieces read",
+      "diffing": "Comparing the two runs…",
+      "diffFailed": "Those two runs could not be compared.",
+      "identical": "Nothing moved. The two runs agree, item for item.",
+      "notRecorded": "not recorded"
+    },
+    "formalise": {
+      "open": "Write this down",
+      "title": "Write this work down",
+      "lede": "The run found no template covering this work. Writing it down gives the workspace one name for it, and the next run can match against it.",
+      "name": "What this work is called",
+      "detail": "What it involves",
+      "steps": "Steps",
+      "stepsHint": "One per line. Leave it empty if the work has no fixed order.",
+      "save": "Write it down",
+      "saving": "Writing it down…",
+      "cancel": "Cancel",
+      "failed": "That could not be written down. Nothing was saved.",
+      "done": "Close",
+      "written": "Written down as “{{title}}”. The next run can match against it."
+    },
+    "nodeRun": {
+      "title": "The node pipeline",
+      "lede": "This reads marked work against the template library. It is a different pass from the analysis above, and what it drops appears below.",
+      "window": "Window",
+      "days": "Last {{count}} day",
+      "days_other": "Last {{count}} days",
+      "counting": "Counting what this window holds…",
+      "holds": "{{count}} piece of work in this window",
+      "holds_other": "{{count}} pieces of work in this window",
+      "empty": "Nothing in this window. A wider one may hold work this one does not.",
+      "capped": "Over the {{cap}} limit — the oldest will not be read. Narrow the window to see recent work whole.",
+      "countFailed": "Could not count this window: {{reason}}",
+      "run": "Run the node pipeline",
+      "running": "Reading marked work…",
+      "failed": "The run did not finish. Nothing was recorded.",
+      "result": "Read {{read}} of {{held}} · {{kinds}} kinds of work · {{processes}} processes",
+      "candidates": "{{count}} finished engagement matches no process anybody has written down",
+      "candidates_other": "{{count}} finished engagements match no process anybody has written down",
+      "reasonUnknown": "the server gave no reason"
+    },
+    "compose": {
+      "eyebrow": "Cold start",
+      "title": "Write down what the pipeline found",
+      "lede": "A run reads and records; it writes nothing into your libraries. This turns what it found into a task template for each kind of work and a process for each shape, as drafts you can read and change.",
+      "write": "Write it down",
+      "writing": "Writing what was found…",
+      "failed": "Nothing was written. The libraries are unchanged.",
+      "nothing": "No repeated shape yet. A kind of work needs three pieces before it becomes a template, and a shape needs three engagements before it becomes a process.",
+      "summary": "{{kinds}} kinds of work · {{drafted}} task templates drafted · {{processes}} processes composed",
+      "shape": "{{steps}} steps · seen in {{runs}} engagements",
+      "alreadyThere": "Already in the library: {{names}}",
+      "precondition": "Only finished engagements count. Work in an engagement nobody closed is left out, so close the work and end the engagement before running this."
+    },
+    "kpi": {
+      "read": "pieces of work read",
+      "findings": "findings",
+      "shapes": "shapes found",
+      "source": "From the discovery analysis. The analysers below are a separate pass with their own counts.",
+      "neverRun": "The discovery analysis has not run yet. The analysers below are a separate pass and may still have counts."
+    },
+    "ribbon": {
+      "title": "Findings by stage",
+      "key": "width = count"
+    },
+    "card": {
+      "evidence": "{{count}} case",
+      "evidence_other": "{{count}} cases"
+    },
+    "drawer": {
+      "label": "The evidence behind this finding",
+      "pick": "Choose a finding to see what it rests on.",
+      "close": "Close the drawer",
+      "evidence": "Rests on",
+      "about": "About",
+      "phrasedBy": "Written by",
+      "byModel": "the local model",
+      "byTemplate": "a template",
+      "loadingGraph": "Finding what this was drawn from…",
+      "drawnFrom": "Drawn from {{count}} piece of work in the graph",
+      "drawnFrom_other": "Drawn from {{count}} pieces of work in the graph"
+    },
+    "confidence": {
+      "STRONG": "Strong evidence",
+      "WORTH_LOOKING": "Worth looking at",
+      "UNDERMINED": "Something argues against this"
+    },
+    "proposal": {
+      "writeItDown": "Write it down",
+      "notNow": "Not now",
+      "nameIt": "What does the business call this process?",
+      "confirm": "Create the process",
+      "writing": "Writing it down…",
+      "cancel": "Cancel",
+      "written": "Written down",
+      "writtenDetail": "Its steps, in order: {{steps}}.",
+      "whereItIs": "It is in the process library now. Nothing has been started from it — that is somebody’s decision, on the Processes screen."
+    },
+    "analysers": {
+      "title": "The analysers",
+      "why": "Nine small analysers over one snapshot. Each reads one component, answers one question, and says what it found, what it could not see, or that it looked and everything is fine.",
+      "never": "No analysis has been run yet.",
+      "run": "Run the analysers",
+      "running": "Running…",
+      "window": "Looked at {{from}} to {{to}}",
+      "read": "read {{count}}",
+      "findings": "{{count}} findings",
+      "silentButLooked": "Found nothing, and looked at {{count}}.",
+      "silentAndBlind": "Found nothing, and had nothing to look at.",
+      "blocked": "Blocked",
+      "failed": "This analyser failed: {{failure}}",
+      "couldNotSee": "What it could not see",
+      "needed": "What it needed",
+      "preconditionMet": "{{needed}} — {{had}}",
+      "preconditionUnmet": "Needs {{needed}}; {{had}}",
+      "unblockJoin": "{{first}}, and {{last}}",
+      "unblockResult": "— and {{count}} of {{of}} analysers starts working.",
+      "unblockResult_other": "— and {{count}} of {{of}} analysers start working."
+    },
+    "compare": {
+      "title": "What the model made of this run",
+      "why": "Every one of {{count}} pieces of work was scored twice: once by the rules alone, once with the model. The rules decided; the model only left a record.",
+      "bucket": {
+        "agreed": "Agreed",
+        "raised": "Spoke where the rules were silent",
+        "lowered": "Silenced what the rules would have said",
+        "changed": "Said something else",
+        "failed": "Asked and unusable"
+      },
+      "model": "Answered by {{model}}.",
+      "noModel": "No model answered — every row here is the rules alone.",
+      "cost": "How many times the model was called, and how long it took, are not recorded. This counts the work compared, not the cost of comparing it.",
+      "endDate": "Comparing doubles the work of every run. Turn it off once you have your answer."
+    },
+    "runAll": {
+      "run": "Run the analysis",
+      "lede": "Runs all three passes in the order their results feed each other: the node pipeline reads marked work, the discovery analysis reads the graph it leaves, and the analysers read the snapshot both have shaped. Nothing is written to your libraries.",
+      "stage": "Running the {{stage}}…",
+      "nodes": "node pipeline",
+      "analysis": "discovery analysis",
+      "analysers": "analysers",
+      "done": "All three passes finished. The counts below are from this run.",
+      "failed": "The {{stage}} did not finish, so the passes after it did not start. Nothing was written.",
+      "running": "Running…",
+      "progress": "Run progress",
+      "nodesRead": "{{count}} marks read",
+      "bracketsRead": "{{count}} pieces of work read",
+      "analysersRan": "Nine analysers ran"
+    },
+    "runOne": {
+      "title": "Run one pass on its own",
+      "lede": "For diagnosing a single pass. Running one alone leaves the others describing the state before it.",
+      "analysis": "Reads the work graph and produces the findings on the board above."
+    }
+  },
+  "discovery": {
+    "circle": {
+      "label": "Mark this message as work",
+      "marked": "This message is marked as work",
+      "opening": "Opening…"
+    },
+    "mark": {
+      "action": "Mark as work",
+      "marking": "Marking…",
+      "failed": "That could not be marked. Try again.",
+      "work": "Marked as work",
+      "willJoin": "Joins {{where}}",
+      "willOpen": "Opens {{where}}",
+      "joined": "Joined {{where}}",
+      "opened": "Opened {{where}}",
+      "isWork": "Work · {{where}}",
+      "opensJob": "Opens the engagement · {{where}}",
+      "inspect": "See what happened to this message",
+      "kindOther": "Something else…",
+      "kindOwnWord": "A word of your own",
+      "alsoOthers_one": "and 1 other",
+      "alsoOthers_other": "and {{count}} others",
+      "unclaimed": "Nobody yet",
+      "forWhom": "Who is doing it",
+      "whichJob": "Which engagement",
+      "whatKind": "What kind of work",
+      "kindDerived": "Taken from what {{who}} usually does. Change it if this is something else.",
+      "kindNew": "Nobody has used {{name}} before.",
+      "kindNearest": "Closest already in use:",
+      "change": "change"
+    },
+    "activity": {
+      "label": "Activity",
+      "placeholder": "What this piece of work was",
+      "help": "Optional. Naming it keeps this step apart from the rest of the work of its kind.",
+      "suggestions": "Matching activities",
+      "today": "Used today",
+      "yesterday": "Used yesterday",
+      "daysAgo_one": "Used 1 day ago",
+      "daysAgo_other": "Used {{count}} days ago",
+      "byDepartment_one": "Used by {{department}}, once",
+      "byDepartment_other": "Used by {{department}}, {{count}} times",
+      "onClientWork_one": "Used on {{client}}'s work, once",
+      "onClientWork_other": "Used on {{client}}'s work, {{count}} times",
+      "acrossWorkspace_one": "Used once in this workspace",
+      "acrossWorkspace_other": "Used {{count}} times in this workspace",
+      "neverUsed": "Named, not used yet",
+      "tooGeneric": "Used by three or more departments",
+      "nearMiss_one": "This looks like “{{name}}”, used once already.",
+      "nearMiss_other": "This looks like “{{name}}”, used {{count}} times already.",
+      "nearMissNew": "This looks like “{{name}}”, which is already named.",
+      "nearMissMostly": "Mostly used by {{department}}.",
+      "nearMissUse": "Use it",
+      "nearMissDifferent": "No, mine is different",
+      "name": "Name it “{{name}}”",
+      "naming": "Naming…",
+      "nameFailed": "That could not be named. Try again.",
+      "clear": "Clear the activity",
+      "nearMissByModel": "Suggested by a language model, which may be wrong.",
+      "ambiguityWho": "{{who}} already did {{kind}} work in this engagement.",
+      "ambiguityHere": "This engagement already has {{kind}} work in it.",
+      "ambiguityAsk": "What is different about this one?",
+      "ambiguityAlready": "Already named here: {{names}}."
+    },
+    "undo": {
+      "action": "Undo",
+      "label": "Take this mark back",
+      "line": "Marked as work.",
+      "done": "Taken back.",
+      "failed": "That could not be taken back."
+    },
+    "circles": {
+      "addTo": "Add to {{where}}",
+      "start": "Start it",
+      "startOwn": "Start my own",
+      "startFor": "Start it for {{who}}",
+      "caseRecorded": "Already recorded",
+      "caseBoundary": "Where this engagement began",
+      "caseNoEngagement": "No engagement here yet",
+      "caseWhereItLands": "Where this lands",
+      "caseDeliver": "What this delivers",
+      "joinOne": "Join {{who}} on {{where}}",
+      "joinSomeone": "Join somebody's work",
+      "whoseWork": "Whose work are you joining?",
+      "whichClient": "Who is it for?",
+      "clientNotSet": "Not named yet",
+      "clientCreate": "＋ Add a client",
+      "clientName": "What is the client called?",
+      "clientNamePlaceholder": "Sunrise Bakery",
+      "clientAdd": "Add this client",
+      "openFailed": "That engagement could not be opened. Try again.",
+      "someoneElse": "Somebody else…",
+      "someoneElseHelp": "They join this room first, and the room is told.",
+      "whoElse": "Who should it be?",
+      "openLabel": "Mark this as work",
+      "deliverLabel": "Deliver this work",
+      "deliverConfirm": "Deliver it",
+      "delivering": "Delivering…",
+      "delivered": "Delivered · {{where}}",
+      "reading": "Looking…",
+      "readFailed": "That could not be read. Try again.",
+      "deliverFailed": "That could not be delivered. Try again.",
+      "thisCloses": "This closes {{where}}.",
+      "whichOne": "Which one does this deliver?",
+      "unblocks": "This unblocks {{who}}.",
+      "unblocked": "and it unblocked {{who}}",
+      "nothingOfYours": "Nothing of yours is open here — there is nothing to deliver yet.",
+      "heldByOthers": "Open here, but held by {{who}}.",
+      "alreadyYours": "Your work is already recorded on this message.",
+      "boundaryTakesNoWork": "This message opens the engagement, so no work is added to it.",
+      "addToEngagement": "Add to {{name}}"
+    },
+    "strip": {
+      "newJob": "Start a new engagement",
+      "newJobOption": "＋ Start a new engagement",
+      "open": "Open it",
+      "close": "Close",
+      "choosePerson": "Choose somebody",
+      "chooseJob": "Choose an engagement",
+      "opensTheJob": "This opens the engagement",
+      "jobName": "What is the engagement called?",
+      "jobNamePlaceholder": "Aurora — spring campaign",
+      "jobNameRequired": "Give the engagement a name first.",
+      "projectLabel": "Name the project you'll follow",
+      "projectLabelPlaceholder": "Summer menu",
+      "openAnyway": "Open a separate one anyway",
+      "oneIsAlreadyOpen": "This client already has an engagement open."
+    },
+    "track": {
+      "label": "Your work",
+      "empty": "Nothing of yours is open. Work appears here the moment you mark something.",
+      "waiting": "Waiting",
+      "node": {
+        "START": "Where this work started",
+        "WORK": "A step in this work",
+        "END": "Where this work ended",
+        "UNSPOKEN": "Ended without a message — {{how}}"
+      }
+    },
+    "queue": {
+      "waitingOnYou": "Waiting on you",
+      "openWork": "Your open work",
+      "deliveredThisWeek": "Delivered this week",
+      "needsYourDecision": "Needs your decision"
+    },
+    "subject": {
+      "label": "Who is this about?",
+      "guessed": "We think this is about {{name}}.",
+      "correct": "Not them",
+      "choose": "Choose who this is about",
+      "none": "Nobody yet"
+    },
+    "blocked": {
+      "ask": "Who is this waiting on?",
+      "answer": {
+        "CLIENT": "The client",
+        "COLLEAGUE": "A colleague",
+        "SUPPLIER": "A supplier",
+        "APPROVAL": "An approval"
+      }
+    },
+    "nudge": {
+      "ask": "Is this still going?",
+      "dismiss": "Not now",
+      "answer": {
+        "DONE": "It is done",
+        "STILL_GOING": "Still going",
+        "DROPPED": "It was dropped"
+      }
+    },
+    "output": {
+      "ask": "What came out of this?",
+      "noneNote": "Nothing came out of it, and that is a real answer.",
+      "answer": {
+        "TEXT": "Something written",
+        "DESIGN": "A design",
+        "REPORT": "A report",
+        "SCHEDULING": "Something scheduled",
+        "NONE": "Nothing"
+      }
+    },
+    "type": {
+      "name": "What is this kind of work called?",
+      "namePlaceholder": "Monthly content plan",
+      "nameTaken": "A kind of work already goes by that name."
+    },
+    "error": {
+      "ILLEGAL_NODE_TRANSITION": "That work is not in a state where that can happen.",
+      "TRACK_ALREADY_CLOSED": "That thread has already been ended.",
+      "UNKNOWN": "That did not work. Try again."
+    },
+    "work": {
+      "tabs": "What this conversation is doing",
+      "tab": {
+        "thread": "Thread",
+        "work": "Work",
+        "waiting": "Waiting",
+        "shelf": "Kept",
+        "analytics": "Analytics"
+      },
+      "loading": "Reading what this conversation is doing…",
+      "failed": "That did not load. Reload the page to try again.",
+      "empty": {
+        "what": "No work has come out of this conversation yet.",
+        "how": "Mark a message as work and it appears here, with whatever follows it."
+      },
+      "open": "Open",
+      "unclaimed": "Nobody yet",
+      "waitingOn": "Waiting on {{count}} thing",
+      "waitingOn_other": "Waiting on {{count}} things",
+      "openMessage": "Open the message this came from",
+      "openMessage_other": "Open the {{count}} messages this came from",
+      "alsoIn": "Also in 1 other conversation",
+      "alsoIn_other": "Also in {{count}} other conversations",
+      "sortLabel": "Order",
+      "sortNewest": "Newest first",
+      "sortOldest": "Oldest first",
+      "openedWhen": "opened",
+      "blockedBy_one": "1 thing blocking",
+      "blockedBy_other": "{{count}} things blocking"
+    },
+    "waiting": {
+      "loading": "Reading what this conversation is waiting on…",
+      "failed": "That did not load. Reload the page to try again.",
+      "empty": {
+        "what": "Nothing here is waiting on anybody.",
+        "how": "When work stalls on somebody else, it appears here with who and since when."
+      },
+      "noReason": "No reason given",
+      "arrived": "It came",
+      "withdraw": "Stop waiting",
+      "endFailed": "That wait could not be cleared. It may already have been.",
+      "expected": "Expected {{date}}",
+      "kind": {
+        "CLIENT": "The client",
+        "COLLEAGUE": "A colleague",
+        "SUPPLIER": "A supplier",
+        "APPROVAL": "An approval"
+      }
+    },
+    "analytics": {
+      "loading": "Counting this room's work…",
+      "failed": "This room's work could not be counted. The tabs beside this one still work.",
+      "empty": {
+        "what": "Nothing in this room has become work yet.",
+        "how": "Figures appear here once somebody marks a message."
+      },
+      "endings": {
+        "label": "Arrived",
+        "sub": "of {{ended}} that ended · {{live}} still live",
+        "eyebrow": "The ones that ended another way"
+      },
+      "waiting": {
+        "label": "Waiting on something",
+        "none": "Nothing is waiting",
+        "allInside": "All of it on people here",
+        "outside": "{{count}} outside this workspace"
+      },
+      "kinds": {
+        "label": "Kinds of work",
+        "sub": "across {{count}} pieces of work",
+        "everyOneDifferent": "Every piece of work has its own word",
+        "eyebrow": "What this room produces"
+      }
+    },
+    "shelf": {
+      "placeholder": "Paste a link, or anything worth keeping to hand",
+      "valueLabel": "What to keep",
+      "labelPlaceholder": "What to call it (optional)",
+      "labelLabel": "What to call it",
+      "keep": "Keep it",
+      "remove": "Take this off the shelf",
+      "loading": "Reading the shelf…",
+      "empty": {
+        "what": "Nothing on the shelf yet.",
+        "how": "The link everybody re-asks for, the address that lives in one person’s head — put it here and it stops being asked for."
+      }
+    },
+    "canvas": {
+      "title": "The work graph",
+      "lead": "What this business actually does, drawn from what its people said.",
+      "loading": "Reading the graph…",
+      "cannotRead": "You cannot read the graph",
+      "cannotReadBody": "This shows the business rather than any one person’s work, so it is the owner’s and a manager’s.",
+      "job": "Engagement",
+      "ended": "Ended",
+      "endThread": "End this thread",
+      "empty": {
+        "heading": "Nothing observed yet",
+        "body": "Mark a message as work in a conversation and the graph starts here.",
+        "action": "Open a conversation"
+      },
+      "lane": {
+        "pair": "{{from}} ↔ {{to}}",
+        "weaklyKeyed": "Loosely grouped",
+        "weaklyKeyedNote": "Not enough was said to place this precisely, so it is grouped by what could be read."
+      },
+      "card": {
+        "role": {
+          "JOB_START": "Engagement opened",
+          "JOB_END": "Engagement closed",
+          "COMPLETION": "Work finished"
+        },
+        "openMessage": "Open the message",
+        "openMessageLabel": "Open the message this came from",
+        "templated": "In the library",
+        "phaseDuration": "{{duration}} {{phase}}",
+        "loop": "{{first}} ⇄ {{second}}",
+        "loopCount": "×{{count}}",
+        "loopCount_other": "×{{count}}"
+      },
+      "move": {
+        "label": "Move this somewhere else",
+        "choose": "Move to…"
+      },
+      "phase": {
+        "WORK": "work",
+        "EXTERNAL_WAIT": "external wait",
+        "INTERNAL_WAIT": "internal wait",
+        "REVIEW": "review"
+      },
+      "closeReason": {
+        "TERMINAL_OUTPUT": "Something came out of it",
+        "DORMANT": "Nothing happened for a while",
+        "JOB_CLOSED": "The engagement closed",
+        "PERFORMER_GONE": "Whoever held it left",
+        "REASSIGNED": "It moved to somebody else"
+      }
+    },
+    "digest": {
+      "title": "What the week found",
+      "summary": "Threads that ended, and what came out of them.",
+      "loading": "Reading the week…",
+      "work": "Work",
+      "repeated": "Repeated {{count}} time",
+      "repeated_other": "Repeated {{count}} times",
+      "provisional": "Provisional",
+      "provisionalNote": "Not enough has happened yet for this to be more than an impression.",
+      "confirm": "This is a kind of work",
+      "confirmLabel": "Confirm {{name}}",
+      "confirmed": "{{name}} is now a process the team can start.",
+      "empty": {
+        "heading": "Nothing to report this week",
+        "body": "No thread ended, so there is nothing yet to say about how the work went."
+      },
+      "tile": {
+        "tracksClosed": "threads ended",
+        "proposals": "kinds of work proposed",
+        "coverage": "of work is named",
+        "coverageValue": "{{percent}}%"
+      }
+    },
+    "describe": {
+      "ask": "What is this work, actually?",
+      "why": "The circle captured that work happened. This says what it was — and nothing else in the data can say it later.",
+      "titleLabel": "What do you call this work?",
+      "titlePlaceholder": "caption set for Aurora",
+      "detailLabel": "What does it involve?",
+      "detailPlaceholder": "three posts and a story",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Saved.",
+      "alreadyAnswered": "That was already answered, and the first answer stands.",
+      "named": "Called “{{title}}”.",
+      "unnamed": "Nobody has named this work yet.",
+      "onceOnly": "Anyone working on this can fill in what is missing. Only you can change what you have written, and only while the work is open.",
+      "correct": "Fix what I wrote",
+      "correctingNote": "Correcting your own description. Analysers group work by it, so it settles when the work closes.",
+      "stepsLabel": "Steps, one per line",
+      "stepsPlaceholder": "Pull the references\nCheck it against the brand guidelines\nSend it to Andrei"
+    },
+    "vocabulary": {
+      "eyebrow": "What people call their work",
+      "count_one": "One activity",
+      "count_other": "{{count}} activities",
+      "note": "A step is keyed on the activity somebody named, so two names for one piece of work are two steps. Merging joins them; retiring stops a name spreading without changing anything already marked. Both are decisions a person makes.",
+      "used_one": "Used once",
+      "used_other": "Used {{count}} times",
+      "generic": "used by three or more departments",
+      "mergePick": "Merge into…",
+      "mergeInto": "Merge “{{name}}” into another activity",
+      "merge": "Merge into “{{name}}”",
+      "retire": "Retire",
+      "retireConfirm": "Retire — press again",
+      "failed": "That could not be done. The list above is unchanged."
+    }
+  },
+  "notification": {
+    "bell": {
+      "label": "Notifications"
+    },
+    "inbox": {
+      "title": "Notifications",
+      "empty": "Nothing new."
+    },
+    "digest": {
+      "summary": "{{count}} things happened while you were away",
+      "summary_other": "{{count}} things happened while you were away"
+    },
+    "subject": {
+      "gone": "This is no longer available."
+    },
+    "prefs": {
+      "title": "What interrupts you",
+      "assignment": "Work coming to you",
+      "time": "Dates and deadlines",
+      "process": "Runs and steps",
+      "weekly": "The weekly summary",
+      "escalation": {
+        "note": "Escalations always arrive."
+      }
+    },
+    "kind": {
+      "WORK_ASSIGNED": "Work was assigned to you",
+      "WORK_RETURNED": "Work came back to you",
+      "WORK_APPROVED": "Work was approved",
+      "WORK_REJECTED": "Work was sent back",
+      "DEADLINE_PROPOSED": "A new date was proposed",
+      "DEADLINE_DECIDED": "A date was decided",
+      "OVERDUE_RUNG_1": "Work is past its date",
+      "OVERDUE_RUNG_2": "Work is well past its date",
+      "OVERDUE_RUNG_3": "Work is well past its date",
+      "LONG_BLOCK_1": "Work has been waiting a while",
+      "LONG_BLOCK_2": "Work has been waiting a long time",
+      "STALE_REVIEW": "A review is waiting",
+      "STEP_REACHABLE": "A step is ready to start",
+      "STEP_STALLED": "A step has not moved",
+      "RUN_COMPLETED": "A run finished",
+      "TASK_ATTACHED_TO_RUN": "Work joined a run",
+      "WEEKLY_SUMMARY": "Your week",
+      "AWAITED_WORK_ARRIVED": "What you were waiting for has arrived",
+      "AWAITED_WORK_DROPPED": "What you were waiting for will not arrive",
+      "BRACKET_STILL_GOING": "Still going?",
+      "JOB_FORCE_CLOSED": "The job you were working on was closed",
+      "SOMEBODY_IS_WAITING_ON_YOU": "Somebody is waiting on you",
+      "WAIT_DATE_HAS_PASSED": "The date you expected has passed",
+      "EXTERNAL_WAIT_IS_LONG": "Something outside the workspace has been waiting a long time",
+      "A_TEMPLATE_EXISTS_FOR_THIS": "There is a template for work you did by hand",
+      "AN_ENGAGEMENT_NEEDS_A_LOOK": "An engagement you opened needs a look",
+      "SOMETHING_IS_WORTH_WRITING_DOWN": "Work is repeating that nobody has written down",
+      "UNKNOWN": "Something happened"
+    }
+  },
+  "queue": {
+    "loading": "Reading the last analysis",
+    "listLabel": "Findings, worst first",
+    "standing": {
+      "label": "How the last run stands"
+    },
+    "none": "Nothing matches that filter. Press it again to see everything.",
+    "nothingNew": "Nothing new this week. {{count}} findings are still true.",
+    "held": "{{count}} held back because you said no.",
+    "suggested": "Suggested",
+    "dismiss": "Not now",
+    "dismissing": "Recording",
+    "dismissNote": "It stays off this queue until it reaches half again as far, or becomes a different kind of problem.",
+    "never": {
+      "title": "No analysis has been run yet",
+      "body": "Run the analysers from the pipeline board, and what they find arrives here."
+    },
+    "failed": {
+      "title": "The queue could not be read",
+      "body": "Reload the page. If it happens again, the last run may not have finished."
+    },
+    "pick": {
+      "title": "Pick something from the queue",
+      "body": "Each item says what was found, why it ranks where it does, and what you might do about it."
+    },
+    "inspector": {
+      "label": "About this finding",
+      "empty": "Pick a finding and its history appears here."
+    },
+    "reach": {
+      "bare": "touches {{count}}",
+      "of": "touches {{reach}} of {{of}}"
+    },
+    "lifecycle": {
+      "NEW": "New",
+      "WORSENING": "Worse",
+      "STILL_TRUE": "Still true",
+      "IMPROVING": "Better",
+      "RESOLVED": "Resolved",
+      "DISMISSED": "Dismissed"
+    },
+    "category": {
+      "YOUR_WORK": "Your work",
+      "YOUR_TIME": "Your time",
+      "YOUR_ENGAGEMENTS": "Your engagements",
+      "YOUR_LIBRARY": "Your library",
+      "YOUR_PROCESSES": "Your processes"
+    },
+    "context": {
+      "standing": "Standing",
+      "measure": "Measure",
+      "evidence": "Evidence",
+      "lifecycle": "Compared with last run",
+      "timesSeen": "Runs it has appeared in",
+      "firstSeen": "First seen",
+      "reach": "Reach",
+      "severity": "Severity",
+      "confidence": "Confidence",
+      "unstated": "Not stated",
+      "evidenceCount": "{{count}} items on the graph",
+      "engagementCount": "{{count}} engagement",
+      "engagementCount_other": "{{count}} engagements",
+      "noClient": "No client recorded",
+      "sameDay": "All on one day",
+      "overDays": "over {{count}} day",
+      "overDays_other": "over {{count}} days"
+    }
+  },
+  "organisation": {
+    "eyebrow": "Workspace vocabulary",
+    "title": "Departments and jobs",
+    "lede": "The parts this business has, the jobs inside them, and who holds which. A job is what a piece of marked work takes its kind from, so this list is the vocabulary the whole product reads work through.",
+    "loading": "Reading the organisation…",
+    "failed": "The organisation could not be read.",
+    "department": "Department",
+    "departmentName": "Department name",
+    "jobName": "Job name",
+    "addJob": "Add a job to this department",
+    "addDepartment": "Add a department",
+    "add": "Add",
+    "save": "Save",
+    "removeJob": "Remove",
+    "removeDepartment": "Remove this department",
+    "noJobs": "No jobs here yet. A department with none records nothing about anybody's work.",
+    "emptyTitle": "No departments yet",
+    "emptyDescription": "Add the parts this business is made of, then the jobs inside them.",
+    "notRecorded": "Not recorded",
+    "whoEyebrow": "Assignments",
+    "whoTitle": "Who does what",
+    "whoLede": "Work somebody marks takes its kind from the job they hold. Somebody with none recorded is an ordinary state — their work simply carries no kind until it is.",
+    "jobFor": "Job for {{name}}"
+  },
+  "board": {
+    "analysersLede": "Small analysers over one snapshot. Each reads one component, answers one question, and says what it found, what it could not see, or that it looked and everything is fine.",
+    "blocked": "Blocked",
+    "carryHistory": "carry history",
+    "clearSelection": "Clear the selection",
+    "coldStart": "Cold start",
+    "coldStartLede": "A run reads and records; it writes nothing into your libraries. This turns what it found into a task template for each kind of work and a process for each shape, as drafts you can read and change. Only finished engagements count — work in an engagement nobody closed is left out.",
+    "couldNotSee": "What it could not see",
+    "coverage": "Coverage",
+    "coverageAlt": "{{read}} of {{total}} pieces of work in the window were read",
+    "decidedEyebrow_one": "{{count}} piece read",
+    "decidedEyebrow_other": "{{count}} pieces read",
+    "decidedNote": "An analyser that found nothing is not a failure. The row above says what each one read before it decided.",
+    "detectorNote": "Grouped by the question each analyser was answering, in the order the stages depend on one another. A stage the run never reached is left out rather than drawn as a zero.",
+    "didNotRun": "did not run",
+    "eachStageReads": "Each stage reads the one before it",
+    "effortBasis": "Effort figures — how long work took, what stalled, what came back — are measured over {{pieces}} pieces of work, not over the {{read}} marks above. A duration belongs to a piece of work, and one piece of work carries several marks.",
+    "findings": "Findings",
+    "findingsByStage": "Findings by stage",
+    "floor": "Floor",
+    "floorMet": "{{met}} of {{total}} met",
+    "foundThis_one": "Found {{count}} thing worth deciding about, across {{read}} read.",
+    "foundThis_other": "Found {{count}} things worth deciding about, across {{read}} read.",
+    "gateEyebrow": "Do these and the pipeline starts working",
+    "gateHeadline_one": "One missing thing is holding an analyser shut.",
+    "gateHeadline_other": "{{count}} analysers are held shut by something that does not exist yet.",
+    "inWindowNotRead": "In window, not read",
+    "inspectorIdle": "Pick an analyser and what it read, found and could not see appears here.",
+    "lastRun": "Last run",
+    "signatureMeaning": "A fingerprint of what this run read. Two runs sharing it read exactly the same work.",
+    "lookedAndFine_one": "Looked at {{count}} thing and found nothing wrong.",
+    "lookedAndFine_other": "Looked at {{count}} things and found nothing wrong.",
+    "lookedAtSaidNothing": "Looked at, and nothing said",
+    "lookedAtWindow": "Looked at {{from}} → {{to}}",
+    "madeOf": "What it is made of",
+    "marksRead": "MARKS READ",
+    "nBlocked_one": "{{count}} blocked",
+    "nBlocked_other": "{{count}} blocked",
+    "nFindings_one": "{{count}} finding",
+    "nFindings_other": "{{count}} findings",
+    "nInWindow_one": "{{count}} in window",
+    "nInWindow_other": "{{count}} in window",
+    "nJobs_one": "{{count}} engagement",
+    "nJobs_other": "{{count}} engagements",
+    "nPiecesRead_one": "{{count}} piece read",
+    "nPiecesRead_other": "{{count}} pieces read",
+    "nShapes_one": "{{count}} shape found",
+    "nShapes_other": "{{count}} shapes found",
+    "needsThis": "Needs {{needed}} — has {{had}}.",
+    "noEffortBasis": "No effort figures on this page: the analyser that measures duration did not run.",
+    "noFindingsYet": "No findings from the last run.",
+    "noWindowYet": "No window yet",
+    "nothingDropped": "Nothing was dropped.",
+    "nothingRunYet": "Nothing has been run yet.",
+    "nothingUnseen": "It reported no blind spot on this run.",
+    "oneAnalyser": "One analyser",
+    "pass": {
+      "nodePipeline": "Node pipeline",
+      "discovery": "Discovery analysis",
+      "readsTheGraph": "reads the graph",
+      "analysers": "The analysers",
+      "overOneSnapshot_one": "{{count}} over one snapshot",
+      "overOneSnapshot_other": "{{count}} over one snapshot"
+    },
+    "pastRuns": "Past runs",
+    "pastRunsEyebrow": "Newest first",
+    "piecesRead": "pieces read",
+    "ran": "ran",
+    "ranSaidNothing": "Ran, said nothing",
+    "read": "Read",
+    "readInWindow": "Read in this window",
+    "readNf": "read {{read}} · {{findings}}f",
+    "readingThePage": "Reading this page",
+    "ready": "ready",
+    "runOnePass": "Run one pass on its own",
+    "runTheAnalysers": "Run the analysers",
+    "running": "Running…",
+    "saidSomething": "FOUND",
+    "shapesNote": "Nothing here has been written down. A shape becomes a process when somebody says so.",
+    "silenceEyebrow": "Read and not acted on · this is normal",
+    "sourcesFailed": "The engagements behind this could not be read.",
+    "sourcesLoading": "Reading the engagements this was found in…",
+    "sourcesNone": "This decision names its subject directly, so it rests on no separate rows.",
+    "stage": {
+      "observe": "Observe",
+      "normalise": "Normalise",
+      "measure": "Measure",
+      "detect": "Detect",
+      "correlate": "Correlate",
+      "recommend": "Recommend"
+    },
+    "stageQuestion": {
+      "observe": "What is there to look at?",
+      "normalise": "What is the shape of it?",
+      "measure": "What are the numbers?",
+      "detect": "What is a pattern?",
+      "correlate": "Why?",
+      "recommend": "What should we do?"
+    },
+    "state": {
+      "threw": "THREW",
+      "blocked": "BLOCKED",
+      "found": "FOUND",
+      "quiet": "QUIET"
+    },
+    "teachAmber": "Amber means blocked — it needs something that does not exist yet, and says exactly what.",
+    "teachGreen": "Green means it produced a finding you can act on. Those queue up in Findings.",
+    "teachGrey": "Grey means it ran and found nothing. That is an answer, not a failure.",
+    "theAnalysers": "The analysers",
+    "theSixStages": "The six stages",
+    "threePasses": "Three passes in the order their results feed each other. Nothing is written to your libraries.",
+    "unblocks_one": "unblocks {{count}}",
+    "unblocks_other": "unblocks {{count}}",
+    "whatFiguresRestOn": "What the figures rest on",
+    "whatItDecided": "What the last run decided",
+    "whatRepeats": "What repeats",
+    "whatTheEdgesMean": "What the edges mean",
+    "widthIsCount": "Width = count",
+    "working": "Working",
+    "writeItDown": "Write down what the pipeline found"
+  },
+  "findings": {
+    "sinceTheRunBefore": "Since the run before",
+    "worse": "Worse",
+    "new": "New",
+    "stillTrue": "Still true",
+    "better": "Better",
+    "nothingNew_one": "Nothing new. One finding is still true, and has been since the run before.",
+    "nothingNew_other": "Nothing new. {{count}} findings are still true, and have been since the run before.",
+    "somethingMoved_one": "One finding in the queue.",
+    "somethingMoved_other": "{{count}} findings in the queue.",
+    "loading": "Reading the queue…",
+    "empty": "Nothing to decide about. Run the analysers to fill this.",
+    "pickSomething": "Pick something from the queue",
+    "pickSomethingLede": "Each item says what was found, why it ranks where it does, what it rests on, and what you might do about it.",
+    "openTheFirst": "Open the first finding",
+    "touches": "Touches",
+    "share": "Share",
+    "seenIn": "Seen in",
+    "confidence": "Confidence",
+    "ofN": "of {{count}}",
+    "noDenominator": "no natural total",
+    "ofWhatWasRead": "of what was read",
+    "consecutiveRuns": "consecutive runs",
+    "noSeverity": "severity not set",
+    "touchesN_one": "touches {{count}}",
+    "touchesN_other": "touches {{count}}",
+    "touchesNofM": "touches {{count}} of {{of}}",
+    "whatWasFound": "What was found",
+    "whyItRanks": "Why it ranks where it does",
+    "score": "score {{score}}",
+    "whatItRestsOn": "What it rests on",
+    "evidenceNote": "Every figure here comes from the snapshot the run read. Nothing was inferred beyond what the evidence rows carry.",
+    "whatYouMightDo": "What you might do about it",
+    "notNow": "Not now",
+    "stillCorrect": "They are still correct",
+    "firstSeen": "first seen {{when}}",
+    "history": "History",
+    "historyIdle": "Pick a finding and its history appears here — how long it has held, and whether anything you have done has moved it.",
+    "thingsTouched": "things touched",
+    "heldSince_one": "Seen once, first on {{when}}.",
+    "heldSince_other": "Held across {{count}} runs, first seen on {{when}}.",
+    "whereTheyComeFrom": "Where findings come from",
+    "workingAnalysers": "Working analysers",
+    "blockedCouldAdd": "Blocked — could add more",
+    "ranSaidNothing": "Ran, said nothing",
+    "ctxClients": "clients: {{list}}",
+    "ctxWorkTypes": "work: {{list}}",
+    "ctxEngagements_one": "{{count}} engagement",
+    "ctxEngagements_other": "{{count}} engagements",
+    "life": {
+      "NEW": "New",
+      "STILL_TRUE": "Still true",
+      "WORSENING": "Worse",
+      "IMPROVING": "Better",
+      "RESOLVED": "Resolved"
+    },
+    "category": {
+      "YOUR_WORK": "Your work",
+      "YOUR_LIBRARY": "Your library",
+      "YOUR_PROCESSES": "Your processes",
+      "YOUR_ENGAGEMENTS": "Your engagements",
+      "YOUR_TIME": "Your time"
+    }
+  },
+  "evidence": {
+    "crosses_one": "This work stayed inside {{list}}.",
+    "crosses_other": "This work crossed {{count}} departments — {{list}}.",
+    "doneBy": "Done by",
+    "engagements": "Engagements it touches",
+    "failed": "The evidence behind this could not be read.",
+    "foot": "Every line here is a row the run read. Nothing was inferred beyond what these marks carry.",
+    "hours_one": "{{count}} hour",
+    "hours_other": "{{count}} hours",
+    "loading": "Reading what this rests on…",
+    "markedBy": "Marked by",
+    "minutes_one": "{{count}} minute",
+    "minutes_other": "{{count}} minutes",
+    "nMarks_one": "{{count}} mark",
+    "nMarks_other": "{{count}} marks",
+    "nWaits_one": "{{count}} wait",
+    "nWaits_other": "{{count}} waits",
+    "nWork_one": "{{count}} piece of work",
+    "nWork_other": "{{count}} pieces of work",
+    "neverAnswered": "never answered",
+    "noChecklistAsked": "Nobody has been asked what the steps are.",
+    "noChecklistDeliberately": "Somebody said there are deliberately no steps.",
+    "noMessage": "The message this was marked on is no longer there.",
+    "noNodes": "This finding names no individual marks — it is about the workspace rather than about particular work.",
+    "notRecorded": "not recorded",
+    "openGraph": "Open the graph",
+    "openMessage": "Open the message",
+    "reach": "How far this reaches",
+    "roleNotRecorded": "role not recorded",
+    "roles": "Roles involved: {{list}}",
+    "stillOpen": "still open",
+    "theDraft": "The draft it produced",
+    "theMarks": "The marks it was derived from",
+    "theWaits": "What it waited on",
+    "theWork": "The work it was measured over",
+    "waitedDays_one": "answered after {{count}} day",
+    "waitedDays_other": "answered after {{count}} days",
+    "withdrawn": "withdrawn",
+    "within": "All of this work happened inside {{department}}."
+  },
+  "stage": {
+    "reachedIt": "Reached it",
+    "stoppedHere": "Stopped here",
+    "wentOn": "Went on",
+    "whatStopped": "What stopped here, and why",
+    "nothingStopped": "Nothing stopped at this stage. Everything that reached it went on.",
+    "nothingReachedIt": "Nothing reached this stage in the last run.",
+    "openOne": "Open one",
+    "foot": "These are the run’s own ledger rows, not a summary of them. The reason is the word the pipeline wrote.",
+    "why": {
+      "jobBoundary": "A job boundary is a container rather than work, so it is not clustered or matched.",
+      "noSignal": "The mark carried no words the clusterer could read.",
+      "noWorkType": "Nobody recorded what kind of work this was, so it could not be keyed on one.",
+      "noEligibleTemplate": "No approved template was substantial enough, or old enough, to be matched against this work.",
+      "textFloor": "The words agreed too weakly with any template. This veto is absolute and is checked before the score.",
+      "belowFloor": "Something matched, but not well enough to act on.",
+      "lowConfidence": "The match was good but the evidence behind it was thin."
+    }
+  }
+}

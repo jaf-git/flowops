@@ -1,0 +1,908 @@
+### FEATURE_TASK — the walking skeleton
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects, and a request without them answers 401 for a
+### reason that has nothing to do with the endpoint being right.
+###
+### Ports: the demo backend runs on 8081 (Tomcat9 owns 8080 on this machine).
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@password = a-long-enough-passphrase
+
+### Sign in as somebody who may give work away (owner or manager).
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{owner}}",
+  "password": "{{password}}"
+}
+
+### The people a task can be given to. **TASK's own list, not the directory** — it is scoped to the
+### caller's part of the reporting tree and to people whose access still stands, by the same rule the
+### create endpoint enforces. The owner is the root, so theirs is the whole company; a manager's is
+### their subtree plus themselves, because self-assignment is permitted.
+### Copy an `id` from here into the create request below.
+GET {{host}}/api/tasks/assignable-people
+
+### The directory, for comparison. It returns everybody, which is why the picker does not use it: a
+### manager choosing from this list would meet ASSIGNEE_OUT_OF_SCOPE after filling in the whole form.
+GET {{host}}/api/workspace/people
+
+### TASK-CREATE-01 — give one piece of work to one person, with a deadline in the future.
+### 201, and the response carries the task as created. The wait phase opened with it.
+###
+### **It also fills the library, and there is no second request for that** (TASKLIB-DRAFT-FROM-TASK-01).
+### Naming no `templateId` makes this free-form work, so TASK announces it, TASKLIB writes a `draft`
+### entry shaped like what you typed and points this task at it — all inside this one transaction, so
+### a failure in either leaves neither. Send this, then look for the entry:
+###   GET {{host}}/api/task-templates?status=draft
+### and the task will carry its `template_id`. Send it with a `templateId` and no draft is proposed,
+### because the work already names its shape. A `"kind":"TICKET"` proposes none either — a ticket is
+### forbidden a template by `task_ticket_has_no_template` in V48.
+POST {{host}}/api/tasks
+Content-Type: application/json
+
+{
+  "title": "Draft the quarterly supplier review",
+  "description": "Compare last quarter against this one and flag anything that moved more than ten per cent.",
+  "assigneeId": "REPLACE-WITH-A-personId-FROM-THE-CALL-ABOVE",
+  "deadline": "2026-09-01T09:00:00Z",
+  "priority": "NORMAL"
+}
+
+### Extension 1a — a deadline that has already passed. 422 DEADLINE_IN_THE_PAST.
+### A task overdue at creation escalates immediately and teaches people to ignore escalation.
+POST {{host}}/api/tasks
+Content-Type: application/json
+
+{
+  "title": "Draft the quarterly supplier review",
+  "assigneeId": "REPLACE-WITH-A-personId",
+  "deadline": "2020-01-01T09:00:00Z",
+  "priority": "NORMAL"
+}
+
+### Extension 1b — no deadline at all. 400 REQUEST_INVALID, refused at the boundary.
+POST {{host}}/api/tasks
+Content-Type: application/json
+
+{
+  "title": "Draft the quarterly supplier review",
+  "assigneeId": "REPLACE-WITH-A-personId",
+  "priority": "NORMAL"
+}
+
+### Extension 2a — somebody outside the caller's subtree. 422 ASSIGNEE_OUT_OF_SCOPE.
+### Sign in as a manager first, and name somebody who reports to the owner instead of to them.
+POST {{host}}/api/tasks
+Content-Type: application/json
+
+{
+  "title": "Draft the quarterly supplier review",
+  "assigneeId": "REPLACE-WITH-SOMEBODY-OUTSIDE-YOUR-SUBTREE",
+  "deadline": "2026-09-01T09:00:00Z",
+  "priority": "NORMAL"
+}
+
+### The queue. What comes back is scoped by what the caller holds: their own work, plus their subtree
+### with TASK_VIEW_SUBTREE, plus everything with TASK_VIEW_ANY. Every row names the phase its clock
+### belongs to — `openPhase` and `phaseSince` travel together and neither is meaningful alone.
+GET {{host}}/api/tasks
+
+### TASK-ACCEPT-01 — the assignee acknowledges. Sign in as the assignee first; a manager accepting on
+### their behalf answers 403 NOT_THE_ASSIGNEE, because acknowledging for another person makes the
+### record false.
+### 200, state ACCEPTED, the wait phase closed with an end time, and no active phase opened.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/accept
+
+### The same request again. 409 ILLEGAL_TRANSITION, and `details` names the state the task is
+### actually in — "already accepted" and "already completed" send a person to different places.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/accept
+
+### =====================================================================================
+### Phase 2 — the assignee's own clock. Start, block, unblock, complete.
+###
+### All four require TASK_ACT_OWN at the door and identity equality with the assignee in the use
+### case. That permission is granted to every role, so the annotation refuses nobody who matters and
+### the identity check is the whole of the protection: sign in as the assignee for every request
+### below, or each answers 403 NOT_THE_ASSIGNEE.
+### =====================================================================================
+
+### TASK-START-01 — the assignee begins. This is the transition that opens the **active** phase, the
+### only interval in the product attributed to a person.
+### 200, state IN_PROGRESS, the wait phase closed and an ACTIVE phase open.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/start
+
+### Extension 1b — starting work that was never acknowledged. 409 ILLEGAL_TRANSITION naming CREATED.
+### Accepting is a separate acknowledgement; skipping it would erase the difference between work
+### nobody has seen and work seen but not begun.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-IN-CREATED-id/start
+
+### TASK-BLOCK-01 — waiting is not working. The active phase closes and a blocked one opens; blocked
+### time is excluded from what is attributed to the assignee. The deadline still applies: a blocked
+### task is still late for the business.
+### 200, state BLOCKED, and the reason on the transition row.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/block
+Content-Type: application/json
+
+{
+  "reason": "The supplier has not sent last quarter's figures"
+}
+
+### Extension 1a — no reason. 400 REQUEST_INVALID, refused at the boundary and by the domain behind
+### it. An unexplained block is unactionable: a manager cannot help with a problem they cannot see.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/block
+Content-Type: application/json
+
+{
+  "reason": "   "
+}
+
+### TASK-UNBLOCK-01 — the assignee can work again. The blocked phase closes and a **new** active
+### phase opens; the earlier one is never reopened or extended, so total active time is the sum of
+### the rows. Check `task_phase_timer`: two ACTIVE rows with different identifiers.
+### 200, state IN_PROGRESS.
+POST {{host}}/api/tasks/REPLACE-WITH-A-BLOCKED-TASK-id/unblock
+Content-Type: application/json
+
+{
+  "resolution": "They sent the figures this morning"
+}
+
+### Extension 1c — no resolution note, and an empty body is accepted too. Requiring an explanation to
+### stop being stuck would be a toll on good news, and the block's own reason is already on record.
+POST {{host}}/api/tasks/REPLACE-WITH-A-BLOCKED-TASK-id/unblock
+Content-Type: application/json
+
+{}
+
+### TASK-COMPLETE-01 — finished work with the evidence that makes reviewing it possible. The active
+### phase closes and the **review** phase opens, so review latency is never added to how long the
+### assignee took. The link is stored inert: the system never fetches it (extension 2b).
+### 200, state COMPLETED, and one row in task_completion_proof.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/complete
+Content-Type: application/json
+
+{
+  "note": "Compared both quarters and sent the summary to the board.",
+  "externalLink": "https://drive.example.ro/q3-review"
+}
+
+### Extension 1a — no proof note. 400 REQUEST_INVALID. Completion without evidence is an assertion,
+### and the review that follows would have nothing to review.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/complete
+Content-Type: application/json
+
+{
+  "note": "   "
+}
+
+### Extension 1b — completing a blocked task. 409 ILLEGAL_TRANSITION naming BLOCKED. Finishing
+### blocked work means unblocking first, so the blocked interval closes honestly rather than being
+### absorbed into the completion.
+POST {{host}}/api/tasks/REPLACE-WITH-A-BLOCKED-TASK-id/complete
+Content-Type: application/json
+
+{
+  "note": "Compared both quarters and sent the summary to the board."
+}
+
+################################################################################
+### TASK-REVIEW-01 — the work waiting on my judgement
+################################################################################
+
+### The review queue. Requires TASK_REVIEW. Completed work inside the caller's scope, oldest first,
+### each row carrying the phase it is in and the instant that phase began — a waiting time that names
+### what it is measuring rather than a bare duration.
+GET {{host}}/api/tasks/review-queue
+
+### An employee holds no TASK_REVIEW. 403 NOT_PERMITTED, before any scope question is asked.
+### Sign in as andrei@atelier.ro first.
+GET {{host}}/api/tasks/review-queue
+
+### One task in full: the proof, whether the deadline was met, and the time broken down by phase.
+### There is no total in the response, deliberately — an unqualified duration is a defect.
+GET {{host}}/api/tasks/REPLACE-WITH-A-TASK-id
+
+### A task belonging to somebody outside the caller's subtree. 403 TASK_OUT_OF_SCOPE — its own code
+### rather than NOT_PERMITTED, because the caller does hold the permission; what is wrong is which
+### task they pointed it at.
+GET {{host}}/api/tasks/REPLACE-WITH-ANOTHER-TEAMS-TASK-id
+
+################################################################################
+### TASK-APPROVE-01 — accept the work, and record how it was
+################################################################################
+
+### The happy path. The review phase closes, the approval phase opens, the judgement is stored and
+### the assignee is told. The score describes this piece of work and is never grouped by person.
+POST {{host}}/api/tasks/REPLACE-WITH-A-COMPLETED-TASK-id/approve
+Content-Type: application/json
+
+{
+  "score": 4,
+  "comment": "Clear, and the second table answered the question I had."
+}
+
+### Enabler E-03 — approving your own work. 403 CANNOT_REVIEW_OWN_WORK, whatever role, permissions
+### or delegated authority the caller holds, because the rule reads identity and never authority.
+### Sign in as ionut@atelier.ro and use a task assigned to Ionuț.
+POST {{host}}/api/tasks/REPLACE-WITH-MY-OWN-COMPLETED-TASK-id/approve
+Content-Type: application/json
+
+{
+  "score": 5
+}
+
+### Extension 1b — no score. 400 REQUEST_INVALID with score REQUIRED. Approving without one records
+### that work was accepted and not how it went, which is the whole point of the field.
+POST {{host}}/api/tasks/REPLACE-WITH-A-COMPLETED-TASK-id/approve
+Content-Type: application/json
+
+{
+  "comment": "Fine."
+}
+
+### Extension 1c — a score outside one to five. 400 REQUEST_INVALID with score OUT_OF_RANGE.
+POST {{host}}/api/tasks/REPLACE-WITH-A-COMPLETED-TASK-id/approve
+Content-Type: application/json
+
+{
+  "score": 9
+}
+
+### Extension 1d — work that was never submitted. 409 ILLEGAL_TRANSITION naming the state it is
+### actually in. Approving it would let the review step be skipped entirely.
+POST {{host}}/api/tasks/REPLACE-WITH-AN-IN-PROGRESS-TASK-id/approve
+Content-Type: application/json
+
+{
+  "score": 4
+}
+
+################################################################################
+### TASK-REJECT-IN-REVIEW-01 — send it back to be finished
+################################################################################
+
+### The happy path. Back to InProgress and never to Created: the assignee keeps their acceptance and
+### the deadline is unchanged, so rework reads as iteration rather than as a fresh assignment. A new
+### active phase opens; the earlier one is never resumed. No score is recorded.
+POST {{host}}/api/tasks/REPLACE-WITH-A-COMPLETED-TASK-id/return
+Content-Type: application/json
+
+{
+  "reason": "The figures for March are missing from the second table."
+}
+
+### Extension 1a — no reason. 400 REQUEST_INVALID. A return without one gives the assignee nothing to
+### act on and turns an ordinary step into a guessing game.
+POST {{host}}/api/tasks/REPLACE-WITH-A-COMPLETED-TASK-id/return
+Content-Type: application/json
+
+{
+  "reason": "   "
+}
+
+### Extension 1b — sending back your own work. 403 CANNOT_REVIEW_OWN_WORK. A person cannot judge
+### their own work in either direction.
+POST {{host}}/api/tasks/REPLACE-WITH-MY-OWN-COMPLETED-TASK-id/return
+Content-Type: application/json
+
+{
+  "reason": "Not quite there."
+}
+
+################################################################################
+### TASK-CLOSE-01 — the administrative end
+################################################################################
+
+### The happy path. Requires TASK_CLOSE. The approval phase closes and nothing opens: this is the only
+### transition in the product that leaves no interval accruing against anybody.
+POST {{host}}/api/tasks/REPLACE-WITH-AN-APPROVED-TASK-id/close
+
+### Extension 1a — closing work that was never approved. 409 ILLEGAL_TRANSITION naming COMPLETED.
+### Closing unapproved work would let the review step be skipped, which is the point of having one.
+POST {{host}}/api/tasks/REPLACE-WITH-A-COMPLETED-TASK-id/close
+
+### Extension 1b — closing an already-closed task. 409 ILLEGAL_TRANSITION naming CLOSED, and nothing
+### is appended: an event asserting a transition that did not happen would be a false row in a log
+### that cannot be rewritten.
+POST {{host}}/api/tasks/REPLACE-WITH-A-CLOSED-TASK-id/close
+
+### An employee holds no TASK_CLOSE, not even for their own approved work. 403 NOT_PERMITTED.
+### Sign in as andrei@atelier.ro first.
+POST {{host}}/api/tasks/REPLACE-WITH-AN-APPROVED-TASK-id/close
+
+################################################################################
+### TASK-REJECT-01 — declining work that is not yours
+################################################################################
+
+### The happy path. Requires TASK_ACT_OWN and identity equality with the assignee. The assignee is
+### cleared and the task stays in Created, so it goes back to whoever gave it out. Sign in as
+### andrei@atelier.ro first.
+POST {{host}}/api/tasks/REPLACE-WITH-A-CREATED-TASK-id/reject
+Content-Type: application/json
+
+{
+  "reason": "This is Cristina's account, not mine"
+}
+
+### Read it back as the assigner. The row comes back with a null assigneeId and an empty assigneeName
+### — which is how *nobody has this* is told apart from *a former member has this*, where the
+### identifier survives and only the name is empty.
+GET {{host}}/api/tasks
+
+### Extension 1a — no reason. 400 REQUEST_INVALID. A rejection without one moves the problem to the
+### assigner with nothing to act on, and is the one place a required free-text field earns itself.
+POST {{host}}/api/tasks/REPLACE-WITH-A-CREATED-TASK-id/reject
+Content-Type: application/json
+
+{
+  "reason": "   "
+}
+
+### Extension 1b — declining work already accepted. 409 ILLEGAL_TRANSITION naming ACCEPTED. After
+### acceptance the route is TASK-REASSIGN-01, which is the assigner's act rather than the assignee's.
+POST {{host}}/api/tasks/REPLACE-WITH-AN-ACCEPTED-TASK-id/reject
+Content-Type: application/json
+
+{
+  "reason": "Changed my mind"
+}
+
+### Extension 1c — declining somebody else's work. 403 NOT_THE_ASSIGNEE. Sign in as maria@atelier.ro.
+POST {{host}}/api/tasks/REPLACE-WITH-SOMEBODY-ELSES-TASK-id/reject
+Content-Type: application/json
+
+{
+  "reason": "Not mine"
+}
+
+################################################################################
+### TASK-SET-DEADLINE-01 — the date belongs to whoever is doing the work
+################################################################################
+
+### The happy path. Requires TASK_ACT_OWN and identity equality with the assignee, and works only from
+### **Accepted**: before work begins the date is theirs outright, so nobody answers them. Sign in as
+### andrei@atelier.ro, accept a task, then run this. **Nothing moves** — the state stays Accepted and
+### the wait phase keeps running, because choosing a date is not progress.
+POST {{host}}/api/tasks/REPLACE-WITH-AN-ACCEPTED-TASK-id/deadline
+Content-Type: application/json
+
+{
+  "deadline": "2026-09-15T15:00:00Z"
+}
+
+### Extension 3a — setting it again while still in Accepted. Permitted: nobody is relying on the date
+### yet, and any acknowledgement the assigner had given is cleared, because they agreed to a different
+### date from this one.
+POST {{host}}/api/tasks/REPLACE-WITH-THE-SAME-TASK-id/deadline
+Content-Type: application/json
+
+{
+  "deadline": "2026-09-18T15:00:00Z"
+}
+
+### Extension 2b — before acceptance. 409 ILLEGAL_TRANSITION naming CREATED: a date is a commitment and
+### one cannot commit to work one has not acknowledged.
+POST {{host}}/api/tasks/REPLACE-WITH-A-CREATED-TASK-id/deadline
+Content-Type: application/json
+
+{
+  "deadline": "2026-09-15T15:00:00Z"
+}
+
+### Extension 2c — once work has begun. **409 USE_A_PROPOSAL_INSTEAD, not ILLEGAL_TRANSITION**, and the
+### distinction is the whole reason the code exists: the assignee's next move genuinely exists and has a
+### name, so the refusal points at it rather than reporting only what cannot be done.
+POST {{host}}/api/tasks/REPLACE-WITH-AN-IN-PROGRESS-TASK-id/deadline
+Content-Type: application/json
+
+{
+  "deadline": "2026-09-15T15:00:00Z"
+}
+
+### Extension 1a — a date already past. 422 DEADLINE_IN_THE_PAST, the same code creation uses. There is
+### no @Future on the field: a date that has passed is a fact about the world rather than about the
+### shape of the request, so the domain answers it and a caller with no form in front of it meets it too.
+POST {{host}}/api/tasks/REPLACE-WITH-AN-ACCEPTED-TASK-id/deadline
+Content-Type: application/json
+
+{
+  "deadline": "2020-01-01T09:00:00Z"
+}
+
+### Extension 1b — the date it already carries. 409 NOTHING_CHANGED, and nothing is appended: an event
+### recording a change that did not happen would raise a fresh notice to the assigner saying a date moved
+### when none did.
+POST {{host}}/api/tasks/REPLACE-WITH-THE-SAME-TASK-id/deadline
+Content-Type: application/json
+
+{
+  "deadline": "2026-09-18T15:00:00Z"
+}
+
+### The creator's side. **No parameter for a person** — the subject is the session, which is the whole
+### authorization story for this read: there is no route by which somebody names anybody else, so there
+### is no decision to get wrong. Sign in as maria@atelier.ro, who gave the work out.
+GET {{host}}/api/tasks/deadline-notices
+
+### Empty is the ordinary answer and is not an error. Sign in as somebody who has given no work out —
+### elena@atelier.ro — and expect `{"notices": []}`. The screen renders nothing at all for this.
+GET {{host}}/api/tasks/deadline-notices
+
+### Acknowledging. 204, changes nothing about the work and tells the assignee nothing: acknowledging is
+### not a decision, and announcing it would make it read as one. Run it twice — the second also
+### succeeds, because a double press should not become an error about something already done.
+POST {{host}}/api/tasks/REPLACE-WITH-A-NOTICED-TASK-id/deadline-notice/acknowledge
+
+### Somebody who did not give the work out. 403 NOT_THE_CREATOR. Sign in as ionut@atelier.ro.
+POST {{host}}/api/tasks/REPLACE-WITH-A-NOTICED-TASK-id/deadline-notice/acknowledge
+
+################################################################################
+### TASK-PROPOSE-DEADLINE-01 — yes, but not by then
+################################################################################
+
+### The happy path. Requires TASK_ACT_OWN and identity equality. **The task does not move**: it stays
+### in Created and its wait phase keeps running, because pausing would let a proposal be used to stop
+### the clock. Sign in as andrei@atelier.ro first.
+POST {{host}}/api/tasks/REPLACE-WITH-A-CREATED-TASK-id/deadline-proposals
+Content-Type: application/json
+
+{
+  "proposedDeadline": "2026-09-15T15:00:00Z",
+  "reason": "The parts arrive Friday"
+}
+
+### Extension 1c — a date *earlier* than the current deadline. Accepted, not refused: somebody
+### offering to finish sooner is proposing a change like any other.
+POST {{host}}/api/tasks/REPLACE-WITH-ANOTHER-CREATED-TASK-id/deadline-proposals
+Content-Type: application/json
+
+{
+  "proposedDeadline": "2026-08-20T09:00:00Z",
+  "reason": "The parts came early"
+}
+
+### Extension 1d — a second proposal while one is open. 409 PROPOSAL_ALREADY_OPEN, and the details
+### carry the date already asked for: told only that something is open, you cannot tell whether it is
+### the request you meant to make.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-THAT-HAS-AN-OPEN-PROPOSAL-id/deadline-proposals
+Content-Type: application/json
+
+{
+  "proposedDeadline": "2026-09-22T15:00:00Z",
+  "reason": "Later still"
+}
+
+### Extension 1b — a date that has already passed. 422 DEADLINE_IN_THE_PAST, the same code creation
+### uses, because it is the same fact about the world.
+POST {{host}}/api/tasks/REPLACE-WITH-A-CREATED-TASK-id/deadline-proposals
+Content-Type: application/json
+
+{
+  "proposedDeadline": "2020-01-01T09:00:00Z",
+  "reason": "It should have been last year"
+}
+
+### Extension 2b — accepting the work while your proposal is open. It succeeds and the proposal
+### survives: accepting the work is not accepting the date.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-THAT-HAS-AN-OPEN-PROPOSAL-id/accept
+
+################################################################################
+### TASK-DECIDE-DEADLINE-01 — the answer the assignee is owed
+################################################################################
+
+### Agreeing. Requires TASK_DECIDE_DEADLINE and that you assigned the work, or are the owner. The
+### deadline becomes the proposed date, the proposal closes, and the amendment keeps both values.
+### Sign in as the person who created the task.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-THAT-HAS-AN-OPEN-PROPOSAL-id/deadline-proposals/decision
+Content-Type: application/json
+
+{
+  "accept": true
+}
+
+### Extension 1a — refusing, with the reason the assignee is owed. The deadline is untouched.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-THAT-HAS-AN-OPEN-PROPOSAL-id/deadline-proposals/decision
+Content-Type: application/json
+
+{
+  "accept": false,
+  "reason": "The client will not move the audit"
+}
+
+### Extension 1a again — refusing in silence. 400 REQUEST_INVALID.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-THAT-HAS-AN-OPEN-PROPOSAL-id/deadline-proposals/decision
+Content-Type: application/json
+
+{
+  "accept": false,
+  "reason": "   "
+}
+
+### Extension 1c — deciding when nothing is open. 409 NO_OPEN_PROPOSAL.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-WITH-NO-PROPOSAL-id/deadline-proposals/decision
+Content-Type: application/json
+
+{
+  "accept": true
+}
+
+### Extension 1b — a different manager deciding another's proposal. 403 NOT_THE_CREATOR, and note the
+### code rather than the status: this caller *holds* TASK_DECIDE_DEADLINE, so being told they lacked a
+### permission would send them looking in the wrong place.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-SOMEBODY-ELSE-ASSIGNED-id/deadline-proposals/decision
+Content-Type: application/json
+
+{
+  "accept": true
+}
+
+################################################################################
+### TASK-EDIT-01 — correcting what was asked for
+################################################################################
+
+### The happy path. Requires TASK_EDIT and that you assigned the work, or are the owner. A deadline
+### change is never silent: old and new go on the record, the assignee is told, and at-risk is
+### recomputed against the window in force at this moment.
+PUT {{host}}/api/tasks/REPLACE-WITH-A-TASK-YOU-CREATED-id
+Content-Type: application/json
+
+{
+  "deadline": "2026-09-30T15:00:00Z",
+  "priority": "HIGH",
+  "description": "Before the audit, and include the Cluj suppliers"
+}
+
+### Extensions 1e and 1f — the title and the assignee are absent from the body, so sending them
+### changes nothing. Read the response: the title is exactly what it was.
+PUT {{host}}/api/tasks/REPLACE-WITH-A-TASK-YOU-CREATED-id
+Content-Type: application/json
+
+{
+  "deadline": "2026-10-01T15:00:00Z",
+  "priority": "HIGH",
+  "description": "Before the audit",
+  "title": "Something else entirely",
+  "assigneeId": "00000000-0000-0000-0000-000000000000"
+}
+
+### Extension 1d — submitting exactly what it already says. 422 NOTHING_CHANGED, **and nothing is
+### appended**: an event recording a change that did not happen is a false row in a log that cannot be
+### rewritten. Run the same body twice and the second one is refused.
+PUT {{host}}/api/tasks/REPLACE-WITH-A-TASK-YOU-CREATED-id
+Content-Type: application/json
+
+{
+  "deadline": "2026-10-01T15:00:00Z",
+  "priority": "HIGH",
+  "description": "Before the audit"
+}
+
+### Extension 1b — a deadline in the past. 422 DEADLINE_IN_THE_PAST. An instantly-overdue task
+### teaches people to ignore escalation.
+PUT {{host}}/api/tasks/REPLACE-WITH-A-TASK-YOU-CREATED-id
+Content-Type: application/json
+
+{
+  "deadline": "2020-01-01T09:00:00Z",
+  "priority": "NORMAL",
+  "description": "Before the audit"
+}
+
+### Extension 1a — editing a closed task. 409 TASK_IS_CLOSED. A closed task is a historical record and
+### editing it would rewrite history.
+PUT {{host}}/api/tasks/REPLACE-WITH-A-CLOSED-TASK-id
+Content-Type: application/json
+
+{
+  "deadline": "2026-10-01T15:00:00Z",
+  "priority": "NORMAL",
+  "description": "Too late"
+}
+
+### Extension 1c — retargeting work somebody else assigned. 403 NOT_THE_CREATOR. Sign in as a manager
+### who did not create the task and does hold TASK_EDIT.
+PUT {{host}}/api/tasks/REPLACE-WITH-A-TASK-SOMEBODY-ELSE-ASSIGNED-id
+Content-Type: application/json
+
+{
+  "deadline": "2026-10-01T15:00:00Z",
+  "priority": "URGENT",
+  "description": "Mine now"
+}
+
+### Extension 2b — shortening the deadline into the at-risk window. Permitted, and the response comes
+### back with atRisk true. That is the honest outcome, and it is why the notification is mandatory
+### rather than a courtesy.
+PUT {{host}}/api/tasks/REPLACE-WITH-A-TASK-YOU-CREATED-id
+Content-Type: application/json
+
+{
+  "deadline": "2026-08-12T09:00:00Z",
+  "priority": "URGENT",
+  "description": "Before the audit"
+}
+
+### ---------------------------------------------------------------------------------------------
+### TASK-LINK-01 and TASK-CHECKLIST-01 — what the work is done from, and the steps through it
+### ---------------------------------------------------------------------------------------------
+
+### What a task is worked from, what it produced, and its steps. Visible to the person doing the work
+### and the person who gave it out, and to nobody else. Both lists empty is the ordinary answer for a
+### task nobody has attached anything to — the screen renders nothing at all for it rather than an
+### empty box.
+GET {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/material
+
+### Attach the brief. INPUT is what the work is done from, OUTPUT what it produced, REFERENCE
+### everything else. 201, and the link comes back with the identifier you need to detach it.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/links
+Content-Type: application/json
+
+{
+  "url": "https://drive.atelier.ro/brief-q3.pdf",
+  "label": "Brief for Q3",
+  "role": "INPUT"
+}
+
+### A link nobody labelled. Read the response: `displayText` is the host, because a bare address in a
+### list is unreadable and a row that says nothing is a row nobody clicks.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/links
+Content-Type: application/json
+
+{
+  "url": "https://drive.atelier.ro/q3/reconciliation.xlsx",
+  "role": "OUTPUT"
+}
+
+### **Stored cross-site scripting, refused at the door.** 422 LINK_SCHEME_NOT_ALLOWED, and nothing is
+### written — check `select count(*) from task_link`. Only http and https are stored. This is the first
+### place in the product where free text one person wrote becomes an element another person clicks, so
+### the rule is an allow-list in the domain rather than a pattern on a form field.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/links
+Content-Type: application/json
+
+{
+  "url": "javascript:alert(document.cookie)",
+  "role": "REFERENCE"
+}
+
+### A link on somebody else's work. 403 NOT_THE_ASSIGNEE — sign in as a colleague who neither holds
+### this task nor gave it out. Attaching is open to the assignee *and* the assigner, and to no third
+### person, because a link is part of the work rather than a comment on it.
+POST {{host}}/api/tasks/REPLACE-WITH-SOMEBODY-ELSES-TASK-id/links
+Content-Type: application/json
+
+{
+  "url": "https://example.ro/unrelated",
+  "role": "REFERENCE"
+}
+
+### Take a link off. 204. A link identifier belonging to another task answers 404 TASK_NOT_FOUND
+### rather than removing it: an identifier means nothing outside the task it hangs from.
+DELETE {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/links/REPLACE-WITH-A-LINK-id
+
+### Write a step. Open to the assignee and to whoever gave the work out — an assigner listing what they
+### expect is ordinary. A step has no state, no assignee and no deadline: a part with any of those is a
+### sub-task, and a thing whose parts are work is a Process (DECISION-TASK-PARTS-01).
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/checklist
+Content-Type: application/json
+
+{
+  "text": "Reconcile the ledger against the bank statement"
+}
+
+### Tick it. **The assignee alone**, so sign in as the person doing the work; the assigner meets 403
+### NOT_THE_ASSIGNEE at this exact request even though they wrote the step. A tick asserts that a piece
+### of work was done, and asserting that on somebody's behalf makes the record false.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/checklist/REPLACE-WITH-A-STEP-id
+Content-Type: application/json
+
+{
+  "done": true
+}
+
+### Untick it. Read `doneAt` in the response: it is null again, not the old moment. A step that is not
+### done has no time at which it was done, and keeping the old one would let a later tick appear to
+### have happened earlier than it did.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/checklist/REPLACE-WITH-A-STEP-id
+Content-Type: application/json
+
+{
+  "done": false
+}
+
+### Remove a step that turned out not to be one. 204. The steps around it keep their positions —
+### nothing shows the numbers, so closing the gaps would rewrite rows nobody touched.
+DELETE {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/checklist/REPLACE-WITH-A-STEP-id
+
+### **Nothing above gates a completion.** Leave a step unticked and finish the work anyway: 200. An
+### unticked step is information, not a permission. Two rules for *may this be finished* — this one and
+### CompletionProof — is how somebody meets a refusal that neither of them explains.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-YOU-HAVE-STARTED-id/complete
+Content-Type: application/json
+
+{
+  "note": "Done everything that mattered."
+}
+
+### ---------------------------------------------------------------------------------------------
+### TASK-COMMENT-01, TASK-REASSIGN-01, TASK-OVERRIDE-01 — the discussion and the two escape hatches.
+### ---------------------------------------------------------------------------------------------
+
+### Leave a note. 201. **No permission of its own** — the precondition is view access, which the same
+### scope rule the task detail uses already answers. Try it as somebody outside the team and you get
+### TASK_OUT_OF_SCOPE rather than NOT_PERMITTED, which is the point of the endpoint asking for the
+### weakest permission there is.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/comments
+Content-Type: application/json
+
+{
+  "body": "Am sunat furnizorul; revin cu termenul mâine."
+}
+
+### The same with a body of spaces. 400 REQUEST_INVALID. A comment cannot be edited or deleted, so an
+### empty one would sit permanently in the activity saying nothing.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/comments
+Content-Type: application/json
+
+{
+  "body": "   "
+}
+
+### The whole story, in one list. Transitions and comments interleaved, oldest first — the reason a
+### task was blocked sits beside the discussion about it. Read `overridden` on each entry: a move the
+### owner forced carries true and renders differently, because a record where an override looks like an
+### ordinary move is a record that hides its own exceptions.
+GET {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/activity
+
+### Move the work. 200, and read the response: `state` is **CREATED** again, because the new person has
+### not seen this task and leaving it InProgress would assert they are working on something they do not
+### know exists. Then read `task_phase_timer` for this task — the previous assignee's active row is
+### still there, closed, still theirs. Nothing is transferred.
+###
+### Signed in as a manager, try a person outside your subtree: 422 ASSIGNEE_OUT_OF_SCOPE. Signed in as
+### an employee: 403 at the door. Both are the grant this endpoint waited eleven migrations for.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/reassign
+Content-Type: application/json
+
+{
+  "newAssigneeId": "REPLACE-WITH-A-PERSON-id",
+  "reason": "Andrei este în concediu până luni."
+}
+
+### The same to the person who already holds it. 422 NOTHING_CHANGED, and nothing is appended — a move
+### that did not happen must not leave a row saying it did.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/reassign
+Content-Type: application/json
+
+{
+  "newAssigneeId": "REPLACE-WITH-THE-CURRENT-ASSIGNEE-id",
+  "reason": "Rămâne la el."
+}
+
+### End a task created in error. 200. **The owner and nobody else** — a manager holding TASK_REASSIGN
+### is refused here with 403, which is the difference between the two hatches in one response. The
+### transition it writes carries `overridden: true` for ever, and Closed opens no interval, so nothing
+### is left accruing on finished work.
+POST {{host}}/api/tasks/REPLACE-WITH-A-TASK-id/override
+Content-Type: application/json
+
+{
+  "targetState": "CLOSED",
+  "reason": "Comanda a fost anulată de client; sarcina nu mai are obiect."
+}
+
+### **The only route out of Closed in the product**, and the reason Closed can be terminal in the
+### normal machine without being a trap. Run it against the task you just closed: 200, and exactly one
+### phase timer is open afterwards — the ACTIVE one that IN_PROGRESS occupies.
+POST {{host}}/api/tasks/REPLACE-WITH-THE-TASK-YOU-JUST-CLOSED-id/override
+Content-Type: application/json
+
+{
+  "targetState": "IN_PROGRESS",
+  "reason": "Clientul a revenit asupra deciziei."
+}
+
+### ------------------------------------------------------------------------------------------------
+### TASK-CATEGORISE-TASKS-01 — named groupings for tasks, so a queue of forty can be narrowed.
+### ------------------------------------------------------------------------------------------------
+
+### The groupings, and which task is in which. Requires TASK_VIEW_OWN.
+### Both come back in one answer, because a screen fetching them separately could render a filing
+### against a grouping it had not heard of yet. The count on each is keyed to the grouping and never
+### to a person (CANVAS_00 §5).
+GET {{host}}/api/task-categories
+
+### Name a grouping. 201 with its id. **Requires WORKSPACE_CONFIGURE**, which the owner holds and a
+### manager does not — a vocabulary everybody reads is a workspace decision rather than one person's.
+POST {{host}}/api/task-categories
+Content-Type: application/json
+
+{
+  "name": "Aurora Coffee"
+}
+
+### The same name again, differing only in case and surrounding space. **409 CATEGORY_NAME_TAKEN**,
+### not 500: *Clients* and *clients* are one idea, and somebody who made the second would never find
+### the work filed under the first. Run it — a refusal with no handler answers 500 and reads as the
+### server blaming itself for a rule it applied correctly.
+POST {{host}}/api/task-categories
+Content-Type: application/json
+
+{
+  "name": "  aurora COFFEE "
+}
+
+### Rename one. 204. The same name rule, so a rename cannot collide either.
+PUT {{host}}/api/task-categories/REPLACE-WITH-A-CATEGORY-id
+Content-Type: application/json
+
+{
+  "name": "Aurora Coffee Ltd"
+}
+
+### File a task under a grouping. 204. **Requires TASK_EDIT** — filing one task is an ordinary edit of
+### that task, a different act from shaping the vocabulary. A grouping that does not exist here is
+### refused with 404 rather than reconciled, so a mistyped identifier changes nothing instead of
+### clearing whatever the task was already in.
+PUT {{host}}/api/task-categories/tasks/REPLACE-WITH-A-TASK-id
+Content-Type: application/json
+
+{
+  "categoryId": "REPLACE-WITH-A-CATEGORY-id"
+}
+
+### Take it out again. `null` is the removal; a task belongs to at most one grouping, so this replaces
+### rather than adds.
+PUT {{host}}/api/task-categories/tasks/REPLACE-WITH-A-TASK-id
+Content-Type: application/json
+
+{
+  "categoryId": null
+}
+
+### The queue narrowed to one grouping. **Ask for both and check they agree** — the count and the rows
+### are built by two different call sites, and a category clause added to one and not the other shows
+### *12* above three rows.
+GET {{host}}/api/tasks/sections?category=REPLACE-WITH-A-CATEGORY-id
+
+###
+GET {{host}}/api/tasks?section=not-started&category=REPLACE-WITH-A-CATEGORY-id
+
+### A grouping identifier that names nothing. **200 with no rows, never an error**: it is the ordinary
+### result of a bookmark that outlived a grouping somebody removed, and 404 here would additionally
+### make this endpoint a way to find out which identifiers exist.
+GET {{host}}/api/tasks/sections?category=00000000-0000-0000-0000-000000000000
+
+### Remove a grouping. 204. **Its tasks are not touched** — they come home to uncategorised, which is
+### where they started. Check with the queue read above: the rows are still there, with no grouping.
+DELETE {{host}}/api/task-categories/REPLACE-WITH-A-CATEGORY-id
+
+### ---------------------------------------------------------------------------------------------
+### TASK-THROUGHPUT-01 — work arriving against work finishing, by week
+### ---------------------------------------------------------------------------------------------
+
+### The Reports chart's series. Twelve rows, oldest first, **including the weeks nothing happened in** —
+### a week with two zeroes is the point of the whole thing, because a plain `group by` drops it and the
+### chart then draws two busy fortnights with the quiet one between them removed.
+GET {{host}}/api/tasks/throughput?weeks=12
+
+### Out of range is **bounded, not refused**: 52 rows back, not a 400. A chart asks for a shape, not a
+### favour, and beyond a year weekly bars stop being readable.
+GET {{host}}/api/tasks/throughput?weeks=500
+
+### The other end. 4 rows, because two bars show two numbers rather than a trend.
+GET {{host}}/api/tasks/throughput?weeks=1
+
+### Not a number. **400 and not 500** — the arm for it is a default in `GlobalExceptionHandler`, and it
+### was absent until 2026-08-23, so every mistyped query parameter in the product answered 500.
+GET {{host}}/api/tasks/throughput?weeks=twelve
+
+### **The one worth running as somebody else.** Sign in as an employee and compare their totals with the
+### owner's over the same window: theirs must be strictly smaller, because the count is scoped by
+### `TaskAudienceRule` — the same rule the queue applies, passed in rather than re-derived. A counting
+### endpoint that ignored scope fails silently, since nobody notices a number that is too large.
+GET {{host}}/api/tasks/throughput?weeks=12

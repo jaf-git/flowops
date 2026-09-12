@@ -1,0 +1,207 @@
+### FEATURE_DISCOVERY — the two questions this zone asks a human, and the pairing rule behind one of them
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects. The demo backend runs on 8081 — Tomcat9 owns 8080
+### on this machine.
+###
+### **A companion to `discovery.http`, not a replacement.** That file is the circle — the click every
+### employee makes all day, and the whole of this zone's supply of evidence. This file is the sparse,
+### deliberate half: *this thread has ended*, and *this stranded work belongs there*. Different
+### permissions, different frequencies, different people.
+###
+### **The permission split is the point and is worth watching in a demonstration.** DISCOVERY_02 §3: ask
+### an employee only what they can answer by **recognition**, and a manager anything requiring
+### **classification**. *Has this thread ended?* is recognition — the person who started the work knows —
+### so every role may answer it. *Which thread does this orphan belong to?* is classification, the
+### signals have already failed at it once, and an employee is refused. The last two requests in this
+### file show exactly that, on the same two endpoints, one after the other.
+###
+### Seed the workspace in discovery mode first, then use `discovery.http` to open an engagement and mark
+### a request and its completion. There is nothing to end until something has been marked:
+###   ./mvnw spring-boot:run -Dspring-boot.run.arguments="--discovery"
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@manager = ionut@atelier.ro
+@employee = andrei@atelier.ro
+@password = a-long-enough-passphrase
+
+### Copy real identifiers out of `discovery.http`'s responses into these.
+@trackId = 00000000-0000-0000-0000-000000000000
+@orphanNodeId = 00000000-0000-0000-0000-000000000000
+
+### Sign in as the manager who runs the client work.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{manager}}",
+  "password": "{{password}}"
+}
+
+###############################################################################
+### DISCOVERY-END-THREAD-01 — one control, and it settles the hardest problem here
+###############################################################################
+
+### 200. The thread's ending, with a `completeness` nobody sent.
+###
+### **This settles what fifteen scenarios of reasoning could not.** Three of the fingerprint's six
+### components — position in the thread, the following role, the median work-phase duration — cannot
+### resolve until a thread closes, so until this endpoint exists the zone accumulates a graph and
+### discovers nothing from it. Every attempt to infer the close failed for a stated reason: a terminal
+### output arrives on threads that carry on, dormancy is silence rather than an ending, and an engagement
+### closing cuts everything in it mid-flight. **The person who started the work knows when it ended, so
+### they are asked, once, cheaply.**
+###
+### Watch the `completeness` in the response, because it is the field that stops a lie. COMPLETE where a
+### request met a paired completion carrying a terminal output; START_ONLY where only the opening node
+### exists; PARTIAL otherwise. **A thread started and never completed carries whatever duration ran
+### before it went quiet: it does not look incomplete, it looks efficient.** START_ONLY is excluded from
+### discovery precisely so that silence is never read as speed.
+POST {{host}}/api/discovery/tracks/{{trackId}}/end
+Content-Type: application/json
+
+### 409 TRACK_ALREADY_CLOSED. **Send the request above twice and this is the second answer.**
+###
+### Invariant I12: `completeness` is frozen at the close and never recomputed. Read the row afterwards —
+### the value is the one the first press wrote, unchanged. A recomputation would let a completion
+### arriving after the close reverse START_ONLY to COMPLETE and walk a dormancy-inflated thread back into
+### evidence, turning a quiet lie into a recorded fact. There is deliberately no setter for it.
+###
+### A thread never reopens either. Work that comes back opens a *new* thread linked to this one: two
+### closure events would make every sequence inferred from closure wrong, silently.
+POST {{host}}/api/discovery/tracks/{{trackId}}/end
+Content-Type: application/json
+
+### 422 UNKNOWN_TRACK. **Refused rather than conjured.**
+###
+### Threads are inferred from work that happened. One created on demand here would be a case identifier
+### with no observation behind it — closed, empty, and indistinguishable in every later query from a
+### thread somebody actually worked.
+POST {{host}}/api/discovery/tracks/33333333-3333-3333-3333-333333333333/end
+Content-Type: application/json
+
+###############################################################################
+### DISCOVERY-PAIR-NODES-01 — the rule behind that `completeness`, and it has no endpoint
+###############################################################################
+
+### There is no request to write here, and the absence is the design rather than a gap.
+###
+### **Pairing is a rule, not an action.** `PairingPolicy` is asked which request a completion answered,
+### by the endpoint that records what a piece of work produced and, later, by the sweep over threads
+### nobody answered — two callers, one class, because a rule implemented at one call site is a rule the
+### second call site will not have.
+###
+### DISCOVERY_07 threshold 11 is **4 of 4 auto · 3 of 4 asks**, and both numbers live on
+### `workspace_settings` rather than in the code. The four signals are: the candidate request is in the
+### **same thread** as the completion · the completion's **performer is the request's performer** · the
+### completion carries a **terminal output type** · the request is the **most recent open one** on that
+### key. Each is a fact already stored, so pairing needs no column of its own.
+###
+### **At three of four nothing is paired.** That is not an unfinished branch: an unconfirmed guess is
+### worse than a blank. A blank is visibly missing and somebody fixes it; a wrong pair fabricates a
+### duration that looks identical to a real one in every table afterwards.
+###
+### **The two walls are in the query.** Candidates come from the completion's own thread and nowhere
+### else — I1 and I2 — because a wall a confidence score can cross is not a wall.
+
+###############################################################################
+### DISCOVERY-ASSIGN-ORPHAN-01 — the work no signal could place
+###############################################################################
+
+### 200. Everything waiting to be placed, oldest first.
+###
+### **An orphan is a real state rather than a failure.** A node whose thread could not be inferred is
+### kept, excluded from every sequence computation until somebody places it, and offered here. *Losing a
+### signal beats building a false relationship*: a wrongly-placed node is undetectable afterwards and a
+### missing one is visibly missing.
+###
+### **Read what is NOT in these rows.** Whose sentence it was, yes — a manager cannot place the work
+### without knowing that. A count of somebody's orphans, a duration, an average: never. Invariant I5 says
+### no figure is ever keyed to a person, and it is enforced by **the absence of the route** rather than by
+### a permission — a figure a permission merely hides has already been computed. This queue is the easiest
+### place in the whole zone to break that.
+###
+### Status questions are never here. One has no thread by construction and is therefore not homeless, and
+### offering one would ask somebody to file an answered question as work.
+GET {{host}}/api/discovery/orphans
+
+### 200. Placed. Read the queue again afterwards — the node is gone from it.
+PATCH {{host}}/api/discovery/nodes/{{orphanNodeId}}/track
+Content-Type: application/json
+
+{
+  "trackId": "{{trackId}}"
+}
+
+### 409 NODE_IS_NOT_ORPHAN. **Send the request above twice and this is the second answer.**
+###
+### Only work belonging to no thread may be adopted. Moving a node that already sits in one would
+### re-thread work that has already contributed an inferred order to the graph, which is a rewrite of
+### history rather than a correction of it.
+PATCH {{host}}/api/discovery/nodes/{{orphanNodeId}}/track
+Content-Type: application/json
+
+{
+  "trackId": "{{trackId}}"
+}
+
+### 422 UNKNOWN_WORK_NODE, for a unit of work that does not exist.
+PATCH {{host}}/api/discovery/nodes/44444444-4444-4444-4444-444444444444/track
+Content-Type: application/json
+
+{
+  "trackId": "{{trackId}}"
+}
+
+### 422 UNKNOWN_TRACK. **The same answer a thread in another engagement gets, and that is deliberate.**
+###
+### A thread belongs to exactly one job, so placing a node across that boundary would leave its job
+### pointing one way and its thread the other — invariant I2 broken in the one place a person could break
+### it by hand. Distinguishing the two refusals would let somebody learn which threads exist in
+### engagements they were not looking at by watching which answer comes back.
+PATCH {{host}}/api/discovery/nodes/{{orphanNodeId}}/track
+Content-Type: application/json
+
+{
+  "trackId": "55555555-5555-5555-5555-555555555555"
+}
+
+###############################################################################
+### The permission split, on the same two endpoints, one after the other
+###############################################################################
+
+### Sign in as an employee.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{employee}}",
+  "password": "{{password}}"
+}
+
+### 200 — **an employee may end a thread.** `WORK_NODE_MARK`, which every role in this workspace holds.
+###
+### *Has this thread ended?* is recognition. The person who did the work knows, it costs them one tap,
+### and no mechanism can answer it better. Gating it behind a manager would mean the answer arrives days
+### later from somebody who was not there — or never.
+POST {{host}}/api/discovery/tracks/{{trackId}}/end
+Content-Type: application/json
+
+### 403 NOT_PERMITTED — **and the same employee is refused the orphan queue.**
+###
+### `WORK_NODE_ASSIGN_SUBJECT` is the manager's. *Which thread does this stranded node belong to?* is
+### classification, not recognition: the signals have already failed at it once, and asking the person
+### who marked it to guess again is asking for the false relationship by another route.
+###
+### **An unconfirmed guess is worse than a blank.** A blank is visibly missing. A wrong label looks
+### identical to a right one and is never found again.
+GET {{host}}/api/discovery/orphans
+
+### 403 NOT_PERMITTED on the write half too, for the same reason.
+PATCH {{host}}/api/discovery/nodes/{{orphanNodeId}}/track
+Content-Type: application/json
+
+{
+  "trackId": "{{trackId}}"
+}

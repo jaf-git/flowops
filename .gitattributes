@@ -1,0 +1,21 @@
+# One line-ending convention for the whole repository, so a file committed on
+# Windows behaves identically on the Linux build agents. The Maven wrapper being
+# committed without its executable bit, and the line-ending warnings on every
+# commit, both came from this being unset.
+
+* text=auto eol=lf
+
+# Windows scripts are only correct with carriage returns.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Never touched.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text eol=lf
+*.jar binary
+*.woff binary
+*.woff2 binary

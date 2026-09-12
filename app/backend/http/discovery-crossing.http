@@ -1,0 +1,237 @@
+### FEATURE_DISCOVERY — the crossing: the one thing that moves between the two zones, and the two refusals
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects. The demo backend runs on 8081 — Tomcat9 owns 8080
+### on this machine.
+###
+### **DECISION-DISCOVERY-ZONE-01 draws two zones** — Discovery *observes*, the application *executes*,
+### they share no tables — and exactly one thing crosses between them in exactly one direction: **an
+### approved template.** Everything in `discovery.http`, `discovery-tracks.http` and
+### `discovery-canvas.http` writes rows this zone owns and can afford to be wrong about; the requests
+### here write into a governed library that running work references.
+###
+### **There are three such requests and this file holds two of them.** The third —
+### DISCOVERY-WRITE-IT-DOWN-01, a recurring shape authored as a process — is in
+### `discovery-analysis.http` with the rest of the pipeline page's calls. Its code sits in
+### `FormalisationController` beside these two, because what decides where a door lives is what it
+### writes; its walkthrough sits with the page it is pressed from, because what decides where a
+### walkthrough lives is who is reading it. Said here so the count is not read as two.
+###
+### **What to watch while demonstrating this, and it is a count rather than a screen.** Before the first
+### request and after the last, run:
+###
+###   select (select count(*) from task) as tasks, (select count(*) from process_instance) as runs;
+###
+### The two numbers are identical afterwards. A node became a task *template* and a thread became a
+### process *template*; nobody was given any work, and no run started. Describing how work is done and
+### deciding to do it are different acts belonging to different zones, and only the first happens here.
+###
+### Seed the workspace in discovery mode, then use `discovery.http` to open an engagement and mark two
+### requests in one thread. There is nothing to formalise until something has been marked:
+###   ./mvnw spring-boot:run -Dspring-boot.run.arguments="--discovery"
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@manager = ionut@atelier.ro
+@employee = andrei@atelier.ro
+@password = a-long-enough-passphrase
+
+### Copy real identifiers out of `discovery.http`'s responses into these. `nodeId` and `secondNodeId`
+### must be two units of work in the SAME thread — the same pair in the same engagement — or the
+### composition below has nothing to gate on.
+@nodeId = 00000000-0000-0000-0000-000000000000
+@secondNodeId = 00000000-0000-0000-0000-000000000000
+@trackId = 00000000-0000-0000-0000-000000000000
+
+### Copy the `taskTemplateId` out of the first response into this, to read it back through TASKLIB.
+@taskTemplateId = 00000000-0000-0000-0000-000000000000
+
+### Copy the `processTemplateId` out of the composition response into this.
+@processTemplateId = 00000000-0000-0000-0000-000000000000
+
+### Sign in as the owner. She holds WORK_NODE_MARK, TASK_TEMPLATE_CREATE, TASK_TEMPLATE_APPROVE and
+### PROCESS_TEMPLATE_AUTHOR — which is what the two endpoints below need between them.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{owner}}",
+  "password": "{{password}}"
+}
+
+###############################################################################
+### DISCOVERY-FORMALISE-WORK-01 — a node becomes a template, and never a task
+###############################################################################
+
+### 201. The crossing point. Requires WORK_NODE_MARK plus TASKLIB's own TASK_TEMPLATE_CREATE and
+### TASK_TEMPLATE_APPROVE — **called rather than copied**, and re-checked by TASKLIB on its own side of
+### the wall. No permission in DISCOVERY creates a template; the one thing that crosses does so under the
+### receiving zone's authority (DISCOVERY_02 §4).
+###
+### **There is no auto-create path in this feature and there is no confidence high enough to add one**
+### (invariant I7). A template that appeared without a person floods a shared vocabulary with words
+### nobody chose, which is the failure this design is built against. Note what the request body cannot
+### say: there is no `confidence` field, no `auto` field, and no shape a background pass could fill in.
+### The form is pre-filled from what was observed so that agreeing costs almost nothing; **agreeing is
+### still what happens.**
+###
+### `steps` become the template's checklist (DISCOVERY_03 §3) and are optional — a node nobody broke down
+### is ordinary, and inventing steps would be the product writing somebody's checklist for them.
+###
+### The node is **not consumed**. Read `work_node` afterwards: the row is still there, still says what it
+### said, and has gained a `task_template_id`. That column has no foreign key, deliberately — Discovery
+### records that the crossing happened and does not own TASKLIB's table.
+POST {{host}}/api/discovery/nodes/{{nodeId}}/formalise
+Content-Type: application/json
+
+{
+  "title": "Moodboard for a rebrand",
+  "detail": "The first visual pass, before any logo work starts.",
+  "steps": [
+    "Collect references",
+    "Lay out the board",
+    "Send it for a first reaction"
+  ]
+}
+
+### 200. **The same template, read back through TASKLIB's own door.** Worth doing in a demonstration
+### rather than trusting the response above: an identifier in a response proves a UUID was generated,
+### not that a row exists in another feature's table under that feature's rules.
+###
+### It comes back APPROVED — a person saved it with the evidence in front of them, which is better
+### curation than a queue somebody works through a week later — and it carries the three steps as its
+### `checklist`. It has an author, and the author is the person who pressed save: a template nobody wrote
+### is one nobody can be asked about.
+GET {{host}}/api/task-templates/{{taskTemplateId}}
+
+### The second unit of work in the same thread, so the composition below has two steps rather than one.
+POST {{host}}/api/discovery/nodes/{{secondNodeId}}/formalise
+Content-Type: application/json
+
+{
+  "title": "Logo variants",
+  "detail": null,
+  "steps": []
+}
+
+### 409 NODE_ALREADY_TEMPLATED. **Send the first request twice and this is the second answer.**
+###
+### Two templates from one observation is two vocabulary entries for one activity, and repointing the
+### node to the second would silently disown the first — which a process template may already reference.
+### It is refused **before** anything is created, so the library gains nothing: a refusal that had
+### already written the row it then refused to record would be the duplicate it exists to prevent. Count
+### `task_template` either side of this request and the number is unchanged.
+POST {{host}}/api/discovery/nodes/{{nodeId}}/formalise
+Content-Type: application/json
+
+{
+  "title": "Moodboard, second attempt",
+  "detail": null,
+  "steps": []
+}
+
+### 422 UNKNOWN_WORK_NODE. A unit of work that does not exist is refused rather than conjured. One
+### created on demand here would be an observation with nothing behind it, and would then be formalised
+### into a library entry describing work nobody did.
+POST {{host}}/api/discovery/nodes/11111111-1111-1111-1111-111111111111/formalise
+Content-Type: application/json
+
+{
+  "title": "Work nobody observed",
+  "detail": null,
+  "steps": []
+}
+
+###############################################################################
+### DISCOVERY-COMPOSE-PROCESS-01 — the vocabulary before the grammar
+###############################################################################
+
+### 409 TRACK_NOT_FULLY_TEMPLATED. **Send this BEFORE formalising the second node and this is the
+### answer** — which is why it sits here rather than at the end of the file.
+###
+### **Rule 2 made mechanical.** A process template contains only task templates (invariant I6), so a
+### thread holding one unit of work nobody has formalised has no step to offer for it. The alternative is
+### a placeholder step named after whatever sentence somebody sent, which is how an SOP ships with a hole
+### in it — and a hole in an SOP reads to whoever follows it as a step nobody bothered to write down
+### rather than as one still being written.
+###
+### **The vocabulary must exist before the grammar.** Templating each node first is not an obstacle
+### placed in front of composing a process; it is the composing, done in the order that makes the result
+### mean anything.
+POST {{host}}/api/discovery/tracks/{{trackId}}/compose
+Content-Type: application/json
+
+{
+  "name": "Rebrand"
+}
+
+### 201. Every unit of work in the thread is in the library, so the thread becomes a process template.
+### Requires WORK_NODE_MARK plus PROCESS's own PROCESS_TEMPLATE_AUTHOR — what ProcessTemplateController
+### demands to author a template by hand. A caller who may not write a process template on that screen
+### may not write one through this door either.
+###
+### **The request cannot name the steps, and that absence is deliberate.** They are the thread's own
+### units of work, oldest first, which is the only order an observation has. A caller that could name the
+### steps could name a step the thread does not contain, and the process a person got would be a
+### different process from the one they were looking at.
+###
+### **This is the product's actual claim.** A process template now exists describing how this business
+### rebrands, derived from two sentences two people sent each other in a chat — nobody wrote it, nobody
+### filled in a form describing the business, and the workspace was seeded with no library at all.
+POST {{host}}/api/discovery/tracks/{{trackId}}/compose
+Content-Type: application/json
+
+{
+  "name": "Rebrand"
+}
+
+### 200. The composed template through PROCESS's own door, with its whole graph.
+###
+### Two steps, each naming a `taskTemplateId` and none carrying free text — invariant I6, visible in the
+### response shape rather than asserted in prose. `expectedDurationHours` is null on both: the zone
+### measures observed work-phase durations and deliberately does not hand one over here, because a
+### template's expected duration is what somebody planning the work believes and an observed median is
+### what happened. Presenting the second as the first would put a number in the library that the very
+### evidence it came from has already contradicted.
+###
+### `overview` is null for the same reason. A thread carries no prose about itself — it is a sequence of
+### things that happened — and writing one here would put a sentence in the process library that nobody
+### in the workspace typed.
+GET {{host}}/api/process-templates/{{processTemplateId}}
+
+###############################################################################
+### The permission split, on the door it protects
+###############################################################################
+
+### Sign in as Andrei, who marks work all day.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{employee}}",
+  "password": "{{password}}"
+}
+
+### 403 NOT_PERMITTED. WORK_NODE_MARK is the one permission in this product deliberately granted to
+### everybody, because **nothing exists to analyse unless the people doing the work click** — it is not
+### a licence to author a process template. That is PROCESS_TEMPLATE_AUTHOR, PROCESS's own, held by the
+### owner and managers. Refused before the thread is even looked for.
+POST {{host}}/api/discovery/tracks/{{trackId}}/compose
+Content-Type: application/json
+
+{
+  "name": "Rebrand"
+}
+
+### 403 NOT_PERMITTED, and this one is worth a second look because Andrei DOES hold TASK_TEMPLATE_CREATE
+### — V45 grants it to every role precisely so that anybody may propose a template. He does not hold
+### TASK_TEMPLATE_APPROVE, and this endpoint creates an *approved* entry, so both are required. The
+### refusal comes from TASKLIB's own published surface rather than from anything DISCOVERY decided.
+POST {{host}}/api/discovery/nodes/{{nodeId}}/formalise
+Content-Type: application/json
+
+{
+  "title": "Something Andrei observed",
+  "detail": null,
+  "steps": []
+}

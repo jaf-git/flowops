@@ -1,0 +1,967 @@
+### FEATURE_PROCESS — the template surface
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects, and a request without them answers 401 for a
+### reason that has nothing to do with the endpoint being right.
+###
+### Ports: the demo backend runs on 8081 (Tomcat9 owns 8080 on this machine).
+###
+### The probes are ordered as a person would meet them: author, look, draw an edge, refuse a cycle,
+### edit, refuse what may not be edited. Paste an identifier from one response into the next — the
+### step identifiers come back in the authoring response precisely so the edges can be drawn.
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@manager = ionut@atelier.ro
+@employee = andrei@atelier.ro
+@password = a-long-enough-passphrase
+
+### Sign in as somebody who may record how the business works (owner or manager).
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{owner}}",
+  "password": "{{password}}"
+}
+
+### The work a step will reference. CONSTRAINT-TEMPLATE-FIRST-01: a step names a task template rather
+### than describing itself, so the library entry has to exist before the process can be authored.
+### Two calls, because creating and approving are TASKLIB_UC_03 and UC_04 and there is no third door.
+# @name work
+POST {{host}}/api/task-templates
+Content-Type: application/json
+
+{
+  "title": "Pregătește echipamentul",
+  "description": "laptop, acces, birou",
+  "priority": "NORMAL",
+  "estimatedHours": 4,
+  "checklist": [],
+  "submitForApproval": true
+}
+
+### Approving it. **No body at all** — the endpoint takes an optional draft, and `{}` is a draft whose
+### title is blank, which the request validation refuses before the use case is reached.
+POST {{host}}/api/task-templates/{{work.response.body.id}}/approval
+
+### PROCESS-AUTHOR-TEMPLATE-01 — author a template. 201, with an identifier for every step.
+### Each step names its work; there is no title here, and the server would ignore one.
+POST {{host}}/api/process-templates
+Content-Type: application/json
+
+{
+  "name": "Integrare angajat nou",
+  "overview": "Cum integrăm un coleg nou în primele patru săptămâni.",
+  "steps": [
+    { "taskTemplateId": "{{work.response.body.id}}", "expectedDurationHours": 4 }
+  ]
+}
+
+### Extension 2a — no steps. 400 REQUEST_INVALID: a template with no work is not a process.
+POST {{host}}/api/process-templates
+Content-Type: application/json
+
+{ "name": "Gol", "overview": "nimic de făcut", "steps": [] }
+
+### Extension 2b — a step naming no work. 400 STEP_TASK_TEMPLATE_REQUIRED, and `details[0].field` is
+### `steps[1].taskTemplateId` — the position, because a form has to highlight a row.
+POST {{host}}/api/process-templates
+Content-Type: application/json
+
+{
+  "name": "Recepție marfă",
+  "overview": null,
+  "steps": [
+    { "taskTemplateId": "{{work.response.body.id}}", "expectedDurationHours": 1 },
+    { "taskTemplateId": null, "expectedDurationHours": null }
+  ]
+}
+
+### Extension 1a — the same active name again. 409 TEMPLATE_NAME_TAKEN.
+POST {{host}}/api/process-templates
+Content-Type: application/json
+
+{
+  "name": "Integrare angajat nou",
+  "overview": "a doua oară",
+  "steps": [{ "taskTemplateId": "{{work.response.body.id}}", "expectedDurationHours": null }]
+}
+
+### Where one piece of work is used — PROCESS's half of the traceability page. 200.
+### The process templates that plan it and the runs that have cut it. A template nobody uses and one
+### that does not exist answer alike, with two empty lists.
+GET {{host}}/api/process-templates/using/{{work.response.body.id}}
+
+### The library. 200. Whoever may author or instantiate may read it.
+GET {{host}}/api/process-templates
+
+### One template with its whole graph. 200. Paste the identifier from the authoring response.
+@template = 00000000-0000-0000-0000-000000000000
+GET {{host}}/api/process-templates/{{template}}
+
+### PROCESS-DEFINE-DEPENDENCIES-01 — the second step waits for the first. 200, graph returned.
+@stepOne = 00000000-0000-0000-0000-000000000000
+@stepTwo = 00000000-0000-0000-0000-000000000000
+
+### Somebody active, for the described-run section at the foot of this file. Copy one out of
+### GET /api/workspace/people.
+@personId = 00000000-0000-0000-0000-000000000000
+@stepThree = 00000000-0000-0000-0000-000000000000
+POST {{host}}/api/process-templates/{{template}}/dependencies
+Content-Type: application/json
+
+{ "dependentStepId": "{{stepTwo}}", "dependsOnStepId": "{{stepOne}}" }
+
+### Extension 2c — the same edge again. 200, one edge, and no second event in `process_event`.
+POST {{host}}/api/process-templates/{{template}}/dependencies
+Content-Type: application/json
+
+{ "dependentStepId": "{{stepTwo}}", "dependsOnStepId": "{{stepOne}}" }
+
+### The third waits for the second, so the chain is one → two → three.
+POST {{host}}/api/process-templates/{{template}}/dependencies
+Content-Type: application/json
+
+{ "dependentStepId": "{{stepThree}}", "dependsOnStepId": "{{stepTwo}}" }
+
+### G1, over a transitive path — the first now waits for the third. 409 GRAPH_CYCLE, and `details`
+### names every step of the cycle, because an author cannot see the graph they are being refused.
+POST {{host}}/api/process-templates/{{template}}/dependencies
+Content-Type: application/json
+
+{ "dependentStepId": "{{stepOne}}", "dependsOnStepId": "{{stepThree}}" }
+
+### Extension 2d — a step that waits for itself. 409 GRAPH_CYCLE, a cycle of length one.
+POST {{host}}/api/process-templates/{{template}}/dependencies
+Content-Type: application/json
+
+{ "dependentStepId": "{{stepOne}}", "dependsOnStepId": "{{stepOne}}" }
+
+### G4 — an edge into another template's step. 422 CROSS_TEMPLATE_EDGE. Paste a step of a second
+### template into `dependsOnStepId`; a step that exists nowhere answers 422 UNKNOWN_STEP instead, and
+### the two codes are different on purpose.
+POST {{host}}/api/process-templates/{{template}}/dependencies
+Content-Type: application/json
+
+{ "dependentStepId": "{{stepTwo}}", "dependsOnStepId": "{{stepOne}}" }
+
+### Take the edge back out. 200, graph returned.
+DELETE {{host}}/api/process-templates/{{template}}/dependencies/{{stepThree}}/{{stepTwo}}
+
+### ── ADR-004: the observed order, and the act that makes one of them real ─────────────────────────
+###
+### The node pipeline writes the order it *watched* as OBSERVED edges. They carry the confidence it
+### measured, they draw on screen, and they block nothing — every step of a freshly composed process
+### is startable. *A followed B eight times* is not *B waits for A*: it may be a dependency, or it may
+### be that one person does content on Mondays, and an edge that blocks on a guess makes a step
+### unreachable in every future run with nothing on screen explaining why.
+###
+### To see one: run the pipeline (`node-pipeline.http`), open the composed template, and read its
+### edges — `kind` is OBSERVED and `confidence` is set. Then instantiate it and confirm **every step
+### is assignable at once**.
+
+### PROCESS-DEFINE-DEPENDENCIES-01 — a person decides an observed order must hold. 200. From here the
+### edge blocks, appears in cycle checks, and behaves exactly as a hand-drawn one.
+POST {{host}}/api/process-templates/{{template}}/dependencies/promote
+Content-Type: application/json
+
+{ "dependentStepId": "{{stepTwo}}", "dependsOnStepId": "{{stepOne}}" }
+
+### Press it twice. 200 both times, and the second changes nothing — a card is a thing people press
+### twice, and so is an edge that already blocks. An edge that was never observed answers the same
+### way: the caller asked for a state, and there is nothing there to argue with.
+POST {{host}}/api/process-templates/{{template}}/dependencies/promote
+Content-Type: application/json
+
+{ "dependentStepId": "{{stepTwo}}", "dependsOnStepId": "{{stepOne}}" }
+
+### 409 GRAPH_CYCLE — promoting the reverse of an edge that already blocks. **The observation is left
+### exactly as it was.** Both directions were genuinely seen; what is refused is the claim that both
+### must always hold, which is a claim about the future rather than about the evidence.
+POST {{host}}/api/process-templates/{{template}}/dependencies/promote
+Content-Type: application/json
+
+{ "dependentStepId": "{{stepOne}}", "dependsOnStepId": "{{stepTwo}}" }
+
+### PROCESS-EDIT-TEMPLATE-01 — change the overview and drop the third step. 200. The dropped step's
+### edges go with it in the same transaction, and **no running instance is affected**
+### (DECISION-PROCESS-SNAPSHOT-01) — instantiate first and re-read the instance to see that.
+PATCH {{host}}/api/process-templates/{{template}}
+Content-Type: application/json
+
+{
+  "overview": "Varianta scurtă: două săptămâni.",
+  "steps": [
+    { "id": "{{stepOne}}", "taskTemplateId": "{{work.response.body.id}}", "expectedDurationHours": 4 },
+    { "id": "{{stepTwo}}", "taskTemplateId": "{{work.response.body.id}}", "expectedDurationHours": 8 }
+  ]
+}
+
+### A step with no identifier is added. 200, and the new step comes back with one.
+PATCH {{host}}/api/process-templates/{{template}}
+Content-Type: application/json
+
+{
+  "overview": "Varianta scurtă: două săptămâni.",
+  "steps": [
+    { "id": "{{stepOne}}", "taskTemplateId": "{{work.response.body.id}}", "expectedDurationHours": 4 },
+    { "id": "{{stepTwo}}", "taskTemplateId": "{{work.response.body.id}}", "expectedDurationHours": 8 },
+    { "taskTemplateId": "{{work.response.body.id}}", "expectedDurationHours": 1 }
+  ]
+}
+
+### Extension 2b — remove every step. 422 TEMPLATE_NEEDS_A_STEP.
+PATCH {{host}}/api/process-templates/{{template}}
+Content-Type: application/json
+
+{ "overview": "nimic", "steps": [] }
+
+### Sign in as a manager who authored nothing.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "{{manager}}", "password": "{{password}}" }
+
+### Extension 2c — a manager editing somebody else's template. 403 NOT_THE_AUTHOR. The owner is
+### exempt; a manager is not, and the bound is in the use case because it depends on the request.
+PATCH {{host}}/api/process-templates/{{template}}
+Content-Type: application/json
+
+{
+  "overview": "al meu acum",
+  "steps": [{ "id": "{{stepOne}}", "taskTemplateId": "{{work.response.body.id}}", "expectedDurationHours": null }]
+}
+
+### Sign in as an employee.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "{{employee}}", "password": "{{password}}" }
+
+### 403 NOT_PERMITTED — an employee neither authors processes nor reads the library.
+GET {{host}}/api/process-templates
+
+### 403 NOT_PERMITTED — nor authors one.
+POST {{host}}/api/process-templates
+Content-Type: application/json
+
+{
+  "name": "Al meu",
+  "overview": null,
+  "steps": [{ "taskTemplateId": "{{work.response.body.id}}", "expectedDurationHours": null }]
+}
+
+### ─────────────────────────────────────────────────────────────────────────────
+### PROCESS-INSTANTIATE-01 and PROCESS-VIEW-INSTANCE-01 — running one
+### ─────────────────────────────────────────────────────────────────────────────
+
+### Sign in as somebody who may start a run.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "{{owner}}", "password": "{{password}}" }
+
+### Start a run and name who steers it. 201. Every entry step comes back REACHABLE and everything
+### else PENDING, in one transaction with the event and the notices.
+### `processOwnerId` may be an employee — it is a per-instance position, not a role.
+@processOwner = 00000000-0000-0000-0000-000000000000
+POST {{host}}/api/process-instances
+Content-Type: application/json
+
+{
+  "templateId": "{{template}}",
+  "name": "Integrare — Andrei Munteanu",
+  "processOwnerId": "{{processOwner}}"
+}
+
+### Extension 1a — a Process Owner who does not exist or is deactivated. 422
+### PROCESS_OWNER_NOT_ACTIVE, and no instance is created. An unknown identifier and a deactivated
+### person answer alike, so nobody can learn which accounts exist by watching the refusal.
+POST {{host}}/api/process-instances
+Content-Type: application/json
+
+{
+  "templateId": "{{template}}",
+  "name": "Fără cârmaci",
+  "processOwnerId": "11111111-1111-1111-1111-111111111111"
+}
+
+### The runs this caller may see. 200, scoped from the reporting tree at the moment of the read.
+### Defaults to the board, so this answers exactly what it answered before `population` existed.
+GET {{host}}/api/process-instances
+
+### The same read, naming the board explicitly. Identical to the request above.
+GET {{host}}/api/process-instances?population=ON_THE_BOARD
+
+### Every run this caller may see, including the ones somebody put away. 200.
+### **What any figure must be computed over** (PROCESS-ARCHIVE-INSTANCE-01): archiving is a statement
+### about a screen, so a total that moves when the board is tidied has rewritten history. Run this
+### beside the one above with a run archived — the lists differ by exactly that run, and by nothing
+### else. `population` widens which runs are answered, never whose.
+GET {{host}}/api/process-instances?population=EVERY_RUN
+
+### A population that does not exist. 400, not a silently different list — which is the whole reason
+### the parameter is an enum on the wire rather than a boolean or a free string.
+GET {{host}}/api/process-instances?population=EVERYTHING
+
+### Where one run stands. 200: every step with its condition, the progress, `awaitingAssignment` as
+### its own field, and the bottleneck **as a step**. Nothing here is keyed by a person.
+###
+### What the operations canvas draws each node from, added with CANVAS-VIEW-PROCESS-01. On an
+### assigned step: `assigneeId` and `assigneeName` — who **TASK** says holds it now, resolved for
+### this response and stored nowhere, so an erased person comes back with an empty name and reads as
+### a former member; `deadline`; `atRisk` as the workspace's window stood at this read; and `phases`,
+### time per kind. **There is no total in `phases` and there is not going to be one** — look for a
+### `totalSeconds` and satisfy yourself it is absent (DECISION-PHASE-TIMER-01).
+###
+### `edges` is new beside `steps`: every dependency as `from`, `to` and `satisfied`. Close the step an
+### edge waits on, through TASK's own endpoints, and re-read — `satisfied` flips to true. Only PROCESS
+### knows what Closed means for a step, so the flag is decided here rather than by whoever draws it.
+###
+### The standing question for any canvas surface: **is any number on this response keyed to a
+### person?** Read it and satisfy yourself the answer is no. The assignee is attribution on the step
+### that holds the work; every count on the response counts steps.
+@instance = 00000000-0000-0000-0000-000000000000
+GET {{host}}/api/process-instances/{{instance}}
+
+### The snapshot, by hand. Edit the template above — rename a step, remove one — then re-read the
+### instance. Its steps and edges are unchanged (DECISION-PROCESS-SNAPSHOT-01). This is the
+### guarantee that makes editing safe, and it is worth watching once rather than trusting.
+GET {{host}}/api/process-instances/{{instance}}
+
+### Extension 2a — sign in as somebody the run does not concern, and ask for it. 404
+### INSTANCE_NOT_FOUND, **byte-identical to the answer for an instance that does not exist**, so the
+### refusal does not reveal that it does.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "elena@atelier.ro", "password": "{{password}}" }
+
+### 404 — the run exists and this caller may not see it.
+GET {{host}}/api/process-instances/{{instance}}
+
+### 404 — no such run at all. Compare the two responses; they are the same.
+GET {{host}}/api/process-instances/99999999-9999-9999-9999-999999999999
+
+### ─────────────────────────────────────────────────────────────────────────────
+### PROCESS-ASSIGN-REACHABLE-01 — the hinge
+### ─────────────────────────────────────────────────────────────────────────────
+
+### Sign in as the Process Owner. **This may be an employee** — the position is per-instance, and
+### the endpoint admits them through the ownership half of its disjunction rather than a grant.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "ioana@atelier.ro", "password": "{{password}}" }
+
+### Who this run's steps may be handed to — the list the assignment dialog's picker renders.
+### **Computed for whoever started the run, not for the caller.** The created task names the
+### instantiator as its creator, so TASK's subtree rule runs against them; a list computed for the
+### Process Owner would offer people the next call refuses and hide people it would accept
+### (decision row 211). Try it as Ioana against a run Ionuț started: Ionuț is on the list, and he is
+### not in Ioana's own subtree.
+###
+### It carries the assignment endpoint's own permission check, so signing in as Andrei — who neither
+### holds PROCESS_ASSIGN_STEP nor steers this run — answers 403 rather than a subtree he cannot use.
+GET {{host}}/api/process-instances/{{instance}}/assignable-people
+
+### Hand a reachable step to somebody. 200, and the step comes back ASSIGNED with its task.
+### The created task names **whoever started the run** as its creator, not the Process Owner, so
+### TASK's subtree rule runs against the person who decided the work exists (decision row 206).
+@instanceStep = 00000000-0000-0000-0000-000000000000
+@assignee = 00000000-0000-0000-0000-000000000000
+### The response is the whole instance, read back through the view rather than answered from the
+### aggregate — so the step you have just handed to somebody comes back **with them on it**, with the
+### deadline you sent and its at-risk answer. It used to come back naming nobody, and the browser
+### writes this response straight into its cache.
+POST {{host}}/api/process-instances/{{instance}}/steps/{{instanceStep}}/assignment
+Content-Type: application/json
+
+{ "assigneeId": "{{assignee}}", "deadline": "2026-12-31T17:00:00Z" }
+
+### Extension 2a — a step whose dependencies are not met. 409 STEP_NOT_REACHABLE, and `details`
+### names each step it is still waiting on. No task is created.
+@pendingStep = 00000000-0000-0000-0000-000000000000
+POST {{host}}/api/process-instances/{{instance}}/steps/{{pendingStep}}/assignment
+Content-Type: application/json
+
+{ "assigneeId": "{{assignee}}", "deadline": "2026-12-31T17:00:00Z" }
+
+### Extension 2b — the same step again. 409 ILLEGAL_STEP_TRANSITION carrying the condition it was
+### actually in, because "already assigned" and "already closed" send a person to different places.
+### No second task exists.
+POST {{host}}/api/process-instances/{{instance}}/steps/{{instanceStep}}/assignment
+Content-Type: application/json
+
+{ "assigneeId": "{{assignee}}", "deadline": "2026-12-31T17:00:00Z" }
+
+### ── The loop closing, by hand ────────────────────────────────────────────────
+### Carry the created task to Closed through TASK's own endpoints, then re-read the instance. The
+### step that was waiting on it is REACHABLE and nobody touched PROCESS to make that happen.
+###
+### Sign in as the assignee first.
+@task = 00000000-0000-0000-0000-000000000000
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "elena@atelier.ro", "password": "{{password}}" }
+
+### Accept, start, complete — ordinary TASK, nothing about processes.
+POST {{host}}/api/tasks/{{task}}/accept
+
+### 
+POST {{host}}/api/tasks/{{task}}/start
+
+### After this one the task is COMPLETED. **Re-read the instance now**: the next step is still
+### PENDING, because the graph advances on Closed and never on Completed — completed work may still
+### be returned for rework (DECISION-PROCESS-REACHABILITY-01).
+POST {{host}}/api/tasks/{{task}}/complete
+Content-Type: application/json
+
+{ "note": "gata", "externalLink": null }
+
+### Sign back in as the reviewer.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "{{owner}}", "password": "{{password}}" }
+
+### 
+POST {{host}}/api/tasks/{{task}}/approve
+Content-Type: application/json
+
+{ "score": 4, "comment": "bine" }
+
+### And close it. **This** is the move the graph advances on.
+POST {{host}}/api/tasks/{{task}}/close
+
+### Re-read the run: the closed step is CLOSED, the one that waited is REACHABLE and sits in
+### `awaitingAssignment`, and progress has moved. Close every step and the run reports COMPLETE
+### with a duration.
+GET {{host}}/api/process-instances/{{instance}}
+
+### Extension 5a — instead of closing, have the assignee decline. The step returns to REACHABLE with
+### its task reference dropped, and the Process Owner is prompted again. Without it the step would
+### sit assigned against a task nobody holds and the run would stall invisibly.
+POST {{host}}/api/tasks/{{task}}/reject
+Content-Type: application/json
+
+{ "reason": "nu am acces la depozit" }
+
+###############################################################################
+### PROCESS-ADD-TASK-01, PROCESS-REMOVE-TASK-01, PROCESS-REORDER-TASKS-01
+###
+### A run holds the workspace's own tasks (DECISION-PROCESS-MEMBERSHIP-01), so it can be corrected
+### while it runs rather than only abandoned. Paste a step identifier from the run above into
+### {{step}} and a task identifier into {{task}} as you go.
+###############################################################################
+
+### Which of my tasks could go in. Scope is TASK's answer; the subtraction — what a run already
+### holds — is PROCESS's. An empty list has two causes and the screen tells them apart: you can see
+### no tasks at all, or everything you can see is already in a run.
+GET {{host}}/api/process-instances/{{instance}}/attachable-tasks
+
+### Attach one that already exists. Nothing about it changes: same assignee, same deadline, same
+### state, same place in that person's queue. Read the task afterwards and only the two provenance
+### columns differ.
+POST {{host}}/api/process-instances/{{instance}}/tasks
+Content-Type: application/json
+
+{ "taskId": "{{task}}", "dependsOnStepIds": [] }
+
+### The same task again — 409 TASK_ALREADY_IN_A_PROCESS. A task in two runs would advance two graphs
+### on one closure. The unique index refuses it as well, which is what settles a race the check
+### cannot see.
+POST {{host}}/api/process-instances/{{instance}}/tasks
+Content-Type: application/json
+
+{ "taskId": "{{task}}", "dependsOnStepIds": [] }
+
+### A task identifier naming nothing — 404 TASK_NOT_FOUND, byte for byte the same answer a task
+### outside your scope gets. Sign in as {{employee}} and attach one of the owner's tasks to see it.
+POST {{host}}/api/process-instances/{{instance}}/tasks
+Content-Type: application/json
+
+{ "taskId": "00000000-0000-0000-0000-000000000000", "dependsOnStepIds": [] }
+
+### The other door: write a task straight into the run. This one *does* give somebody work, so it
+### keeps every check TASK's create path makes — including the subtree rule, run against whoever
+### started the run rather than whoever is steering it.
+POST {{host}}/api/process-instances/{{instance}}/tasks
+Content-Type: application/json
+
+{
+  "title": "Comandă badge-ul",
+  "description": "pentru acces la sediu",
+  "assigneeId": "{{assignee}}",
+  "priority": "HIGH",
+  "dependsOnStepIds": ["{{step}}"]
+}
+
+### Both doors at once — 400 REQUEST_INVALID. The request has not said which act it means.
+POST {{host}}/api/process-instances/{{instance}}/tasks
+Content-Type: application/json
+
+{ "taskId": "{{task}}", "title": "și", "assigneeId": "{{assignee}}", "dependsOnStepIds": [] }
+
+### Change the reading order. Every step of the run, every time: a partial order would leave two
+### sharing a position. Nothing here touches a condition — what waits on what is the graph below.
+PATCH {{host}}/api/process-instances/{{instance}}/tasks/order
+Content-Type: application/json
+
+{ "stepIds": ["{{step}}"] }
+
+### Say that one step waits for another, on a run that is already going. A cycle is refused with
+### every step of it named. A step nobody has taken returns to pending; an assigned one is left
+### alone, because somebody holds that task.
+POST {{host}}/api/process-instances/{{instance}}/dependencies
+Content-Type: application/json
+
+{ "dependentStepId": "{{step}}", "dependsOnStepId": "{{step}}" }
+
+### And take it back out. If that was the last thing a pending step waited for, it becomes reachable
+### in this same transaction and the Process Owner is told.
+DELETE {{host}}/api/process-instances/{{instance}}/dependencies/{{step}}/{{step}}
+
+### Take a task out of the run. **The task survives** — same state, same assignee, same deadline,
+### minus the process badge. Steps that waited on it open now. The last task of a run cannot be
+### removed: 409 INSTANCE_NEEDS_A_TASK.
+DELETE {{host}}/api/process-instances/{{instance}}/tasks/{{step}}
+
+### Read the task afterwards: it is still there, unchanged, and belongs to no run.
+GET {{host}}/api/tasks/{{task}}
+
+### ─────────────────────────────────────────────────────────────────────────────
+### PROCESS-START-FROM-TASKS-01 — a process out of work that already exists
+### ─────────────────────────────────────────────────────────────────────────────
+
+### Sign in as somebody who may start a run.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "{{owner}}", "password": "{{password}}" }
+
+### Which tasks could go into a process at all — the picker the start dialog reads, for a run that
+### does not exist yet. The same list `/{{instance}}/attachable-tasks` returns, scoped by TASK's own
+### rule and holding only tasks that belong to no run, with no identifier to scope it by because
+### there is nothing yet to refuse one against. `PROCESS_INSTANTIATE`, so an employee gets 403.
+###
+### **The literal segment beats `/{id}`**, which is why this is not read as an instance whose
+### identifier is the word. Exercise this probe rather than the run-scoped one above: the two return
+### the same shape, so calling the wrong one and getting a sensible answer proves nothing.
+GET {{host}}/api/process-instances/attachable-tasks
+
+### Start a process from two of them. 201, and `templateId` comes back **null**: this run was cut
+### from nothing. Every step is ATTACHED with no definition, in the order given, showing each task's
+### own title — no task is created, nobody is notified, and no dependency is drawn.
+@taskOne = 00000000-0000-0000-0000-000000000000
+@taskTwo = 00000000-0000-0000-0000-000000000000
+POST {{host}}/api/process-instances/from-tasks
+Content-Type: application/json
+
+{
+  "name": "Închidere lunară august",
+  "processOwnerId": "{{processOwner}}",
+  "taskIds": ["{{taskOne}}", "{{taskTwo}}"]
+}
+
+### Extension 3a — no tasks at all. 400 REQUEST_INVALID. A run may not be emptied, so it may not be
+### born empty.
+POST {{host}}/api/process-instances/from-tasks
+Content-Type: application/json
+
+{ "name": "Gol", "processOwnerId": "{{processOwner}}", "taskIds": [] }
+
+### Extension 3c — a task that is already in a run. 409 TASK_ALREADY_IN_A_PROCESS, and no instance
+### is created. Run the request above twice to see it.
+POST {{host}}/api/process-instances/from-tasks
+Content-Type: application/json
+
+{ "name": "Din nou", "processOwnerId": "{{processOwner}}", "taskIds": ["{{taskOne}}"] }
+
+### Extension 3d — the same task named twice. The same 409, because it is the same thing: the second
+### copy would be joining a run the first has already put it in.
+POST {{host}}/api/process-instances/from-tasks
+Content-Type: application/json
+
+{ "name": "De două ori", "processOwnerId": "{{processOwner}}", "taskIds": ["{{taskTwo}}", "{{taskTwo}}"] }
+
+### Extension 3b — a task outside the caller's scope, and one that does not exist. Both 404
+### TASK_NOT_FOUND, byte for byte: an endpoint that says *that exists but is not yours* is a way to
+### learn which identifiers name real work.
+POST {{host}}/api/process-instances/from-tasks
+Content-Type: application/json
+
+{ "name": "Nu e a mea", "processOwnerId": "{{processOwner}}", "taskIds": ["00000000-0000-0000-0000-000000000000"] }
+
+### Extension 2a — a steerer who does not exist or is deactivated. 422 PROCESS_OWNER_NOT_ACTIVE, and
+### nothing is written: the tasks keep no provenance.
+POST {{host}}/api/process-instances/from-tasks
+Content-Type: application/json
+
+{
+  "name": "Fără cârmaci",
+  "processOwnerId": "00000000-0000-0000-0000-000000000000",
+  "taskIds": ["{{taskOne}}"]
+}
+
+### ---------------------------------------------------------------------------------------------
+### PROCESS-RETIRE-TEMPLATE-01 and PROCESS-ABANDON-INSTANCE-01 — the process story gains an ending.
+### ---------------------------------------------------------------------------------------------
+
+### Take a template out of the library. 200. **Nothing is deleted**: run the instance read below
+### afterwards and the run cut from it is still RUNNING with its provenance intact. As a manager who
+### did not author it: 403 NOT_THE_AUTHOR — the permission passes at the door and the row-dependent
+### rule refuses inside, which no annotation could express.
+POST {{host}}/api/process-templates/REPLACE-WITH-A-TEMPLATE-id/retirement
+
+### The same again. 409 TEMPLATE_IS_RETIRED, and no second event is appended — a log row for a change
+### that did not happen is a false row.
+POST {{host}}/api/process-templates/REPLACE-WITH-A-TEMPLATE-id/retirement
+
+### Try to start it. 409 TEMPLATE_IS_RETIRED. The library list already hides it, so this is the door
+### somebody with a stale page or a kept identifier reaches — which is exactly the case a screen
+### filter cannot cover.
+POST {{host}}/api/process-instances
+Content-Type: application/json
+
+{
+  "templateId": "REPLACE-WITH-THE-RETIRED-TEMPLATE-id",
+  "name": "Prea târziu",
+  "processOwnerId": "REPLACE-WITH-A-PERSON-id"
+}
+
+### Author it again under the same name. 201. The unique index on the name is partial — `where active`
+### — so retiring frees it, deliberately: a process written badly once must not lock its own name.
+POST {{host}}/api/process-templates
+Content-Type: application/json
+
+{
+  "name": "REPLACE-WITH-THE-RETIRED-TEMPLATE-name",
+  "overview": "A doua încercare",
+  "steps": [{ "taskTemplateId": "{{work.response.body.id}}", "expectedDurationHours": 2 }]
+}
+
+### Stop a run that should not continue. 200. Read three things in the response: `state` is ABANDONED
+### rather than COMPLETE — a run that was stopped is not a run that finished; `awaitingAssignment` is
+### empty, because nothing is waiting to be given out in a run nobody is running; and
+### `needingAttention` names the steps whose tasks are **still with somebody**.
+###
+### **PROCESS closed none of those tasks**, and that is the boundary rather than an omission
+### (PROCESS_00 §4). End each one through TASK-OVERRIDE-01 — `POST /api/tasks/{id}/override` — on
+### purpose and one at a time. That use case existing is what made this one buildable.
+POST {{host}}/api/process-instances/REPLACE-WITH-A-RUNNING-INSTANCE-id/abandonment
+Content-Type: application/json
+
+{
+  "reason": "Clientul a anulat comanda; nu mai continuăm producția."
+}
+
+### The same run again. 409 INSTANCE_NOT_RUNNING, no second event, and the first reason stands — the
+### second attempt rewrites nothing.
+POST {{host}}/api/process-instances/REPLACE-WITH-A-RUNNING-INSTANCE-id/abandonment
+Content-Type: application/json
+
+{
+  "reason": "A doua oară."
+}
+
+### With nothing said. 400 REQUEST_INVALID. Everybody who had a task in the run reads this sentence,
+### and a run stopped in silence was quietly forgotten with an extra step.
+POST {{host}}/api/process-instances/REPLACE-WITH-A-RUNNING-INSTANCE-id/abandonment
+Content-Type: application/json
+
+{
+  "reason": "   "
+}
+
+### ─────────────────────────────────────────────────────────────────────────────────────────────────
+### CLOSING A RUN THAT SUCCEEDED — PROCESS-CLOSE-INSTANCE-01.
+###
+### **The hole this fills was a false statement about a real thing.** A run reaches COMPLETE on its own
+### the moment its last step closes, so the ordinary ending needs no request. What had no door at all
+### was the run that *succeeded* while a step nobody needs any more is still open — the client signed
+### off in the meeting, the last two steps are moot. Until now the only way to end that run was
+### `/abandonment`, so the way to record a success was to record it as a failure.
+###
+### V42 went to some length to keep those two facts apart in the very same table, and then left one of
+### them with no way to be written. This is the counterpart.
+### ─────────────────────────────────────────────────────────────────────────────────────────────────
+
+### Declare a running instance finished. 200.
+###
+### **Read three things in the response.** `state` is COMPLETE and `completedAt` is set — this run *did*
+### finish, so every reading of *when did this complete* and every start-to-finish duration finds it.
+### That is the asymmetry with abandonment, which deliberately leaves `completedAt` empty because an
+### abandoned run did not complete. `closureNote` carries the sentence. And `needingAttention` lists
+### the steps whose tasks are **still open**, because PROCESS closed none of them — it holds no port
+### that mutates a task — and a person ends each one through TASK-OVERRIDE-01, on purpose and one at a
+### time.
+###
+### That last field is the one worth checking by hand. Its gate read `!= ABANDONED` until this endpoint
+### shipped, which would have made the *one* ending where somebody has decided the work is done the
+### ending that never mentions the work that is not.
+POST {{host}}/api/process-instances/REPLACE-WITH-A-RUNNING-INSTANCE-id/closure
+Content-Type: application/json
+
+{
+  "note": "Clientul a semnat la ședință; ultimii doi pași nu mai sunt necesari."
+}
+
+### The same run again. 409 INSTANCE_NOT_RUNNING — it has already finished. The first note stands and
+### no second event is appended.
+POST {{host}}/api/process-instances/REPLACE-WITH-A-RUNNING-INSTANCE-id/closure
+Content-Type: application/json
+
+{
+  "note": "A doua oară."
+}
+
+### With nothing said. 400 REQUEST_INVALID, naming the field `note` — not `reason`, which is the
+### abandonment dialog's field and would highlight nothing on this form.
+###
+### Required for the reason the abandonment reason is, and arguably more so: everybody who held a task
+### in this run reads it, and several of them are holding one that has just been declared unnecessary.
+POST {{host}}/api/process-instances/REPLACE-WITH-A-RUNNING-INSTANCE-id/closure
+Content-Type: application/json
+
+{
+  "note": "   "
+}
+
+### On a run that was abandoned. 409 — both endings are refused on a run that has already ended, and
+### the database refuses the pair as well: `process_instance_ends_one_way` will not store a reason for
+### stopping beside a note explaining that it finished. A record that contradicts itself is one no
+### screen could render honestly.
+POST {{host}}/api/process-instances/REPLACE-WITH-AN-ABANDONED-INSTANCE-id/closure
+Content-Type: application/json
+
+{
+  "note": "Încercăm să o închidem ca reușită după ce a fost abandonată."
+}
+
+###############################################################################
+### PROCESS-START-FROM-DESCRIPTIONS-01 — a run made out of work that does not exist yet
+###############################################################################
+
+### The third way a run begins. 201, with a step and a task per description.
+###
+### **One request because it must be one transaction.** Every step here could be done from a browser —
+### create a task, create another, start a run over them — and DECISION-PROCESS-FROM-TASKS-01 examined
+### that arrangement and refused it: *the person whose third one fails is left with a half-built process
+### they did not ask for*. Five requests cannot be made atomic by the caller. One can.
+###
+### It is what the chat-assist form submits when somebody turns a conversation into a process, and it is
+### an ordinary endpoint besides — anybody who may start a run may describe one.
+###
+### Each task is created through TASK's own create path, so the rule about whom the caller may give work
+### to is applied by TASK, against the caller, exactly as on every other create. Requires
+### PROCESS_INSTANTIATE, which the owner and managers hold and employees do not.
+POST {{host}}/api/process-instances/from-descriptions
+Content-Type: application/json
+
+{
+  "name": "Aurora Coffee — brand strategy",
+  "processOwnerId": "{{personId}}",
+  "steps": [
+    {"title": "Discovery workshop", "description": "What they believe they sell", "assigneeId": "{{personId}}",
+     "deadline": null, "priority": "NORMAL"},
+    {"title": "Competitor scan", "description": null, "assigneeId": "{{personId}}",
+     "deadline": null, "priority": "HIGH"},
+    {"title": "Positioning statement", "description": null, "assigneeId": "{{personId}}",
+     "deadline": null, "priority": "NORMAL"}
+  ]
+}
+
+### 403 — a step names somebody the caller may not direct, and **the whole run goes with it**.
+###
+### This is the request worth running twice: count the tasks before and after. A manager may give work
+### to their own reports and not to somebody else's, so a plan whose second step reaches outside their
+### subtree is refused — and the *first* step's task must not survive that refusal. Removing the
+### transaction leaves exactly one orphan task behind, which is how the guarantee was proven rather than
+### assumed.
+POST {{host}}/api/process-instances/from-descriptions
+Content-Type: application/json
+
+{
+  "name": "A plan she cannot wholly direct",
+  "processOwnerId": "{{personId}}",
+  "steps": [
+    {"title": "Something for her own report", "description": null, "assigneeId": "{{personId}}",
+     "deadline": null, "priority": "NORMAL"},
+    {"title": "Something for somebody else's", "description": null,
+     "assigneeId": "11111111-1111-1111-1111-111111111111", "deadline": null, "priority": "NORMAL"}
+  ]
+}
+
+### 400 — a run with no work in it. A run may not be emptied, so it may not be born empty either: one
+### invariant stated at both ends.
+POST {{host}}/api/process-instances/from-descriptions
+Content-Type: application/json
+
+{"name": "Nothing at all", "processOwnerId": "{{personId}}", "steps": []}
+
+### 422 — a run needs somebody who can steer it. An unknown identifier and a deactivated person answer
+### alike, so a caller cannot learn which accounts exist by watching which refusal they get.
+POST {{host}}/api/process-instances/from-descriptions
+Content-Type: application/json
+
+{
+  "name": "Steered by nobody",
+  "processOwnerId": "11111111-1111-1111-1111-111111111111",
+  "steps": [
+    {"title": "Anything", "description": null, "assigneeId": "{{personId}}", "deadline": null,
+     "priority": "NORMAL"}
+  ]
+}
+
+### ------------------------------------------------------------------------------------------------
+### PROCESS-CATEGORISE-RUNS-01 — named groupings for runs, so a board of fifty is readable.
+###
+### **Only the named groupings are here.** *Runs one person holds entirely* and *runs whose work is
+### shared* are derived where the board is drawn, from who holds each step. There is no endpoint for
+### them and there should not be: a stored answer is wrong the moment somebody reassigns a step.
+### ------------------------------------------------------------------------------------------------
+
+### The groupings, and which run is in which. Requires PROCESS_VIEW_OWN.
+### Both in one answer, because a board needs both to draw one thing and two round trips would let it
+### render a filing against a grouping it has not heard of yet. The count on each is keyed to the
+### grouping and never to a person (CANVAS_00 §5).
+GET {{host}}/api/process-categories
+
+### Name a grouping. 201 with its id. **Requires WORKSPACE_CONFIGURE**, granted to OWNER only in V19 —
+### a manager is refused with 403, which is the whole point of the two permissions being different.
+POST {{host}}/api/process-categories
+Content-Type: application/json
+
+{
+  "name": "Client onboarding"
+}
+
+### The same name, differing only in case and surrounding space. **409 CATEGORY_NAME_TAKEN.**
+### This one answered **500** when the endpoints shipped, because the refusal had no handler in
+### PROCESS's advice — the server blaming itself for a rule it applied correctly. Run it.
+POST {{host}}/api/process-categories
+Content-Type: application/json
+
+{
+  "name": "  client ONBOARDING "
+}
+
+### Rename one. 204. A grouping identifier from nowhere answers **404 CATEGORY_NOT_FOUND**, which was
+### the second refusal with no handler.
+PUT {{host}}/api/process-categories/REPLACE-WITH-A-CATEGORY-id
+Content-Type: application/json
+
+{
+  "name": "Onboarding"
+}
+
+### File a run under a grouping. 204. **Requires PROCESS_EDIT_INSTANCE** — filing one run is an
+### ordinary edit of that run, a different act from shaping the vocabulary everybody reads. A run
+### belongs to at most one grouping: several would put it in three places on a board whose whole
+### purpose is to make fifty runs readable.
+PUT {{host}}/api/process-categories/runs/REPLACE-WITH-AN-INSTANCE-id
+Content-Type: application/json
+
+{
+  "categoryId": "REPLACE-WITH-A-CATEGORY-id"
+}
+
+### Take it out again. `null` removes it; this replaces rather than adds.
+PUT {{host}}/api/process-categories/runs/REPLACE-WITH-AN-INSTANCE-id
+Content-Type: application/json
+
+{
+  "categoryId": null
+}
+
+### Remove a grouping. 204. **Its runs are not touched** — `on delete set null` brings them home to
+### uncategorised, which is where they started. Check with the read above: the runs are still there.
+DELETE {{host}}/api/process-categories/REPLACE-WITH-A-CATEGORY-id
+
+### Put a finished run away, so the operations board stops carrying it. 204.
+### **Requires PROCESS_ARCHIVE_INSTANCE** — a permission of its own rather than
+### `PROCESS_EDIT_INSTANCE`, because editing a run changes it for the people working it while
+### archiving removes it from *everybody's* board. Granted to OWNER and MANAGER in V59.
+###
+### **A statement about a screen, never about the work.** Nothing closes, nothing is deleted, no task
+### is touched, and every figure the analysis and export surfaces compute counts this run exactly as
+### it counted it before. Check with the run list above: it is gone from there and from nowhere else.
+POST {{host}}/api/process-instances/REPLACE-WITH-AN-INSTANCE-id/archive
+
+### The same call against a run that is still going. 409 INSTANCE_STILL_RUNNING, and a sentence
+### rather than a constraint violation: archiving live work would hide it from the only screen that
+### shows it. The schema refuses it too, so no other door can get this wrong quietly.
+POST {{host}}/api/process-instances/REPLACE-WITH-A-RUNNING-INSTANCE-id/archive
+
+### Put it back on the board. 204. Reversible on purpose — a board-tidying act that could not be
+### undone is one nobody would dare use on a run they were unsure about. Restoring a run that is
+### already on the board is not an error: the request names the state it wants, not a transition it
+### believes is available, so two clicks and one click agree.
+DELETE {{host}}/api/process-instances/REPLACE-WITH-AN-INSTANCE-id/archive
+
+### ── SOP-METADATA-01: the optional step, and the run owner's decision ─────────────────────────────
+###
+### A step marked `optional` carries a `conditionNote` — the question somebody has to answer. Both are
+### written when the template is authored; the run then carries **its own copy** of them, because
+### `DECISION-PROCESS-SNAPSHOT-01` says a run is cut from a template and never linked to it again. A
+### run cut in March where finance approval was mandatory still requires it in May after somebody
+### marks that step optional.
+POST {{host}}/api/process-templates
+Content-Type: application/json
+
+{"name":"Livrare campanie","overview":"Cum livrăm o campanie","steps":[
+  {"taskTemplateId":"{{taskTemplateId}}","expectedDurationHours":4},
+  {"taskTemplateId":"{{taskTemplateId2}}","expectedDurationHours":2,
+   "optional":true,"conditionNote":"Is the value above 5,000?"},
+  {"taskTemplateId":"{{taskTemplateId3}}","expectedDurationHours":8}]}
+
+### The question is asked **when the step becomes reachable** — never at instantiation, where the
+### answer is frequently unknown and a guess is then wrong for the rest of the run; and never of the
+### assignee, because the step has no assignee until the question is answered. Read the run and look
+### for `optional`, `conditionNote`, and `condition: "REACHABLE"` on the same step.
+GET {{host}}/api/process-instances/{{instanceId}}
+
+### **Skip.** The step closes, so dependents release and a run whose remaining work was all optional
+### completes — through the same transition a finished task runs, not a second one written beside it.
+### `origin` is preserved and the skip is visible in history: a step skipped is a fact about the run
+### rather than an absence from it.
+###
+### Two events are appended, and the pair is deliberate. `STEP_SKIPPED` records the judgement somebody
+### made; `STEP_CLOSED` records what it did to the graph. A reader asking *why did this run finish
+### without the finance step* needs the first; every consumer counting closures needs the second.
+POST {{host}}/api/process-instances/{{instanceId}}/steps/{{stepId}}/skip
+
+### Idempotent. Send it twice: the second answers 200, changes nothing, and appends no second event,
+### because a double-click must not be able to write one judgement into history twice.
+POST {{host}}/api/process-instances/{{instanceId}}/steps/{{stepId}}/skip
+
+### 409 STEP_NOT_OPTIONAL — **the refusal that keeps the mechanism honest.** Without it, skip is a
+### general-purpose way to make any step go away, and a run could reach Complete having silently
+### dropped work its template requires. The way to remove required work is
+### `DELETE /api/process-instances/{id}/tasks/{stepId}`, which looks like what it is.
+POST {{host}}/api/process-instances/{{instanceId}}/steps/{{mandatoryStepId}}/skip
+
+### 409 STEP_NOT_AWAITING_DECISION — the step is still PENDING (its dependencies are unmet, so nobody
+### should be asked yet) or already ASSIGNED (somebody holds a task a skip would strand).
+POST {{host}}/api/process-instances/{{instanceId}}/steps/{{pendingStepId}}/skip
+
+### ── What a skipped step must never do to a figure ────────────────────────────────────────────────
+###
+### A skipped step has `closed_at` set — that is how the graph advances — so every query filtering on
+### *closed* admits it. Three readings exclude it, and `V63`'s column comment carries the reasoning:
+###
+###   * `TemplateHistoryAdapter`'s edge query (`upstream.skipped_at is null`). Without it,
+###     AI-INSIGHT-FALSE-DEPENDENCY-01 asks whether a dependent began before a step that never
+###     happened finished — always true — and reports every edge into a skipped step as false.
+###   * `TemplateUsesAdapter.cutIn` and `.countCutIn`. A skipped step is not a run of that work.
+###
+### Three further readings deliberately do **not** filter, and the reasons are in decision row 617:
+### `planned` derives what the template *plans* and a skipped step was still planned; `max(closed_at)`
+### is a real interaction at a real instant.
+###
+### Walk it: skip a step, then read the template analysis page and confirm no false-dependency finding
+### appeared for the edge into it.
+GET {{host}}/api/insights?subject_type=process_template&subject_id={{templateId}}

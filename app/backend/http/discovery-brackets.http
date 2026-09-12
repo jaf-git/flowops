@@ -1,0 +1,531 @@
+### FEATURE_DISCOVERY — the bracket model: a START obliged to an END
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects. The demo backend runs on 8081 — Tomcat9 owns 8080
+### on this machine.
+###
+### **This is the second model of the observing zone, and it runs beside the first.** `discovery.http`
+### and `discovery-tracks.http` cover the Track model, which is what the shipped demo and the canvas
+### read. Nothing here replaces them. A bracket is keyed by five parts — chat · client · project ·
+### work type · performer — and the two models observe the same clicks from different angles until the
+### seed carries the new one.
+###
+### **Joining is the default; opening is the exception.** Twenty updates about one piece of work must
+### produce one bracket. If marking the same thing twice opens two, the address is wrong for how this
+### business actually talks, and every duration is then measured over half the work.
+###
+### **The job boundary is a container, not work.** Opening an engagement creates a boundary bracket
+### carrying the full address. A later mark whose address matches it opens a bracket *beside* it and
+### never joins it — work inside the container could never be nudged, never lapse, and would be excluded
+### from the learned process while looking perfectly fine.
+###
+### **No request in this file returns a figure about a person**, and none can be written that would.
+### Rows name who holds work, because attribution is a fact about the work. Nothing counts, ranks or
+### rates anybody, and the guarantee is the absence of the route rather than a filter on it.
+###
+### Seed the workspace first, or there will be nothing to act on:
+###   ./mvnw spring-boot:run "-Dspring-boot.run.profiles=demo"
+
+### **Credentials corrected 2026-08-31 against the running installation.** They were
+### `maria@atelier.ro` / `a-long-enough-passphrase`, and **neither exists**: `auth_user` holds
+### `maria@atelier.ro` plus ionut, ioana, andrei, elena, cosmin and daria, and `SeedCompany:54`
+### sets one password for the whole company. Anyone following this file failed at the first request,
+### which means it had never been run against this database in its previous form.
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@employee = ionut@atelier.ro
+@password = password1234
+
+### **CSRF applies to every POST here.** The session is a cookie, so the token travels in a readable
+### cookie and must come back in a header (`SecurityConfiguration`, double-submit). A REST client that
+### keeps cookies does this for you; `curl` needs `-c`/`-b` and an explicit `X-XSRF-TOKEN`, and without
+### it every request answers **401 with an empty body** — which reads exactly like a wrong password and
+### is not one.
+
+### Copy real identifiers out of `discovery.http`'s two POSTs into these.
+@jobId = 00000000-0000-0000-0000-000000000000
+@conversationId = 00000000-0000-0000-0000-000000000000
+@messageId = 00000000-0000-0000-0000-000000000000
+@bracketId = 00000000-0000-0000-0000-000000000000
+@performerId = 00000000-0000-0000-0000-000000000000
+
+### Sign in as the person who does the work. Every endpoint below requires WORK_NODE_MARK, which every
+### role holds — a permission gate here would be a gate on this zone's only supply of evidence.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{employee}}",
+  "password": "{{password}}"
+}
+
+###############################################################################
+### R1 — where a mark would land, and then marking it
+###############################################################################
+
+### The strip's preview. Writes nothing, so it is safe on every keystroke of a performer picker.
+###
+### It answers with the destination in words — "Summer menu › photos" — and whether it JOINS. That is
+### R1.3: nobody is asked to understand brackets, they are shown the answer before they commit. Somebody
+### who sees "starting" where they expected "adding to" has been given the one chance to notice before
+### the graph fragments.
+GET {{host}}/api/discovery/brackets/preview?jobId={{jobId}}&conversationId={{conversationId}}&performerId={{performerId}}
+
+### The same preview with the work type corrected (R17.5), which is what the strip's chip asks while
+### somebody is typing. The `describe` must change — the type is one of the address's five parts, so a
+### preview that kept saying the derived destination would be promising the wrong bracket.
+GET {{host}}/api/discovery/brackets/preview?jobId={{jobId}}&conversationId={{conversationId}}&performerId={{performerId}}&workType=VIDEO
+
+### The circle beside a message — the only input this zone has.
+###
+### Run this twice with the same performer and the same conversation. **The second must answer
+### `"joined": true` with the same bracketId.** If it opens a second bracket, R1 is broken and the work
+### will show as two half-length pieces with the same step appearing twice in the learned process.
+###
+### Naming a performer other than yourself transfers the closure right to them (R5.3). Assigning work is
+### the opt-in that carries the obligation — otherwise a manager who assigns five people holds five
+### obligations they cannot discharge.
+### **CORRECTED 2026-08-31: this was `POST /api/discovery/brackets/mark`, and no such route exists.**
+### No controller maps it. The live route for the circle beside a message is `POST /api/discovery/work`
+### (`WorkController:110`), which is what the frontend calls and what the verified sequence at the end
+### of this file uses. The capability was never missing — this file named a route that had moved, and
+### nothing exercised the file to notice. `verb` is `CREATE` or `ADD`; there is no `conversationId` on
+### the request, because the address is derived from the message.
+POST {{host}}/api/discovery/work
+Content-Type: application/json
+
+{
+  "messageId": "{{messageId}}",
+  "jobId": "{{jobId}}",
+  "performerId": "{{performerId}}",
+  "verb": "CREATE"
+}
+
+### R17.5 — the same mark, with the work type corrected.
+###
+### The type is derived from what the performer usually does, which is right almost every time and
+### silently wrong the one time somebody works outside their role: a designer shooting a video derives
+### DESIGN, and the business's video work goes missing from its own graph. Send `workType` to overrule it.
+###
+### **Two things to check in the response.** The override goes into the *address*, so marking the same
+### correction twice must answer `"joined": true` — a corrected mark still joins its own bracket, and if
+### it opens a second one the correction has been keyed on something it should not be. And the *fact* of
+### the correction is NOT in the address: it lives on `work_bracket.work_type_overridden`, so the type is
+### never re-derived over the top of somebody's answer later.
+###
+### Preview it first with the same value — the destination sentence must change to match, because the
+### work type is one of the address's five parts and R1.3 promises the sentence is where it will land.
+POST {{host}}/api/discovery/work
+Content-Type: application/json
+
+{
+  "messageId": "{{messageId}}",
+  "jobId": "{{jobId}}",
+  "performerId": "{{performerId}}",
+  "workType": "VIDEO",
+  "verb": "CREATE"
+}
+
+###############################################################################
+### What a conversation has produced
+###############################################################################
+
+### The chat page's Work tab: every bracket this conversation produced, live work first.
+GET {{host}}/api/discovery/brackets/conversation/{{conversationId}}
+
+### The Waiting tab. Open waits only — a satisfied one is history and a cancelled one is a thing that
+### died, and neither is something anybody is still waiting for.
+###
+### Each says whether it is external. A business whose work sat five days waiting on a client has not
+### been slow, and a screen that failed to mark the difference would invite somebody to read a client's
+### delay as a colleague's.
+GET {{host}}/api/discovery/brackets/conversation/{{conversationId}}/waits
+
+###############################################################################
+### R7 — declaring a wait
+###############################################################################
+
+### Waiting silences the person who is blocked and surfaces them to the person who can unblock them.
+###
+### A bracket may hold several at once and releases only when ALL are satisfied. A wait declared on work
+### that already delivered is satisfied the moment it is created, so nobody waits for something that
+### arrived last week.
+###
+### The reason is the person's own words. A dropdown of categories produces a tidy dataset and loses the
+### only sentence anybody would find useful three weeks later.
+POST {{host}}/api/discovery/brackets/{{bracketId}}/wait
+Content-Type: application/json
+
+{
+  "kind": "CLIENT",
+  "onBracketId": null,
+  "reason": "Waiting for Dana to approve the menu photos",
+  "expectedBy": null
+}
+
+###############################################################################
+### R6 — the three ends
+###############################################################################
+
+### Delivered produced something others will use, and the output is REQUIRED — refused in the domain,
+### not merely by this endpoint. Try it with a null outputValue and watch it refuse.
+###
+### No end node is sent. The END is generated from the bracket's own chain: a new node, parented on the
+### last node in the bracket, marked SELF_CLOSE when the bracket held nothing but its START. A START is
+### never promoted into an END — a bracket that opened and closed on one row could not be told from work
+### that never finished.
+###
+### **This is the only close that releases anybody waiting.** Delivered and Done are the two completions
+### out of ten close kinds.
+POST {{host}}/api/discovery/brackets/{{bracketId}}/close
+Content-Type: application/json
+
+{
+  "kind": "DELIVERED",
+  "jobId": "{{jobId}}",
+  "outputKind": "LINK",
+  "outputValue": "https://drive.example/aurora-summer-menu",
+  "reason": null
+}
+
+### Done — finished, and nothing builds on it. No output required and none implied.
+POST {{host}}/api/discovery/brackets/{{bracketId}}/close
+Content-Type: application/json
+
+{
+  "kind": "DONE",
+  "jobId": "{{jobId}}",
+  "outputKind": null,
+  "outputValue": null,
+  "reason": null
+}
+
+### Dropped — ended without completing, and the reason is required.
+###
+### Everybody waiting is WARNED rather than released: the work did not happen, so releasing them would
+### measure every downstream duration from a delivery that never occurred. `released` comes back 0 and
+### `warned` comes back with the count.
+###
+### A drop still counts as evidence. The step existed and was abandoned, and that is a fact about how
+### this business runs — often the most useful one.
+POST {{host}}/api/discovery/brackets/{{bracketId}}/close
+Content-Type: application/json
+
+{
+  "kind": "DROPPED",
+  "jobId": "{{jobId}}",
+  "outputKind": null,
+  "outputValue": null,
+  "reason": "Client postponed the campaign"
+}
+
+###############################################################################
+### R2.1 — taking on work that was going spare
+###############################################################################
+
+### Mark something naming NOBODY first — leave `performerId` null in the mark above. That opens an
+### unclaimed bracket: an address with a hole where the performer goes, because with no performer there
+### is no role to derive a work type from and the marker states it instead.
+###
+### Then claim it as somebody else. The performer is set AND the closure right moves to the claimer:
+### taking work on is the opt-in that carries the obligation to finish it. Left with whoever noticed the
+### work, the person doing it cannot close it and the person who can has no idea when it is done.
+###
+### **Run it twice in the interesting order.** Claim as somebody who ALREADY has an open bracket at the
+### resulting address, and watch `"merged": true` come back with a different `bracketId` than the one in
+### the path — the two were one piece of work described twice, so the evidence folds into the bracket
+### they already had. Anybody waiting on the folded one is re-targeted, never told their work died: it
+### did not die, it is being done three feet away.
+###
+### Claiming somebody else's work answers **409**. That is a handover, which keeps both facts.
+POST {{host}}/api/discovery/brackets/{{bracketId}}/claim
+
+###############################################################################
+### R14 — the handover
+###############################################################################
+
+### A handover is a close and a re-open, never an edit.
+###
+### **Watch `released` come back 0 and `reTargeted` come back non-zero.** Anybody waiting on this work is
+### moved onto the successor, not told it arrived. Telling a waiter that work nobody has done has arrived
+### stops their clock, and every duration measured after that point is wrong with nothing showing it.
+###
+### `workType` in the response is the INHERITED type. A designer taking over a video must not relabel it
+### as design work.
+###
+### Set `causedByDeactivation` true when the previous holder left. The successor is then marked disrupted
+### and excluded from pattern evidence — a business should not learn a lesson from its own staff
+### turnover.
+###
+### Naming somebody with no active membership answers **204** and produces no bracket at all: an orphan
+### for a manager to place, because inventing a successor would create an obligation nobody holds.
+POST {{host}}/api/discovery/brackets/{{bracketId}}/hand-over
+Content-Type: application/json
+
+{
+  "newPerformerId": "{{performerId}}",
+  "messageId": "{{messageId}}",
+  "causedByDeactivation": false
+}
+
+###############################################################################
+### R15, R16 — the engagement itself ends
+###############################################################################
+
+### Whether this job could be closed, and what is in the way.
+###
+### Ready when every piece of work in it has ended. The boundary does not count against itself — a
+### container waiting for itself to finish would mean no engagement could ever close.
+###
+### It also reopens: new work marked against a ready job makes it open again, because one late message
+### from a client is a follow-up rather than a second engagement.
+GET {{host}}/api/discovery/brackets/job/{{jobId}}/readiness
+
+### End the engagement. Writes a JOB_END on the boundary, and the root finally has its end.
+###
+### **Without closure there is no shape, and without a shape there is no discovery.** This is the door
+### the whole observing zone sits behind.
+###
+### Refused with 409 while any work is live, and the refusal says how many pieces are still open so the
+### page can show them rather than restating the rule.
+POST {{host}}/api/discovery/brackets/job/{{jobId}}/close
+
+### Force it closed. The owner may, and nobody else.
+###
+### The realistic stuck job is not a silent one — silence lapses quietly. It is endless activity:
+### somebody posting "still iterating" every week for six weeks, whose bracket stays alive by right
+### because lapsing somebody who kept working would delete live work from the evidence. Only this ends
+### that engagement.
+###
+### The reason is mandatory. One without it cannot be explained later and cannot be told apart from a
+### mistake — and this is exactly the event somebody asks about months afterwards. Send a blank one and
+### watch it refuse.
+###
+### The response carries `tellThem`: everybody who held live work, so each can be told once that what
+### they were working on no longer exists.
+###
+### `shapeEligible` comes back **false, permanently**. The graph is truncated, so the process it would
+### teach never happened — and a shorter process is not obviously a wrong one, which is why the
+### exclusion is structural rather than a judgement made later. Published outputs survive: the work
+### really was delivered, and this concerns the container rather than what came out of it.
+POST {{host}}/api/discovery/brackets/job/{{jobId}}/force-close
+Content-Type: application/json
+
+{
+  "reason": "Client pulled the budget"
+}
+
+###############################################################################
+### The shelf — what a conversation keeps to hand
+###############################################################################
+
+GET {{host}}/api/discovery/brackets/conversation/{{conversationId}}/shelf
+
+POST {{host}}/api/discovery/brackets/conversation/{{conversationId}}/shelf
+Content-Type: application/json
+
+{
+  "kind": "LINK",
+  "value": "https://drive.example/brand-assets",
+  "label": "Aurora brand assets"
+}
+
+###############################################################################
+### What is deliberately not here
+###############################################################################
+
+### **There is no route that aggregates by person.** Not a count, not a rate, not a ranking, not a
+### people axis. It is not hidden behind a permission — it does not exist, and an architecture test
+### asserts the absence rather than trusting it. "Sunrise design: 3 rounds" is a fact about the account
+### and is allowed. "Karim: 3 rounds" is the same data pointed at a person and is forbidden; he did
+### exactly what was asked each time.
+###
+### **There is no route that closes a boundary bracket directly.** Closing the boundary IS closing the
+### job, and allowing it separately would produce a terminal root under a live engagement.
+###
+### **There is no route that force-closes one bracket from another.** Closing a bracket terminalises no
+### other bracket. Reading node parentage as containment once destroyed a third of an eighteen-bracket
+### graph, and the absence of that route is what prevents it returning.
+###
+### **There is no route that creates, assigns or closes a task.** A node never becomes a task. Work
+### needing real review crosses into TASK through one explicit button on a different screen, and
+### `NoRouteFromDiscoveryToATaskTest` asserts that absence.
+
+###############################################################################
+### R21 — the two circles, and the six-tap flow they replace
+###############################################################################
+
+### **This is the door that made the two-step flow unnecessary.** Marking one piece of work used to cost
+### six interactions and a page reload: `POST /discovery/nodes` wrote a node with a null `bracket_id`
+### and `POST /discovery/brackets/mark` placed it. If the second call never came, the work sat in no
+### bracket, at no address, in no count, with nothing anywhere saying so. The routes below write the
+### node, its evidence and its placement in one transaction, so that state no longer exists.
+###
+### **CORRECTED 2026-08-31: the older routes do NOT still answer.** `POST /discovery/brackets/mark` has
+### no route at all — that sentence described an arrangement that had already gone. `POST /discovery/nodes`
+### does still answer.
+
+### The grey circle — one press. CREATE opens new work here.
+###
+### The verb is checked as well as offered. CREATE at an address where a bracket is already open
+### collides with R1.1's partial unique index, so this answers 409 THAT_WORK_IS_ALREADY_OPEN naming the
+### work that is in the way rather than quietly adding to it — somebody who meant "start a separate
+### piece of work" must not have their tap land inside work they did not mean to touch.
+POST {{host}}/api/discovery/work
+Content-Type: application/json
+
+{
+  "messageId": "{{messageId}}",
+  "jobId": "{{jobId}}",
+  "performerId": "{{performerId}}",
+  "workType": null,
+  "verb": "CREATE",
+  "joining": null
+}
+
+### The one-tap case — "Adding to Product photos".
+###
+### Joining is the default and opening is the exception. Twenty updates about one piece of work produce
+### one bracket; if they did not, every duration in the engagement would be measured over a fraction of
+### the work.
+POST {{host}}/api/discovery/work
+Content-Type: application/json
+
+{
+  "messageId": "{{messageId}}",
+  "jobId": "{{jobId}}",
+  "performerId": "{{performerId}}",
+  "workType": null,
+  "verb": "ADD",
+  "joining": null
+}
+
+### "Join Tariq on the photos" — and it opens the JOINER'S OWN bracket.
+###
+### A bracket never has two performers (R19.5), so joining does not enter somebody else's work: it takes
+### that work's type and marks it under the caller's name. What links the two is the row this press
+### writes, and it has to be written — both people end up with a different start message and a different
+### output, so neither the shared-output tier nor the shared-message tier can see them. The derived group
+### came back empty for a real collaboration, and the button did not.
+POST {{host}}/api/discovery/work
+Content-Type: application/json
+
+{
+  "messageId": "{{messageId}}",
+  "jobId": "{{jobId}}",
+  "performerId": null,
+  "workType": null,
+  "verb": "JOIN",
+  "joining": "{{bracketId}}"
+}
+
+### What the red circle may offer here — read BEFORE anything is offered, never checked after.
+###
+### Returns only work this caller may close, plus who holds the rest, so the strip can say "Tariq holds
+### the photos" instead of offering a tap that would be refused. Each row carries who it would unblock,
+### which is what lets the confirmation read "this unblocks Karim".
+###
+### **The engagement's boundary is never among them**, even for the person holding its closure right:
+### delivering it would mean ending an engagement from a message.
+GET {{host}}/api/discovery/work/{{messageId}}/deliverable
+
+### The red circle — "this delivers it".
+###
+### Closes the resolved bracket DELIVERED with output_kind MESSAGE_REF and this message as the value. In
+### a chat the evidence and the deliverable are usually the same thing, and R11 stores a reference rather
+### than a file.
+###
+### `bracketId` is null in the ordinary case, which is one piece of work and one tap. With several of
+### yours open here it is refused — 409 SEVERAL_COULD_BE_DELIVERED with the candidates named — because
+### closing the wrong one releases the wrong waiter and publishes the wrong output to a client's list,
+### and nothing about that throws.
+###
+### Nothing of yours open answers 409 NOTHING_OF_YOURS_IS_OPEN_HERE, naming who holds what is.
+POST {{host}}/api/discovery/work/{{messageId}}/deliver
+Content-Type: application/json
+
+{
+  "bracketId": null
+}
+
+### **Done and Dropped are deliberately absent from this file and from the red circle.** Neither has an
+### artifact to point at, so neither belongs on a message; both live on the bracket, through
+### `POST /brackets/{id}/close` above. That absence is what makes the red circle safe to press — it can
+### only ever deliver, so it cannot accidentally kill a wait.
+
+###############################################################################
+### A whole engagement, opened and finished — VERIFIED end to end 2026-08-31
+###############################################################################
+###
+### **Every request below was run against the running installation on 2026-08-31 and answered as
+### recorded.** It exists because of `IMPL-SOP-REAL-DATA`: demo and test data is created through the
+### application's own endpoints, never by a seeder, because a seeder becomes a third era of writer
+### beside the pre-bracket and bracket-era ones — and `work_type` NULL, `closure` unwritten and
+### `post_close` defaulted are all instances of one column, more than one writer, and nobody comparing.
+###
+### It produced job `37dbcc81-839e-4cbc-a11a-1a97379922f1`: **CLOSED, shape_eligible, three delivered
+### pieces of work.** Before it, the newest-200 window held 8 finished engagements; it is the ninth.
+###
+### **`claim` is not in this sequence, and that is not an omission.** Marking your own work sets you as
+### the performer (`state = SELF`), so nothing needs claiming. `POST /brackets/{id}/claim` is for taking
+### on work somebody *else* noticed — which is why its having no frontend caller matters for handover,
+### not for this path.
+
+### 1 — say something that describes work. The corpus's own marked rows are mostly chatter
+### ("Fine by me, that gives us room." is stored as an ADS piece of work), and chatter is refused by
+### `StepDiscovery.eligible` at `Intent.of(...) == WORK`. A message a person would actually mark reads
+### like this one.
+POST {{host}}/api/conversations/{{conversationId}}/messages
+Content-Type: application/json
+
+{
+  "body": "Wrote the autumn campaign landing page copy and sent the draft to the client for review"
+}
+
+### 2 — open the engagement from that message. `messageId` is required: an engagement begins at
+### something somebody said, not at a form. Answers `{ nodeId, jobId, trackId, weaklyKeyed }` — the
+### node is the JOB_START boundary, and boundaries are containers rather than work.
+POST {{host}}/api/discovery/jobs
+Content-Type: application/json
+
+{
+  "messageId": "{{messageId}}",
+  "name": "Aurora Coffee autumn campaign",
+  "projectLabel": "Autumn 2026"
+}
+
+### 3 — mark each piece of work. One call per governed type; each opens its own bracket at its own
+### address, and the response names the destination in the same words the preview promised
+### ("starting · Autumn 2026 › CONTENT"). Repeat for CLIENT_INTAKE and ADS to give the engagement a
+### shape: discovery needs at least three distinct steps before an engagement is a candidate at all.
+POST {{host}}/api/discovery/work
+Content-Type: application/json
+
+{
+  "messageId": "{{messageId}}",
+  "jobId": "{{jobId}}",
+  "performerId": "{{performerId}}",
+  "workType": "CONTENT",
+  "verb": "CREATE"
+}
+
+### 4 — deliver each bracket. **`outputKind` is `TEXT` or `LINK` and nothing else** — `OutputKind` has
+### exactly two values. `REPORT` and `SCHEDULING` are refused with
+### `R6.1 - a delivery names what it produced`, even though `work_node.output_type` is documented as
+### `TEXT | DESIGN | REPORT | SCHEDULING | NONE`. **Two vocabularies for one idea**, and the refusal
+### names the rule rather than the enum, so it reads like a missing value rather than a wrong word.
+POST {{host}}/api/discovery/brackets/{{bracketId}}/close
+Content-Type: application/json
+
+{
+  "kind": "DELIVERED",
+  "outputKind": "TEXT",
+  "outputValue": "autumn-campaign deliverable"
+}
+
+### 5 — confirm the engagement can end. `{ "ready": true, "liveWork": 0, "status": "READY_TO_CLOSE" }`.
+GET {{host}}/api/discovery/brackets/job/{{jobId}}/readiness
+
+### 6 — end it. No body. Answers `{ status: "CLOSED", shapeEligible: true, tellThem: [], ... }`, and
+### the engagement is now evidence: ADR-013 admits only finished engagements to clustering.
+POST {{host}}/api/discovery/brackets/job/{{jobId}}/close

@@ -1,0 +1,340 @@
+### FEATURE_DISCOVERY — the workspace graph: what everybody sees, and what only participants do
+###
+### Sign in first. The demo backend runs on 8081 — Tomcat9 owns 8080 on this machine.
+###
+### **The structure is public. The words are not.** Everybody in the workspace sees nodes, brackets,
+### states, work types, durations and outputs. A node's TEXT is visible only to the participants of the
+### conversation it was said in.
+###
+### That split is not a filter, and the difference matters when reading these responses. The graph route
+### is served by a port with NO method that returns a sentence, so a leak has no path rather than a path
+### that is currently closed. The search route is served by a second port whose every query narrows to the
+### caller's own conversations INSIDE the SQL, so rows they may not read are never fetched.
+###
+### **No route here aggregates by person.** Not a workload, not a throughput, not a ranking, not a "who
+### introduces the most work types". A public graph makes per-person comparison possible by eye and the
+### design accepts that explicitly; what is refused is the product doing the comparison. Rows name who did
+### the work — attribution is a fact about a piece of work — and carry no number about them.
+
+@host = http://localhost:8081
+@employee = andrei@atelier.ro
+@outsider = maria@atelier.ro
+@password = a-long-enough-passphrase
+
+@jobId = 00000000-0000-0000-0000-000000000000
+
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{employee}}",
+  "password": "{{password}}"
+}
+
+###############################################################################
+### R13 — the shape of an engagement
+###############################################################################
+
+### Every node in the job, with its work type, who performed it, its state, and how long it has taken —
+### and the phase that duration was spent in, because a duration shown without naming its phase invites
+### somebody to read a client's five-day silence as a colleague's slowness.
+###
+### **There is no text field in the response.** Not an empty one, not a null one — none. Look for where
+### the words were removed and you will not find such a place; they were never fetched.
+###
+### **Edges come with the nodes, in three kinds, and no edge crosses a job.**
+###
+###   PARENTAGE   solid  — the request that caused this node, or the performer's own last one (R3.3)
+###   WAIT        dotted — a declared wait, and the ONLY way a dependency enters this graph (R7)
+###   SUCCESSION  thick  — a handover's successor taking the work on (R14)
+###
+### The three strokes are three different claims about the business. Drawn alike, a dependency reads as
+### a sequence and the graph teaches a process step that never happened — which is what nineteen of the
+### twenty defects found while validating these rules looked like: a legal graph, quietly wrong.
+###
+### The outer wall is enforced IN THE QUERIES. A wait whose target lives in another engagement is never
+### selected, rather than selected and filtered — so a bad row written by a migration or a repair script
+### still cannot produce a false edge. `noEdgeCrossesAJob` asserts exactly that, by inserting one.
+###
+### **A WAIT edge carries no reason.** The reason is free text somebody typed; it belongs to that
+### conversation's participants and is served by the waiting tab. `PublicEdge` has no field for it.
+GET {{host}}/api/discovery/graph/job/{{jobId}}
+Authorization: Bearer {{token}}
+
+###############################################################################
+### S1 — the engagement's header
+###############################################################################
+
+### `client ▸ project · state · who closes it`, and what is in the way of closing it.
+###
+### Everything else in this zone depends on the engagement being reachable without hunting for it, which
+### is the whole argument for a pinned bar rather than a tab.
+###
+### **`liveBrackets` does not count the job's own boundary.** The boundary is a container and stays open
+### until the engagement ends (R4a.1), so counting it would mean no job ever reached zero and the close
+### control never turned on. Getting this wrong produces a header that is correct in every visible respect
+### and a button that can never be pressed.
+###
+### `closeReason` is the only free-text string here, and it is a statement about the engagement rather
+### than a conversation's words: R16 requires a force close to say why and requires the scar to stay
+### visible afterwards rather than being filed once the dialog closed.
+###
+### No figure here is about a person. `liveBrackets` counts brackets, which are pieces of work.
+GET {{host}}/api/discovery/graph/job/{{jobId}}/header
+
+###############################################################################
+### R12.6 — search, and the honest third answer
+###############################################################################
+
+### Run this signed in as Andrei, then sign in as somebody who is NOT in the conversation and run it
+### again.
+###
+### Andrei gets the matching sentences. The outsider gets an EMPTY list and a number:
+###
+###     { "matches": [], "beyondReach": 3 }
+###
+### which the interface renders as "3 results in conversations you cannot see."
+###
+### Saying nothing would make the product lie about what it holds. Saying what they are would be the leak.
+### A count is the only honest third option — it tells somebody to go and ask a colleague rather than to
+### conclude the thing does not exist.
+GET {{host}}/api/discovery/graph/search?q=leaflet
+
+###############################################################################
+### R19 — several brackets, one piece of work
+###############################################################################
+
+### A bracket never has two performers. The performer is part of the address precisely so two writers
+### under one manager stay separate — so two people on one deliverable are always two brackets, and
+### collaboration is those brackets grouped by evidence.
+###
+### Read the `tier` on each group:
+###
+###   STRONG — both published the same output. They made one thing. Collapses to one step.
+###   GOOD   — their starts share one message AND the same work type. Asked for it together. Collapses.
+###   WEAK   — same job, same work type, nothing shared. Drawn as a band, NEVER collapsed.
+###
+### **The work type is what makes GOOD safe.** One assignment message naming five people produces five
+### marks with five different work types — five different things. Group those and an entire campaign
+### collapses into a single step, and the learned process loses every stream but one while looking
+### perfectly reasonable, because a short process is not obviously a wrong one.
+###
+### **Why WEAK stays weak.** A collaborator who already has that address open will JOIN it, so two people
+### genuinely working together can end up with different start messages and different outputs. Same job
+### plus same work type is then all that remains: real enough to draw, too thin to assert. Collapsing on
+### it would put a step in the learned process that never existed.
+###
+### The `evidence` field says WHY the system thinks these are one piece of work, so a person can judge it
+### rather than being asked to trust it.
+GET {{host}}/api/discovery/graph/job/{{jobId}}/collaboration
+
+### R19.4 — the same output value in two different jobs.
+###
+### One asset served two engagements. NO EDGE IS DRAWN: a dependency inferred across jobs is exactly the
+### false relationship this zone refuses to invent, and one accumulates daily until the system is
+### confident and wrong.
+###
+### But it is reported, because reuse is a real economic fact that is otherwise invisible. Round two of
+### the summer menu costs half of round one, and the reason is entirely which assets came for free.
+GET {{host}}/api/discovery/graph/reuse
+
+###############################################################################
+### R20 — the company's vocabulary
+###############################################################################
+
+### What the chip says while somebody is still typing a work type.
+###
+### Try a word already in use, then one that is not. A new word answers `neverUsedBefore: true` with its
+### closest existing neighbours — because what actually happens is somebody reaching for the word they
+### know and adding to it: RESEARCH becomes RESEARCH_BRIEF, DESIGN becomes DESIGN_REVIEW.
+###
+### **It never refuses.** Anyone may create a work type. Restricting it to the owner would block work in
+### order to protect a taxonomy, which inverts the priority: recognition over classification, and never
+### stop the work. The safeguard is visibility, not permission.
+###
+### What it prevents is fragmentation: one person writing RESEARCH and another COMPETITOR_ANALYSIS for the
+### same activity splits the taxonomy, and process discovery BREAKS — the same process appears as two,
+### each with half the evidence, and neither reaches the sample floor. Nothing errors. The product simply
+### stops finding something it used to find.
+GET {{host}}/api/discovery/graph/work-type?name=RESEARCH_BRIEF
+
+### This week's vocabulary changes: new work types with their first use, new counterparties, new projects,
+### and any two rare types close enough to be worth a look.
+###
+### Ambient, never urgent, and NEVER a notification. Nobody needs to do anything about a new work type
+### today.
+###
+### Attribution appears — "RESEARCH, first used by Rana". No count per person does, and none can: a
+### leaderboard of who introduces the most types is a person-keyed figure wearing a different hat.
+###
+### Merge suggestions are suggestions. Merging a company's vocabulary is a decision, not a cleanup — two
+### similar words may be one activity, or the distinction a team's whole method rests on.
+GET {{host}}/api/discovery/graph/vocabulary
+
+###############################################################################
+### What is deliberately not here
+###############################################################################
+
+### **R20.4 — drift.** "New to the company" is the weak signal; "new to THIS PROCESS" is the strong one,
+### and it is the earliest signal a business gets that how it works has moved — earlier than any missed
+### deadline, because it shows up while the work is still going well. It needs a process cluster and the
+### bracket model has none. Raised as DISCOVERY_REQ_SPEC_06 rather than answered with an invented
+### definition.
+###
+### **Any route that keys a figure to a person.** It is not hidden behind a permission; it does not exist,
+### and two tests assert the absence — one over method names, one over the SQL, because a person-keyed
+### aggregation reaches production as `group by performer_ref` inside a string, not as a method somebody
+### would name `countByPerformer`.
+
+###############################################################################
+### S2 — the tracker rail
+###############################################################################
+
+### Every live bracket in the workspace, grouped by engagement.
+###
+### The persistence surface the whole flow leans on. Without it the only confirmation anybody gets that
+### their mark landed is a ten-second toast, and a zone whose single input is one tap cannot afford for
+### that tap to leave no trace. Now that the graph is public it is also everybody's "what have I got
+### open" screen, and A6 says that visibility is what materially reduces the lapse rate.
+###
+### **LANES ARE KEYED BY CLIENT AND PROJECT, NEVER BY PERSON.** A lane per colleague is the arrangement
+### a reader reaches for first and it is the people axis R13.2 refuses. The refusal is structural: `Lane`
+### has no field naming a person, so a person-keyed rail cannot be built from this route without
+### changing the type — which is a change somebody has to justify.
+###
+### No counts either. A lane holds its marks; a renderer wanting a total counts the list it was given.
+###
+### **Live brackets only, and NOT the job's own boundary.** The boundary is a container that stays open
+### until the engagement ends (R4a.1), so including it would put a permanent undischargeable mark on
+### every lane — and a rail whose marks are not all actionable stops being scanned, which costs the
+### surface its entire purpose.
+###
+### No text. Work type, who is doing it, how it stands, and which message to jump back to.
+GET {{host}}/api/discovery/graph/rail
+Authorization: Bearer {{token}}
+
+###############################################################################
+### The three numbers at the top of the chat page
+###############################################################################
+
+### `{ "waitingOnYou": 2, "openWork": 3, "deliveredThisWeek": 1 }` — for whoever is signed in.
+###
+### **ONE READ, ONE ANSWER.** Four different counts of live work existed in this product, three of them
+### on screen at once, each computed by whichever client happened to be holding a list. Two tiles built
+### that way disagree the moment one of their lists is filtered, paged or a request behind the other, and
+### nothing on the page says which of the two is wrong. All three figures here come from one statement.
+###
+### **EVERY FIGURE IS ABOUT THE VIEWER'S OWN WORK**, which is R12.1's permitted form. There is no person
+### parameter — this route cannot be aimed at a colleague — and the response has no field a name could go
+### in. Sign in as somebody else above and read it again: that is the only way to see another answer.
+###
+### `waitingOnYou` **counts waits, not waiters.** Two colleagues blocked on one bracket are two waits;
+### "two people are waiting on you" would be a tally over humans. It reads the AWAITED end of the wait —
+### somebody cannot move until you deliver. The other end is a different figure and a different tile.
+###
+### `openWork` is **NOT the job's own boundary** (R4a.1). Open an engagement and read this: the number
+### must not go up. The boundary is a container that stays open until the engagement ends, so counting it
+### would give everybody who has ever opened a job a permanent piece of work they cannot discharge.
+###
+### `deliveredThisWeek` counts **DELIVERED and DONE only** — two of the nine close kinds are completions.
+### Hand a bracket over, drop one, or let one lapse, and this number must not move. The week starts on
+### Monday.
+GET {{host}}/api/discovery/graph/my-work-counts
+Authorization: Bearer {{token}}
+
+###############################################################################
+### The list behind the first of those three numbers
+###############################################################################
+
+### `waitingOnYou: 2` says how many. This says WHICH — so the tile is something to act on rather than a
+### figure to feel bad about.
+###
+### **THE LIST AND THE COUNT ARE ONE PREDICATE.** Run this and the route above back to back: the length
+### of this list and `waitingOnYou` are the same number, always, because both narrow identically — the
+### AWAITED end of an open, uncancelled wait, scoped to whoever is signed in. A panel of three rows under
+### a tile reading two is the same defect the three numbers were built to remove, and nothing on such a
+### page says which half is lying.
+###
+### **`on…` is YOUR work; `waiting…` is THEIRS.** `onAddress` is what is wanted — the thing whose
+### delivery ends this wait. `waitingAddress` is what is held up meanwhile, and `waitingPerformerName` is
+### who is held up. Read the two ends the wrong way round and the list answers *what am I waiting for*,
+### which is a real question of roughly the same size and belongs on a different tile entirely.
+###
+### **Oldest first**, because the longest-blocked thing is the one to act on.
+###
+### **There is no reason field.** R13.1 — the reason is free text somebody typed in a conversation you may
+### not be in. The address, the kind and the timing are structure and are everybody's; the sentence is not,
+### and it is never selected rather than selected and dropped by a mapper.
+###
+### **`declaredAt` is an instant and never `daysWaiting`.** R12.5 — a duration shown without naming its
+### phase invites somebody to read a client's five-day silence as a colleague's slowness. The server sends
+### the moment; the page names the phase beside it.
+###
+### **The name is attribution and nothing else.** R12.1 — no count about that person, no ranking, no
+### grouping, no ordering by them, and no parameter that could aim this read at a colleague. Append
+### `?performerId=…` and nothing changes: there is nowhere for it to go. Sign in as somebody else above,
+### which is the only way to see another answer.
+GET {{host}}/api/discovery/graph/my-waits
+Authorization: Bearer {{token}}
+
+###############################################################################
+### The same desk at a third grain — your work as the chains of nodes it is
+###############################################################################
+
+### One line per piece of work you perform, and inside it that work's own nodes OLDEST FIRST — the chain
+### as it happened.
+###
+### **R4.2 drawn literally.** A START, a WORK node for each step since, and the END generated when
+### somebody closed it. A START is never mutated into an END, so work described and finished in one
+### sentence still has two circles and is still distinguishable from work that never finished.
+###
+### **This is the first read that surfaces `work_node.paired_node_id`.** Either end of a pair reads the
+### other, which is what makes "what ended this?" answerable from the start of a chain rather than by a
+### scan. Deliver a bracket and read this: the last circle is the END, and it is the START's partner.
+###
+### **A handover writes no END node, and that is correct rather than missing.** Nobody said anything — the
+### work moved — so a handed-over line is a START and a `closeKind` of `HANDED_OVER`. Only the human ends
+### (delivered, done, dropped) stand on a sentence and generate an END.
+###
+### **SCOPED BY THE SESSION, AND IT TAKES NO PARAMETER.** Append `?performerId=…` and nothing changes:
+### the route has nowhere to put it. Sign in as somebody else above, which is the only way to see another
+### answer.
+###
+### **No name, no count, no ranking, no duration — and no timestamp either.** Every line is already yours,
+### so naming you would be the product telling you who you are. R12.5 — the ordering that makes a chain
+### readable is done in SQL, so the moments stay in the database rather than travelling out unrendered.
+###
+### **No text.** R13.1 — a node's `messageId` is a pointer the client resolves through a read that already
+### checks who may see it. It is NULL where a node has no evidence of its own, and null is a real answer:
+### the circle is drawn and is simply not a way back.
+###
+### **The engagement's own boundary is not here** (R4a.1). Open an engagement and read this: no line
+### appears for it. It is a container that stays open until the engagement ends, and a container is not
+### something somebody is carrying — which is this page's whole subject.
+###
+### **Closed work IS here.** A chain that ended is the only kind with an END to show; dropping it would
+### answer "what am I doing now", which is `/rail`'s question and already has a surface.
+GET {{host}}/api/discovery/graph/my-track
+Authorization: Bearer {{token}}
+
+###############################################################################
+### S9 — what an engagement delivered
+###############################################################################
+
+### R6's *feeds forward*, made reachable. A delivered output is what lets a terminal end feed the next
+### piece of work without an edge somebody drew.
+###
+### **THE FACT IS EVERYBODY'S; THE VALUE IS NOT.** D5 — an artifact's value is readable by the
+### originating conversation's participants and by the job's owner. A row you may not read still comes
+### back, with `readable: false` and a null value: hiding it would make the product lie about what the
+### engagement produced, and showing the link would be the leak.
+###
+### The narrowing is a CASE in the query. A value you may not read is **never selected**, rather than
+### selected and blanked by a mapper somebody has to remember to write — the same discipline as the
+### search count, and for the same reason.
+###
+### `readable` is a flag rather than something to infer from the null, because "we did not fetch this
+### for you" and "this delivery recorded no value" are different facts and a screen should say the
+### right one.
+GET {{host}}/api/discovery/graph/job/{{jobId}}/artifacts
+Authorization: Bearer {{token}}

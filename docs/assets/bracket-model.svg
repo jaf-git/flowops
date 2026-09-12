@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" width="1200" height="620" role="img" aria-label="The bracket model: a marked message computes a five-part address and joins or opens a bracket">
+  <title>The bracket model</title>
+  <defs>
+    <pattern id="bdots" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.1" fill="#ffffff" fill-opacity="0.04"/>
+    </pattern>
+    <marker id="bArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4a4d52"/>
+    </marker>
+    <marker id="bVolt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#dcfb4b"/>
+    </marker>
+    <clipPath id="bcard"><rect x="0" y="0" width="1200" height="620" rx="20"/></clipPath>
+  </defs>
+
+  <style>
+    .mono { font-family: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace; }
+    .sans { font-family: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+
+    /* The mark pulses, then the address chips resolve one by one, then the bracket fills. */
+    .mark { animation: mark 8s ease-in-out infinite; transform-origin: center; }
+    @keyframes mark {
+      0%, 100% { r: 8; fill: #17181a; stroke: #4a4d52; }
+      6%       { r: 11; fill: #dcfb4b; stroke: #dcfb4b; }
+      18%, 96% { r: 8; fill: #dcfb4b; stroke: #dcfb4b; }
+    }
+
+    .a1 { animation: chip 8s linear infinite; animation-delay: 0.60s; }
+    .a2 { animation: chip 8s linear infinite; animation-delay: 0.85s; }
+    .a3 { animation: chip 8s linear infinite; animation-delay: 1.10s; }
+    .a4 { animation: chip 8s linear infinite; animation-delay: 1.35s; }
+    .a5 { animation: chip 8s linear infinite; animation-delay: 1.60s; }
+    @keyframes chip {
+      0%, 100% { stroke: #2a2c30; fill: #14161a; }
+      2%       { stroke: #dcfb4b; fill: #1c2110; }
+      10%, 95% { stroke: #4a4d52; fill: #17181a; }
+    }
+
+    .b1 { animation: node 8s linear infinite; animation-delay: 2.4s; }
+    .b2 { animation: node 8s linear infinite; animation-delay: 3.1s; }
+    .b3 { animation: node 8s linear infinite; animation-delay: 3.8s; }
+    .b4 { animation: node 8s linear infinite; animation-delay: 4.5s; }
+    @keyframes node {
+      0%, 100% { stroke: #2a2c30; }
+      2%       { stroke: #dcfb4b; }
+      12%, 94% { stroke: #4a4d52; }
+    }
+
+    .span { stroke-dasharray: 460; stroke-dashoffset: 460; animation: draw 8s ease-in-out infinite; animation-delay: 2.4s; }
+    @keyframes draw {
+      0%        { stroke-dashoffset: 460; }
+      28%, 94%  { stroke-dashoffset: 0; }
+      100%      { stroke-dashoffset: 460; }
+    }
+
+    .crawl { stroke-dasharray: 5 6; animation: crawl 1.2s linear infinite; }
+    @keyframes crawl { to { stroke-dashoffset: -11; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .mark,.a1,.a2,.a3,.a4,.a5,.b1,.b2,.b3,.b4,.span,.crawl { animation: none; }
+      .span { stroke-dashoffset: 0; }
+    }
+  </style>
+
+  <g clip-path="url(#bcard)">
+    <rect width="1200" height="620" fill="#0b0b0c"/>
+    <rect width="1200" height="620" fill="url(#bdots)"/>
+
+    <text class="mono" x="48" y="46" font-size="11.5" fill="#63666c" letter-spacing="1.6">THE OBSERVING ZONE · A NODE NEVER BECOMES A TASK</text>
+    <text class="sans" x="48" y="80" font-size="26" font-weight="700" fill="#f2f4f6" letter-spacing="-0.5">One tap on a message, and the graph grows a piece of work</text>
+
+    <!-- ── 1 · the message ── -->
+    <g transform="translate(48, 120)">
+      <text class="mono" x="0" y="0" font-size="10.5" fill="#63666c" letter-spacing="1.3">1 · SOMEBODY MARKS A MESSAGE</text>
+      <rect x="0" y="16" width="300" height="92" rx="14" fill="#111316" stroke="#2a2c30" stroke-width="1.75"/>
+      <circle class="mark" cx="26" cy="62" r="8" fill="#17181a" stroke="#4a4d52" stroke-width="1.75"/>
+      <text class="sans" x="50" y="50" font-size="13" fill="#f2f4f6">“Morning — did you get the</text>
+      <text class="sans" x="50" y="70" font-size="13" fill="#f2f4f6">files they sent over?”</text>
+      <text class="mono" x="50" y="92" font-size="10" fill="#4a4d52">ANDREI MUNTEANU · 13:14</text>
+    </g>
+
+    <!-- ── 2 · the address ── -->
+    <g transform="translate(392, 120)">
+      <text class="mono" x="0" y="0" font-size="10.5" fill="#63666c" letter-spacing="1.3">2 · THE ADDRESS IS COMPUTED — FIVE PARTS, NOTHING ELSE</text>
+
+      <g transform="translate(0, 16)">
+        <rect class="a1" x="0"   y="0" width="146" height="40" rx="10" fill="#14161a" stroke="#2a2c30" stroke-width="1.5"/>
+        <text class="mono" x="14" y="17" font-size="9.5" fill="#63666c" letter-spacing="1">CHAT</text>
+        <text class="sans" x="14" y="32" font-size="12" fill="#f2f4f6">Andrei ↔ Maria</text>
+
+        <rect class="a2" x="158" y="0" width="146" height="40" rx="10" fill="#14161a" stroke="#2a2c30" stroke-width="1.5"/>
+        <text class="mono" x="172" y="17" font-size="9.5" fill="#63666c" letter-spacing="1">CLIENT</text>
+        <text class="sans" x="172" y="32" font-size="12" fill="#f2f4f6">Aurora Coffee</text>
+
+        <rect class="a3" x="316" y="0" width="146" height="40" rx="10" fill="#14161a" stroke="#2a2c30" stroke-width="1.5"/>
+        <text class="mono" x="330" y="17" font-size="9.5" fill="#63666c" letter-spacing="1">PROJECT</text>
+        <text class="sans" x="330" y="32" font-size="12" fill="#f2f4f6">Summer menu</text>
+
+        <rect class="a4" x="474" y="0" width="146" height="40" rx="10" fill="#14161a" stroke="#2a2c30" stroke-width="1.5"/>
+        <text class="mono" x="488" y="17" font-size="9.5" fill="#63666c" letter-spacing="1">WORK TYPE</text>
+        <text class="sans" x="488" y="32" font-size="12" fill="#f2f4f6">CONTENT</text>
+
+        <rect class="a5" x="632" y="0" width="146" height="40" rx="10" fill="#14161a" stroke="#2a2c30" stroke-width="1.5"/>
+        <text class="mono" x="646" y="17" font-size="9.5" fill="#63666c" letter-spacing="1">PERFORMER</text>
+        <text class="sans" x="646" y="32" font-size="12" fill="#f2f4f6">Andrei</text>
+      </g>
+
+      <text class="sans" x="0" y="88" font-size="12.5" fill="#63666c">The address decides, and nothing else does — not time, not who spoke last, not how the message reads.</text>
+      <text class="sans" x="0" y="106" font-size="12.5" fill="#63666c">A partial unique index permits exactly one open bracket per address. Not a service check — an index.</text>
+    </g>
+
+    <line class="crawl" x1="352" y1="182" x2="384" y2="182" stroke="#4a4d52" stroke-width="1.5" marker-end="url(#bArrow)"/>
+
+    <!-- ── 3 · the bracket ── -->
+    <g transform="translate(48, 290)">
+      <text class="mono" x="0" y="0" font-size="10.5" fill="#63666c" letter-spacing="1.3">3 · IT JOINS THE OPEN BRACKET AT THAT ADDRESS, OR OPENS A NEW ONE</text>
+
+      <!-- the span line -->
+      <path class="span" d="M 60 32 L 60 20 L 1040 20 L 1040 32" fill="none" stroke="#dcfb4b" stroke-width="2"/>
+      <rect x="396" y="10" width="308" height="20" fill="#0b0b0c"/>
+      <text class="mono" x="550" y="24" font-size="10.5" fill="#dcfb4b" text-anchor="middle" letter-spacing="1.2">ONE BRACKET · A START OBLIGED TO AN END</text>
+
+      <!-- the nodes -->
+      <g transform="translate(0, 40)">
+        <rect class="b1" x="0" y="0" width="240" height="88" rx="14" fill="#14161a" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="mono" x="18" y="26" font-size="10" fill="#dcfb4b" letter-spacing="1.2">START</text>
+        <text class="sans" x="18" y="50" font-size="13.5" font-weight="700" fill="#f2f4f6">Collect the photos</text>
+        <text class="mono" x="18" y="72" font-size="10" fill="#4a4d52">ANDREI · CONTENT</text>
+
+        <rect class="b2" x="266" y="0" width="240" height="88" rx="14" fill="#14161a" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="mono" x="284" y="26" font-size="10" fill="#63666c" letter-spacing="1.2">WORK</text>
+        <text class="sans" x="284" y="50" font-size="13.5" font-weight="700" fill="#f2f4f6">Four of six, rest today</text>
+        <text class="mono" x="284" y="72" font-size="10" fill="#4a4d52">NOT AN END — THE BRACKET STAYS OPEN</text>
+
+        <rect class="b3" x="532" y="0" width="240" height="88" rx="14" fill="#14161a" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="mono" x="550" y="26" font-size="10" fill="#ffb454" letter-spacing="1.2">WAIT</text>
+        <text class="sans" x="550" y="50" font-size="13.5" font-weight="700" fill="#f2f4f6">Waiting on the client</text>
+        <text class="mono" x="550" y="72" font-size="10" fill="#4a4d52">DECLARED, SO IT CAN BE MEASURED</text>
+
+        <rect class="b4" x="798" y="0" width="240" height="88" rx="14" fill="#14161a" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="mono" x="816" y="26" font-size="10" fill="#a8efb5" letter-spacing="1.2">END · DELIVERED</text>
+        <text class="sans" x="816" y="50" font-size="13.5" font-weight="700" fill="#f2f4f6">Sent the gallery link</text>
+        <text class="mono" x="816" y="72" font-size="10" fill="#4a4d52">DELIVERED REQUIRES AN OUTPUT</text>
+
+        <line class="crawl" x1="242" y1="44" x2="264" y2="44" stroke="#4a4d52" stroke-width="1.5" marker-end="url(#bArrow)"/>
+        <line class="crawl" x1="508" y1="44" x2="530" y2="44" stroke="#4a4d52" stroke-width="1.5" marker-end="url(#bArrow)"/>
+        <line class="crawl" x1="774" y1="44" x2="796" y2="44" stroke="#4a4d52" stroke-width="1.5" marker-end="url(#bVolt)"/>
+      </g>
+
+      <text class="sans" x="0" y="156" font-size="12.5" fill="#63666c">A node's parent is the node whose request caused it — never the node created most recently. One message assigning five</text>
+      <text class="sans" x="0" y="174" font-size="12.5" fill="#63666c">people produces five siblings, not a chain of five. No edge ever crosses a job, so cycles are impossible by construction.</text>
+    </g>
+
+    <!-- ── the two refusals ── -->
+    <g transform="translate(48, 504)">
+      <g>
+        <rect x="0" y="0" width="544" height="76" rx="12" fill="#111316" stroke="#2a2c30" stroke-width="1.5"/>
+        <rect x="0" y="0" width="4" height="76" rx="2" fill="#dcfb4b"/>
+        <text class="sans" x="20" y="28" font-size="13.5" font-weight="700" fill="#f2f4f6">A node never becomes a task</text>
+        <text class="sans" x="20" y="49" font-size="12" fill="#63666c">The observing zone is not a second task engine. Only an approved</text>
+        <text class="sans" x="20" y="66" font-size="12" fill="#63666c">template ever crosses into the running application.</text>
+      </g>
+
+      <g transform="translate(560, 0)">
+        <rect x="0" y="0" width="544" height="76" rx="12" fill="#111316" stroke="#2a2c30" stroke-width="1.5"/>
+        <rect x="0" y="0" width="4" height="76" rx="2" fill="#ff6b6b"/>
+        <text class="sans" x="20" y="28" font-size="13.5" font-weight="700" fill="#f2f4f6">No number is ever produced about a person</text>
+        <text class="sans" x="20" y="49" font-size="12" fill="#63666c">It measures work, not workers. Every figure in the product describes</text>
+        <text class="sans" x="20" y="66" font-size="12" fill="#63666c">a piece of work; the scope test refuses anything that would not.</text>
+      </g>
+    </g>
+
+    <rect x="0.75" y="0.75" width="1198.5" height="618.5" rx="19.25" fill="none" stroke="#2a2c30" stroke-width="1.5"/>
+  </g>
+</svg>

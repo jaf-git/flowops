@@ -1,0 +1,207 @@
+### FEATURE_CHAT — conversations, messages, and what they become
+#
+# Sign in first with auth.http; the session cookie carries from there.
+#
+# **Every read below resolves the caller from that session.** There is no request in this file that
+# names whose conversations to return, and that absence is DECISION-CHAT-PRIVACY-01 rather than an
+# omission — a route taking a person identifier in order to read would be the confused-deputy path the
+# decision refuses. The one identifier naming somebody else starts a conversation and reads nothing.
+
+@host = http://localhost:8081
+@conversation = 00000000-0000-0000-0000-000000000000
+@person = 00000000-0000-0000-0000-000000000000
+@message = 00000000-0000-0000-0000-000000000000
+# CHAT-ASSIGN-DIRECT-01: an active template to start a run of, and a team channel to be refused by.
+@template = 00000000-0000-0000-0000-000000000000
+@channel = 00000000-0000-0000-0000-000000000000
+
+### The rail — CHAT-VIEW-CONVERSATIONS-01
+# Announcements pinned first, then direct conversations by most recent message. Ordered by recency and
+# never by presence. The only number here is the caller's own unread count.
+GET {{host}}/api/conversations
+
+### Start a conversation — CHAT-VIEW-CONVERSATIONS-01 step 5
+# Anybody may talk to anybody active, regardless of the reporting tree (CHAT_02 §3). Running this
+# twice returns the same conversation both times: the unique index on the normalised participant pair
+# is the guarantee, so two people opening it in the same instant still get one row.
+POST {{host}}/api/conversations
+Content-Type: application/json
+
+{
+  "personId": "{{person}}"
+}
+
+### Start a conversation with somebody who has left — 422 COUNTERPART_NOT_ACTIVE
+# Distinct from PERSON_NOT_FOUND on purpose: an unknown identifier means you are looking at something
+# stale, a deactivated one means the colleague has gone. They send you to do different things.
+POST {{host}}/api/conversations
+Content-Type: application/json
+
+{
+  "personId": "{{person}}"
+}
+
+### Read a conversation — CHAT-VIEW-CONVERSATION-01
+# Newest first; page backwards with `before`. Reading appends nothing and notifies nobody — no receipt
+# reaches the other participant.
+GET {{host}}/api/conversations/{{conversation}}/messages?limit=50
+
+### Page backwards through history
+GET {{host}}/api/conversations/{{conversation}}/messages?before=42&limit=50
+
+### A conversation you are not in — 404 CONVERSATION_NOT_FOUND
+# **Byte-identical to an unknown conversation**, deliberately. Try it with a random identifier and
+# compare the two responses: same status, same code, same message. If they differed, this route would
+# be a way to ask which conversations exist and, over a few probes, who is talking to whom.
+GET {{host}}/api/conversations/11111111-1111-1111-1111-111111111111/messages
+
+### Say something — CHAT-SEND-MESSAGE-01
+# One transaction: the message and its event. The event carries no body — the log records that a
+# message existed, by whom and when, never what it said.
+POST {{host}}/api/conversations/{{conversation}}/messages
+Content-Type: application/json
+
+{
+  "body": "Trebuie să sunăm furnizorul până joi"
+}
+
+### A blank message — 422 MESSAGE_EMPTY
+# Blank counts as absent, as everywhere in this product.
+POST {{host}}/api/conversations/{{conversation}}/messages
+Content-Type: application/json
+
+{
+  "body": "   "
+}
+
+### Mark how far I have read — CHAT-VIEW-CONVERSATION-01 step 5
+# The caller's own bookkeeping. **Forward only**: send an older message identifier afterwards and the
+# marker does not move back, so scrolling up through history cannot un-read a conversation.
+POST {{host}}/api/conversations/{{conversation}}/read
+Content-Type: application/json
+
+{
+  "throughMessageId": "{{message}}"
+}
+
+### What may be offered here — CHAT-ASSIGN-DIRECT-01
+# Everything in the answer decides whether a control **renders at all**, and nothing in it enforces
+# anything. `counterpartId` is absent on the announcement channel and on a team channel — a broadcast
+# has no other person and a channel has many, so neither control renders.
+#
+# `mayAssignTask` is **TASK's** answer over its own subtree rule, called rather than copied.
+# `templates` is deliberately not filtered by that rule: a Process Owner is a per-instance position
+# rather than a role, so a run may be handed to somebody a task may not be. That asymmetry is the one
+# thing about this response worth reading twice.
+#
+# An empty `templates` is an ordinary answer and means the library is empty. The dialog says so and
+# offers the way to author one; it does not vanish.
+GET {{host}}/api/conversations/{{conversation}}/assignment-context
+
+### Give the other person a task — CHAT-ASSIGN-DIRECT-01, the task path
+# **There is no assignee in this body, and the absence is the security property.** The assignee is the
+# conversation's counterpart, resolved server-side, so there is no parameter to vary in order to reach
+# somebody else — and CHAT never grows a subtree check of its own, which would be a second
+# implementation of TASK's scope and the one that goes stale.
+#
+# Send an `assigneeId` here and it is ignored: the request record has no such component.
+#
+# One downstream call, and it goes first. Only once a task exists is a **work mark** appended to the
+# thread — a row carrying who, which kind, and which work, and no sentence in any language. Each
+# client assembles the words it shows.
+POST {{host}}/api/conversations/{{conversation}}/tasks
+Content-Type: application/json
+
+{
+  "title": "Sună furnizorul de gresie",
+  "description": "Comanda din București a întârziat",
+  "deadline": "2026-08-25T09:00:00Z",
+  "priority": "NORMAL"
+}
+
+### A deadline in the past — 422 DEADLINE_IN_THE_PAST, and no mark
+# TASK's own refusal, passed through with its own code and message unchanged. The interesting part is
+# what is *not* here afterwards: no work mark, because the mark is appended only after the downstream
+# call succeeds. A mark pointing at work that does not exist cannot occur.
+POST {{host}}/api/conversations/{{conversation}}/tasks
+Content-Type: application/json
+
+{
+  "title": "Prea târziu",
+  "description": null,
+  "deadline": "2020-01-01T09:00:00Z",
+  "priority": "NORMAL"
+}
+
+### Start a process the other person steers — CHAT-ASSIGN-DIRECT-01, the run path
+# The counterpart becomes the run's **Process Owner**. They steer it and assign each step as it
+# becomes reachable — they are *not* assigned its work, and no step is assigned to anybody here.
+#
+# The run takes the template's own name. A conversation has none to lend it, and the names a caller
+# would invent — *Raluca's run* — put a person's name on work in a library everybody reads.
+POST {{host}}/api/conversations/{{conversation}}/runs
+Content-Type: application/json
+
+{
+  "templateId": "{{template}}"
+}
+
+### Either path in a channel — 409 CONVERSATION_NOT_DIRECT
+# Told apart from not-found, unlike almost every other refusal in this feature. The caller is already
+# a participant, so they can see the channel and know what kind it is; hiding the reason would leak
+# nothing and would only leave them re-trying something that cannot work.
+POST {{host}}/api/conversations/{{channel}}/tasks
+Content-Type: application/json
+
+{
+  "title": "Ceva",
+  "description": null,
+  "deadline": "2026-08-25T09:00:00Z",
+  "priority": "NORMAL"
+}
+
+### A conversation I am not in — 404 CONVERSATION_NOT_FOUND
+# **The whole guarantee, at two more routes.** Identical to the answer an unknown identifier gives —
+# same status, same code, same message. Told apart, a caller could enumerate the workspace's
+# conversations by trying identifiers.
+GET {{host}}/api/conversations/99999999-9999-9999-9999-999999999999/assignment-context
+
+###############################################################################
+### CHAT-MANAGE-ROOMS-01 — the roster, and bringing somebody in
+###############################################################################
+
+### Who is in this room.
+###
+### **This is the roster, and it is not a reporting line.** The observing zone's mark strip was reading
+### TASK's assignable-people list, which answers with a manager's subtree — so a client manager holding
+### no reports was offered exactly one person to name as a performer: himself, and the messages he needed
+### to mark for other people were unmarkable, with nothing about it looking like a failure. The people
+### you can name for work you are discussing are the people in the room.
+###
+### A room the caller is not in answers exactly as one that does not exist.
+###
+### The announcement channel legitimately answers with an empty list: it has no membership rows at all,
+### because it is everybody, and a stored copy of the workspace roster would go stale the moment somebody
+### joined.
+GET {{host}}/api/conversations/{{group}}/participants
+
+### Bring somebody into a group — and the room is told.
+###
+### A membership that changed silently would mean everything said afterwards is read by somebody the
+### earlier speakers did not know was listening. Announced, never gated — the same treatment a new client
+### gets. Idempotent on the membership and not on the line: a second press adds nobody and announces
+### nothing.
+###
+### Only a group. A direct is two people by definition and the pairing is a check constraint; a channel's
+### membership IS the role assignment, so adding somebody there would be claiming they hold a job the org
+### chart says they do not. Both answer 409.
+###
+### Somebody who has left the workspace answers 422 COUNTERPART_NOT_ACTIVE rather than being added
+### quietly — they would appear in the roster the mark strip reads, and work marked for them would open a
+### bracket whose closure right belongs to nobody who can exercise it.
+POST {{host}}/api/conversations/{{group}}/participants
+Content-Type: application/json
+
+{
+  "personId": "{{person}}"
+}

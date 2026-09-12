@@ -1,0 +1,78 @@
+### FEATURE_AUTOMATION — the evaluation pass
+###
+### **There is nothing to call in this file, and that is the specification rather than an omission.**
+### All six use cases of FEATURE-AUTOMATION-01 say the same sentence — *no public endpoint* — and the
+### reasons are different for each half of the feature:
+###
+###   - The five markers (at-risk, overdue, stalled, long-blocked, stale-review) are **derived at read
+###     time** and ride TASK's and PROCESS's existing read models. There is no route that returns a
+###     marker, because a marker is a field on the thing it describes. AUTOMATION_03 section 1.
+###   - The escalation ladder is **invoked by the scheduler and by nobody else**. A human trigger would
+###     be a way to escalate about somebody on demand, which is the opposite of what the ladder is for.
+###
+### Two absences are asserted by tests rather than documented here, because a prohibition with no test
+### is a preference:
+###
+###   - **No route returns a count keyed to a person** — not escalations per person, not stalls per
+###     Process Owner, not reviews held per manager. UC-06 names the last of these as the most tempting
+###     aggregate in the product and the most damaging: *average review turnaround by manager* is a
+###     per-person performance metric wearing a process-improvement label
+###     (CONSTRAINT-METRICS-PRIVACY-01).
+###   - **No port in this feature can change a task or a step.** AUTOMATION_03 section 7, checked by
+###     `NothingInAutomationCanChangeWorkTest`.
+###
+### What you can do from here is watch it run, and change how often it does.
+
+###############################################################################
+### The one control that exists
+###############################################################################
+###
+### `flowops.automation.evaluation-ms` — the fixed delay between passes, in milliseconds. Default
+### 300000, which is five minutes, matching the two sweeps that already exist. The pass also runs once
+### at startup, so a freshly seeded demonstration database shows its markers immediately rather than
+### five minutes later.
+###
+### It is an **operational** number and not a rule. The guarantee is *one notification per thing found*;
+### the interval decides only how soon. Set it low in a demonstration and watch the idempotence hold:
+###
+###   application.yml
+###     flowops:
+###       automation:
+###         evaluation-ms: 15000
+###
+### Scheduling is switched off entirely under test (`SchedulingIsOffUnderTestTest`), so no suite is ever
+### racing a background pass.
+
+###############################################################################
+### Watching it work, since there is no request to make
+###############################################################################
+###
+### Ports: the demo backend runs on 8081 (Tomcat9 owns 8080 on this machine).
+###
+### The pass leaves three kinds of evidence, and none of them is a response body:
+###
+###   1. **The notification arrives.** Sign in as the person the rung addresses and read their inbox —
+###      that is `GET /api/notifications`, and it belongs to NOTIFICATION rather than here.
+###   2. **The ladder's row moves.** `escalation_state` gains a row at rung 0 the first time a task is
+###      seen overdue, and its `rung` and `last_fired_at` advance by exactly one rung per pass however
+###      many intervals elapsed (UC-03 extension 3b).
+###   3. **Nothing about the task changed.** The point of the whole feature. Compare the task before and
+###      after: same state, same deadline, same assignee.
+###
+### The two queries worth having open while watching, against the demo database:
+###
+###   select task_id, rung, last_fired_at, resolved_at
+###   from escalation_state
+###   order by last_fired_at desc;
+###
+###   -- Every marker, computed and stored nowhere. If this returns rows and no column called `stalled`,
+###   -- `long_blocked` or `overdue` exists anywhere in the schema, the design is holding.
+###   select column_name, table_name
+###   from information_schema.columns
+###   where column_name in ('stalled', 'long_blocked', 'overdue');
+
+@host = http://localhost:8081
+
+### The health check, which is the only request in this file and is here so the file is runnable at all.
+### If this answers and no automation route exists beside it, that is the feature behaving correctly.
+GET {{host}}/actuator/health

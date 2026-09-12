@@ -1,0 +1,151 @@
+### FEATURE_DISCOVERY — correcting a lane, and the count it takes down with it
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects. The demo backend runs on 8081 — Tomcat9 owns 8080
+### on this machine.
+###
+### **`PATCH /nodes/{id}/lane` and `PATCH /nodes/{id}/track` are two endpoints that look alike and are
+### not.** `DISCOVERY_02` §4 says exactly why:
+###
+###   *Correcting a track's lane is curation, not editing. Dragging a card moves an observation between
+###   threads and removes evidence from a type that may already be named, which recomputes its count and
+###   can demote it (I13).*
+###
+### So placing an orphan is a manager answering *which thread is this* about work nothing could place.
+### Moving a card that is already placed is an owner changing what the product has already concluded —
+### `DISCOVERY_TYPE_CURATE`, the owner's alone. The contrast is the last block of this file: the same
+### manager who may empty the orphan queue meets 403 here.
+###
+### **The recompute is not optional.** A moved card that left a named type's count untouched would leave
+### the product confident in evidence it no longer has. Watch it in `discovery-types.http`: the count
+### falls by one and a type below its floor answers `PROVISIONAL` instead of `NAMED`.
+###
+### Nothing here is worth running on an empty workspace. Seed in discovery mode, then use
+### `discovery.http` and `discovery-tracks.http` to build and end some threads:
+###   ./mvnw spring-boot:run -Dspring-boot.run.arguments="--discovery"
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@manager = ionut@atelier.ro
+@password = a-long-enough-passphrase
+
+### Copy real identifiers out of `GET /api/discovery/canvas?jobId=...` into these three.
+### `cardId` is a `nodeId` on some lane; `laneId` is the `trackId` of a DIFFERENT, still-open lane in
+### the SAME engagement; `closedLaneId` is a lane whose `closeReason` is not null.
+@cardId = 00000000-0000-0000-0000-000000000000
+@laneId = 00000000-0000-0000-0000-000000000000
+@closedLaneId = 00000000-0000-0000-0000-000000000000
+@otherEngagementLaneId = 00000000-0000-0000-0000-000000000000
+
+### Sign in as the owner.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{owner}}",
+  "password": "{{password}}"
+}
+
+###############################################################################
+### DISCOVERY-CORRECT-TRACK-01 — the card was in the wrong thread
+###############################################################################
+
+### 200. The card moves, and the catalogue is recounted inside the same transaction.
+###
+### If the card came out of a *closed* thread, that thread's shape has just changed — and a thread's
+### shape is what a discovered type is counted from. Follow this with `GET /api/discovery/types` in
+### `discovery-types.http` and read `occurrenceCount`; a type that no longer clears its floor comes back
+### `PROVISIONAL` with its name and the owner's confirmation intact, so the evidence returning restores
+### it without anybody being asked to name it twice.
+###
+### The demotion is silent on purpose. A type sitting at its floor oscillates week to week, and
+### announcing each crossing would spend the owner's whole three-decision budget on a type whose real
+### status never changed.
+PATCH {{host}}/api/discovery/nodes/{{cardId}}/lane
+Content-Type: application/json
+
+{
+  "trackId": "{{laneId}}"
+}
+
+### 200, and nothing happened. A card dropped back where it already was is an ordinary thing for a hand
+### to do, and it gets an ordinary answer rather than a refusal — and no clustering pass is spent on it.
+PATCH {{host}}/api/discovery/nodes/{{cardId}}/lane
+Content-Type: application/json
+
+{
+  "trackId": "{{laneId}}"
+}
+
+###############################################################################
+### The three refusals
+###############################################################################
+
+### 409 TRACK_ALREADY_CLOSED. Nothing joins a closed thread: the closing instant is what every duration
+### inside it was measured against, so a card arriving afterwards would sit inside a window that had
+### already been read.
+###
+### **The thread a card LEAVES may be closed, and that asymmetry is deliberate.** Only closed threads are
+### evidence, so if a card could never leave one, no correction could ever change a count and I13 would
+### describe a situation that cannot arise.
+PATCH {{host}}/api/discovery/nodes/{{cardId}}/lane
+Content-Type: application/json
+
+{
+  "trackId": "{{closedLaneId}}"
+}
+
+### 422 UNKNOWN_TRACK. A lane belonging to another engagement, refused as though it did not exist.
+###
+### **I1 and I2.** A thread belongs to exactly one job, so a card dropped into another job's thread would
+### leave its own `job_id` pointing one way and its thread the other — the invariant broken in the one
+### place a person could break it by hand, and broken invisibly, because both rows would still be
+### individually valid.
+###
+### It answers *unknown* rather than *not in your engagement* for the reason marking answers one way for
+### three situations: a refusal telling the caller a thread exists in an engagement they were not looking
+### at is a refusal that enumerates.
+PATCH {{host}}/api/discovery/nodes/{{cardId}}/lane
+Content-Type: application/json
+
+{
+  "trackId": "{{otherEngagementLaneId}}"
+}
+
+### 422 UNKNOWN_WORK_NODE. No such card — refused rather than created.
+PATCH {{host}}/api/discovery/nodes/00000000-0000-0000-0000-000000000000/lane
+Content-Type: application/json
+
+{
+  "trackId": "{{laneId}}"
+}
+
+###############################################################################
+### The contrast that is this endpoint's whole point
+###############################################################################
+
+### Sign in as the manager. He holds WORK_NODE_ASSIGN_SUBJECT and does not hold DISCOVERY_TYPE_CURATE.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{manager}}",
+  "password": "{{password}}"
+}
+
+### 200. The orphan queue is his: work no signal could place, and *which thread is this* is a
+### classification a manager is exactly the right person to make.
+GET {{host}}/api/discovery/orphans
+
+### 403 NOT_PERMITTED. The same person, one endpoint away, refused.
+###
+### Nothing about the request changed — the same card, the same lane, the same engagement. What changed
+### is that the card was already placed, so moving it is not answering an open question but overturning
+### an answer the product has already given and counted. That belongs with the person accountable for the
+### vocabulary.
+PATCH {{host}}/api/discovery/nodes/{{cardId}}/lane
+Content-Type: application/json
+
+{
+  "trackId": "{{laneId}}"
+}

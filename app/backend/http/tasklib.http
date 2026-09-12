@@ -1,0 +1,483 @@
+### FEATURE_TASKLIB — the reusable task library
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects, and a request without them answers 401 for a
+### reason that has nothing to do with the endpoint being right.
+###
+### Ports: the demo backend runs on 8081 (Tomcat9 owns 8080 on this machine).
+###
+### Three permissions govern this file. TASK_TEMPLATE_VIEW and TASK_TEMPLATE_CREATE are held by
+### everybody who can hold a task; TASK_TEMPLATE_APPROVE and TASK_TEMPLATE_RETIRE are not. Signing in
+### as somebody without the last two is the only honest way to check that the refusals are real.
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@password = a-long-enough-passphrase
+
+### Copy an `id` out of the library response into this, and the rest of the file works.
+@templateId = 00000000-0000-0000-0000-000000000000
+@assigneeId = 00000000-0000-0000-0000-000000000000
+
+### Sign in as somebody who may approve and retire.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{owner}}",
+  "password": "{{password}}"
+}
+
+###############################################################################
+### TASKLIB-VIEW-LIBRARY-01 — what is in the library
+###############################################################################
+
+### The library, most used first. `types` comes back with the page, so the filter chips cost no
+### second call. Nine to a page is what the screen asks for; the endpoint will take any size.
+GET {{host}}/api/task-templates?sort=MOST_USED&page=0&size=9
+
+### Narrowed. `q` matches the title, `type` is one of the values `types` returned, and `mine` limits
+### it to what the caller wrote — including their drafts, which nobody else sees.
+GET {{host}}/api/task-templates?q=factur&sort=MOST_USED&page=0&size=9
+
+### One template, by identifier. This is what the analysis page asks before it asks for the figures:
+### it is reached by URL, so it cannot get the title out of a page of the library it never loaded.
+### A retired template answers here too — the page saying a template is dead is the page somebody
+### opens about a dead one.
+GET {{host}}/api/task-templates/{{templateId}}
+
+### 404 for an identifier that is not there. Not-found and not-permitted answer the same shape, so
+### the response never confirms the existence of something the caller may not see.
+GET {{host}}/api/task-templates/11111111-1111-1111-1111-111111111111
+
+###############################################################################
+### TASKLIB-PROPOSE-TEMPLATE-01 / TASKLIB-EDIT-TEMPLATE-01 — writing one
+###############################################################################
+
+### Straight to the approval queue. Requires TASK_TEMPLATE_CREATE. 201, and the status is PROPOSED —
+### nothing is usable until somebody who may approve has approved it.
+POST {{host}}/api/task-templates
+Content-Type: application/json
+
+{
+  "title": "Verificare factură lunară",
+  "description": "Compară factura primită cu contractul și cu consumul raportat.",
+  "type": "Facturare",
+  "priority": "NORMAL",
+  "estimatedHours": 1.5,
+  "checklist": ["Deschide factura", "Compară cu contractul", "Confirmă sau contestă"],
+  "submitForApproval": true
+}
+
+### 400 — a template needs a title. The refusal is the server's, not the form's.
+POST {{host}}/api/task-templates
+Content-Type: application/json
+
+{
+  "title": "",
+  "submitForApproval": false
+}
+
+### Editing one. Only its author may, and only while it is not approved.
+PATCH {{host}}/api/task-templates/{{templateId}}
+Content-Type: application/json
+
+{
+  "title": "Verificare factură lunară",
+  "description": "Compară factura primită cu contractul, cu consumul raportat și cu luna precedentă.",
+  "type": "Facturare",
+  "priority": "NORMAL",
+  "estimatedHours": 2,
+  "checklist": ["Deschide factura", "Compară cu contractul", "Compară cu luna trecută", "Confirmă sau contestă"],
+  "submitForApproval": true
+}
+
+### Copies one as a fresh draft belonging to the caller, so a near-fit can be adjusted without
+### touching what everybody else is using.
+POST {{host}}/api/task-templates/{{templateId}}/copy
+
+###############################################################################
+### TASKLIB-APPROVE-TEMPLATE-01 — the review surface
+###############################################################################
+
+### What is waiting on a decision, oldest first. Requires TASK_TEMPLATE_APPROVE; 403 for everybody
+### else, which is why the screen does not ask this question on their behalf.
+GET {{host}}/api/task-templates/approval-queue
+
+### The curation queue as **jobs**, not as drafts. 200, most-repeated first.
+### TASKLIB-DRAFT-FROM-TASK-01's other half, and `FND_REQ_DECISION_08` requires it to exist wherever
+### the auto-draft does: every ad-hoc task leaves a draft, so the ungrouped queue is hundreds of rows
+### describing a handful of jobs. Create the same free-form task five times through POST /api/tasks
+### and this answers **one** row reading `drafts: 5`, carrying every wording that was typed.
+###
+### It under-groups on purpose -- *Site survey* and *Survey the site* arrive as two rows. That fails
+### toward more rows rather than wrong merges, which is the recoverable direction.
+###
+### Requires TASK_TEMPLATE_APPROVE. Sign in as an employee and it answers 403, not 500 -- TASKLIB
+### carries no advice of its own, so that arm is the shared one in GlobalExceptionHandler.
+GET {{host}}/api/task-templates/draft-candidates
+
+### Approve exactly what was proposed. An empty body is the whole request.
+POST {{host}}/api/task-templates/{{templateId}}/approval
+
+### Approve it while rewriting it, in one action. A reviewer who has to save an edit and then approve
+### can be interrupted between the two, leaving a proposal altered without anybody having agreed to
+### the alteration. Read the template back afterwards: the estimate below is what should be stored.
+POST {{host}}/api/task-templates/{{templateId}}/approval
+Content-Type: application/json
+
+{
+  "title": "Verificare factură lunară",
+  "description": "Compară factura primită cu contractul și cu consumul raportat.",
+  "type": "Facturare",
+  "priority": "HIGH",
+  "estimatedHours": 5,
+  "checklist": ["Deschide factura", "Compară cu contractul"],
+  "submitForApproval": true
+}
+
+### 409 on a second approval. Approving something already approved is not idempotent here — it is a
+### sign that two people are working the same queue, and it should say so.
+POST {{host}}/api/task-templates/{{templateId}}/approval
+
+### Approve several as they stand. One transaction: all of them, or none.
+POST {{host}}/api/task-templates/approvals
+Content-Type: application/json
+
+{
+  "templateIds": ["{{templateId}}"]
+}
+
+### Send it back to its author. The reason is required by the server.
+POST {{host}}/api/task-templates/{{templateId}}/rejection
+Content-Type: application/json
+
+{
+  "reason": "Ultimul pas cere altcineva — fă-l proces."
+}
+
+### 400 — a blank reason. A rejection carrying nothing to act on is one the author answers by
+### resubmitting the same proposal, which wastes both their time.
+POST {{host}}/api/task-templates/{{templateId}}/rejection
+Content-Type: application/json
+
+{
+  "reason": "   "
+}
+
+### Retires it. Requires TASK_TEMPLATE_RETIRE. It stays readable — it may be the provenance of every
+### task ever stamped from it — and is no longer offered.
+POST {{host}}/api/task-templates/{{templateId}}/retirement
+
+###############################################################################
+### TASKLIB-USE-TEMPLATE-01 — creating real work
+###############################################################################
+
+### Copy an id out of here into {{assigneeId}}.
+GET {{host}}/api/tasks/assignable-people
+
+### 201, and a real task exists afterwards. **Check that.** The previous shape of this endpoint counted
+### the use and returned a blueprint for the caller to create the task with — which nothing did, so the
+### library counted browsing and the screen announced work that did not exist. Read `timesUsed` on the
+### template before and after, and then open the task by the `taskId` this returns.
+POST {{host}}/api/task-templates/{{templateId}}/tasks
+Content-Type: application/json
+
+{
+  "title": "Verificare factură lunară — august",
+  "assigneeId": "{{assigneeId}}",
+  "priority": "NORMAL"
+}
+
+### 400 — work is given to somebody, and there is no sensible default for who.
+POST {{host}}/api/task-templates/{{templateId}}/tasks
+Content-Type: application/json
+
+{
+  "title": "Verificare factură lunară — august"
+}
+
+### Approved templates resembling what somebody is typing, most alike first. Titles are compared with
+### their diacritics removed, so all three of these find the same template.
+GET {{host}}/api/task-templates/suggestions?title=factura&limit=3
+
+###
+GET {{host}}/api/task-templates/suggestions?title=verificare%20factur%C4%83&limit=3
+
+### Empty, rather than the least-bad match. A strip offering something irrelevant teaches people to
+### stop reading it.
+GET {{host}}/api/task-templates/suggestions?title=qwertyuiop&limit=3
+
+###############################################################################
+### TASKLIB-DRAFT-FROM-TASK-01 — the task/process boundary
+###############################################################################
+
+### What the product suspects about a draft, without saving it. The rule lives here so the nudge
+### somebody sees while typing and the warning a reviewer sees are one rule rather than two copies.
+POST {{host}}/api/task-templates/shape-check
+Content-Type: application/json
+
+{
+  "title": "Onboarding client nou",
+  "description": "Strânge brieful, trimite contractul, programează kickoff-ul.",
+  "checklist": []
+}
+
+### The case the deterministic signals honestly miss — it returns []. Decision 374 records why, and
+### the demo must not claim this detector catches it.
+POST {{host}}/api/task-templates/shape-check
+Content-Type: application/json
+
+{
+  "title": "Onboarding client nou",
+  "checklist": ["Strânge brieful", "Trimite contractul", "Programează kickoff-ul"]
+}
+
+### Moves a mis-filed template's work into PROCESS. Omit `processTemplateId` to author a new process;
+### give one to add the work as a step of something that already exists. The task template is retired
+### and records what it became, never deleted.
+POST {{host}}/api/task-templates/{{templateId}}/conversion
+Content-Type: application/json
+
+{
+  "name": "Onboarding client nou",
+  "overview": "De la brief la kickoff.",
+  "splitChecklistIntoSteps": true
+}
+
+###############################################################################
+### TASKLIB-VIEW-TEMPLATE-USAGE-01 — how it has actually performed
+###############################################################################
+
+### The figures behind the analysis page. Computed live over provenance, phase timers and approvals —
+### nothing stored, nothing stale.
+###
+### **Read the body and check what is not in it.** There is no person identifier anywhere, and there is
+### no query parameter that would introduce one: extension 2d refuses a route from a template's
+### performance to who did its tasks and how each of them did. `UsageNamesNobodyTest` holds that
+### absence, and this request is where a human confirms it.
+###
+### Expect on the seeded demo: `stamped` in the twenties, `measuredTasks` 0 and `reviewed` 0, because
+### every stamped task is still CREATED. The page says so rather than printing a duration it has not
+### got. Drive a task through completion and rework and this request starts answering differently.
+GET {{host}}/api/task-templates/{{templateId}}/usage
+
+### The rows behind one of those six counts, selected by **the same predicate that produced the count**.
+### Check that by hand: the number of rows here must equal `live.overdue` in the response above.
+###
+### **Read the body and check what is not in it.** These rows name people, deliberately — a list of work
+### without the assignee answers *which five are overdue* and leaves *whose* unanswered, which is the
+### first thing anybody asks and which the queue already tells them. What they carry no trace of is a
+### **figure**: no duration, no score, no rate. That is the line extension 2d draws. With a number on
+### them, these rows could be grouped by person into exactly the per-person aggregate the decision
+### refuses; with none, the only thing a caller can do with them is show them.
+GET {{host}}/api/task-templates/{{templateId}}/tasks?band=overdue
+
+###
+GET {{host}}/api/task-templates/{{templateId}}/tasks?band=not-started
+
+###
+GET {{host}}/api/task-templates/{{templateId}}/tasks?band=finished
+
+### 400 UNKNOWN_BAND. **Not an empty list**, which is what *nothing is overdue* looks like — a typo
+### answering the most reassuring possible falsehood in the same shape as the truth.
+GET {{host}}/api/task-templates/{{templateId}}/tasks?band=nearly-done
+
+### 404 for a template that is not there, rather than an empty list for a band of nothing.
+GET {{host}}/api/task-templates/11111111-1111-1111-1111-111111111111/tasks?band=overdue
+
+### ─────────────────────────────────────────────────────────────────────────────────────────────────
+### RECURRING ASSIGNMENT — a template that raises its own work.
+###
+### `Verificare factură lunară`, the 1st of every month, to Raluca. Today somebody has to remember to
+### open the library and stamp it; twelve times a year, and the month nobody remembers is the month
+### the invoice is late.
+###
+### **The whole safety argument is one line of DDL**: `primary key (schedule_id, occurrence_date)` on
+### `template_schedule_run`. A sweep that runs twice, a restart half way through a pass and two
+### instances racing on the 1st all land on it and the second one loses. Nothing else is needed and
+### nothing else would be sufficient.
+### ─────────────────────────────────────────────────────────────────────────────────────────────────
+
+### Every schedule on a template. Running ones first, paused ones after — a paused schedule is history
+### the screen keeps rather than something somebody is looking for.
+###
+### `nextOccurrence` is computed on every read and is **null while a schedule is paused**, so it can
+### never be a date that will not happen. `timesRaised` counts real tasks, never occurrences it
+### "should" have produced by now.
+GET {{host}}/api/task-templates/{{templateId}}/schedules
+
+### 404, not an empty list. *Nothing is scheduled* is the most reassuring wrong answer this route could
+### give for a template identifier that is simply wrong.
+GET {{host}}/api/task-templates/11111111-1111-1111-1111-111111111111/schedules
+
+### Set one: the 1st of every month, to whoever `assigneeId` names.
+###
+### **Read what this does not carry: a deadline.** A schedule knows when work should *start* and never
+### when it is due, and a date invented here would be indistinguishable from one somebody chose — in
+### the column the analysis page reads to decide whether a template's estimate is honest. The assignee
+### sets it after accepting (TASK-SET-DEADLINE-01).
+###
+### **And read who it will be created by.** Not the schedule: the person sending this request. Every
+### occurrence is created as them through TASK's own path, so the reporting-line check runs against
+### them on the 1st of every month rather than once, here. Set a schedule for somebody outside your
+### part of the tree and this request succeeds — then the occurrence refuses, because that is the
+### moment the question is actually asked.
+POST {{host}}/api/task-templates/{{templateId}}/schedules
+Content-Type: application/json
+
+{
+  "assigneeId": "REPLACE-WITH-A-PERSON-id",
+  "cadence": "MONTHLY",
+  "dayOfMonth": 1
+}
+
+### The 31st. **Check `nextOccurrence` in the response against a short month.** From any date in
+### February it answers the 28th — or the 29th in a leap year — rather than skipping the month, because
+### *the last day* is what somebody picking 31 means. A schedule that silently skipped would raise
+### eleven month-end closes a year while the screen said monthly, and nothing would go red.
+POST {{host}}/api/task-templates/{{templateId}}/schedules
+Content-Type: application/json
+
+{
+  "assigneeId": "REPLACE-WITH-A-PERSON-id",
+  "cadence": "MONTHLY",
+  "dayOfMonth": 31
+}
+
+### Every Thursday. ISO numbering, so Monday is 1 and **Sunday is 7, not 0**.
+POST {{host}}/api/task-templates/{{templateId}}/schedules
+Content-Type: application/json
+
+{
+  "assigneeId": "REPLACE-WITH-A-PERSON-id",
+  "cadence": "WEEKLY",
+  "dayOfWeek": 4
+}
+
+### 400. A weekly cadence with no day is a rule the sweep would have to interpret, and whatever it
+### chose would be a rule nobody wrote. Refused by the domain and by a check constraint, so a row that
+### arrived any other way is refused too.
+POST {{host}}/api/task-templates/{{templateId}}/schedules
+Content-Type: application/json
+
+{
+  "assigneeId": "REPLACE-WITH-A-PERSON-id",
+  "cadence": "WEEKLY"
+}
+
+### 409 TEMPLATE_STATE_REFUSES on a draft or retired template. Asked **now** rather than left to the
+### first occurrence: a schedule on a draft would look correct until the 1st of next month and then
+### refuse into a log nobody reads, and the person who set it could not tell a schedule that has not
+### fired yet from one that never will.
+POST {{host}}/api/task-templates/REPLACE-WITH-A-DRAFT-TEMPLATE-id/schedules
+Content-Type: application/json
+
+{
+  "assigneeId": "REPLACE-WITH-A-PERSON-id",
+  "cadence": "DAILY"
+}
+
+### Pause it. The row is kept and stops firing, because the occurrences it has already raised are the
+### provenance of real tasks. `nextOccurrence` comes back null.
+POST {{host}}/api/task-templates/{{templateId}}/schedules/REPLACE-WITH-A-SCHEDULE-id/pause
+
+### The same one again. 409 — pausing twice is refused rather than being a harmless repeat.
+POST {{host}}/api/task-templates/{{templateId}}/schedules/REPLACE-WITH-A-SCHEDULE-id/pause
+
+### Resume. **From the next occurrence, never catching up on the ones it missed** — a schedule paused
+### over a quarter does not raise three months of work on the day it comes back. It re-asks whether the
+### template is still approved, because the months it spent paused are exactly when somebody is most
+### likely to have retired it underneath.
+POST {{host}}/api/task-templates/{{templateId}}/schedules/REPLACE-WITH-A-SCHEDULE-id/resume
+
+### 404 SCHEDULE_NOT_FOUND, distinct from TEMPLATE_NOT_FOUND: a missing template means the URL is
+### wrong, a missing schedule means the one on screen has gone since the page was drawn.
+POST {{host}}/api/task-templates/{{templateId}}/schedules/11111111-1111-1111-1111-111111111111/pause
+
+### ── Watching the sweep, which has no endpoint and should not have one ────────────────────────────
+###
+### There is deliberately no `POST /schedules/{id}/run`. A door that raises an occurrence on demand is
+### a door that raises a *second* one, and the guarantee this feature sells is that an occurrence
+### happens once. Watch it instead:
+###
+###   1. Set a DAILY schedule. It fires within `flowops.tasklib.schedule-sweep-ms` (5 min default, and
+###      once at startup).
+###   2. Grep the log for `raised 1 task(s)`.
+###   3. Re-run this request. `timesRaised` is 1.
+###   4. Restart the backend — the sweep runs again at startup, against the same date.
+###   5. Re-run this request. `timesRaised` is **still 1**, and the task count in the queue has not
+###      moved. That is the primary key doing its job, and it is the only way to see it work.
+GET {{host}}/api/task-templates/{{templateId}}/schedules
+
+### ── SOP-METADATA-01: what a template says about the work ─────────────────────────────────────────
+###
+### Six fields on a task template, every one nullable forever. They are **never gathered by a form and
+### never by a migration** (`SOP_01` section 4): the stamp dialog asks for exactly one missing field,
+### inline, below the assignee, and after six uses the template is complete without anybody having
+### opened anything.
+###
+### `GET /api/task-templates/{id}` carries the answers plus `metadata.nextAsk` — the one field to ask
+### for now, computed on the way out and stored nowhere, so the asking order can change without a
+### migration. Null means the template has said everything.
+GET {{host}}/api/task-templates/{{templateId}}
+
+### Record one answer. **One field per call, and the request shape is what enforces it** — a body
+### carrying a field name and a value cannot express two. A DTO with six optional properties would let
+### a caller send all six, and the rule would survive only as a sentence in a screen component.
+PATCH {{host}}/api/task-templates/{{templateId}}/metadata
+Content-Type: application/json
+
+{"field":"RESPONSIBLE_ROLE","answer":"EMPLOYEE"}
+
+### The one field a machine reasons over, and the only one besides the role with a vocabulary. It is
+### what makes two similarly-titled templates recognisably different to the similarity engine, which
+### currently has to infer that from the title alone.
+PATCH {{host}}/api/task-templates/{{templateId}}/metadata
+Content-Type: application/json
+
+{"field":"OUTPUT_KIND","answer":"REPORT"}
+
+### Free text, and deliberately so. Forcing a trigger into a vocabulary would produce a dropdown
+### nobody fills in, and a taxonomy of triggers is something a business has to invent before it can
+### describe itself.
+PATCH {{host}}/api/task-templates/{{templateId}}/metadata
+Content-Type: application/json
+
+{"field":"TRIGGER_NOTE","answer":"The month closes and the client asks for the numbers"}
+
+### Withdrawing an answer: blank clears the field. **Distinct from skipping**, which sends no request
+### at all — skipping is free and unrecorded, so there is nothing here that could record it.
+PATCH {{host}}/api/task-templates/{{templateId}}/metadata
+Content-Type: application/json
+
+{"field":"TRIGGER_NOTE","answer":""}
+
+### 400 UNKNOWN_METADATA_VALUE. Reachable for the two vocabulary fields only; the other four are free
+### text and cannot be wrong, which is the point of their being free text.
+PATCH {{host}}/api/task-templates/{{templateId}}/metadata
+Content-Type: application/json
+
+{"field":"OUTPUT_KIND","answer":"SPREADSHEET"}
+
+### 400 from validation. Not one of the six fields at all.
+PATCH {{host}}/api/task-templates/{{templateId}}/metadata
+Content-Type: application/json
+
+{"field":"WHO_PAYS","answer":"the client"}
+
+### 403 as an employee, and this is the guarantee worth walking by hand. `SOP_01` section 4 says only
+### an owner or manager is asked, because a responsible role is an organisational decision and asking
+### an employee for one is asking them to make it. V62 grants TASK_TEMPLATE_METADATA to those two
+### roles alone — so sign in as an employee and send this. It refuses. **The screen hides the question
+### too, but the screen is not the guarantee**: delete the @PreAuthorize and this request succeeds
+### while every unit test stays green, which is why it is walked here.
+PATCH {{host}}/api/task-templates/{{templateId}}/metadata
+Content-Type: application/json
+
+{"field":"RESPONSIBLE_ROLE","answer":"OWNER"}
+
+### 404. Says nothing about whether such a template ever existed.
+PATCH {{host}}/api/task-templates/11111111-1111-1111-1111-111111111111/metadata
+Content-Type: application/json
+
+{"field":"RESPONSIBLE_ROLE","answer":"MANAGER"}

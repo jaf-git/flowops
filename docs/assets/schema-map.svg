@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" width="1200" height="620" role="img" aria-label="The 91-table schema, grouped into nine bounded contexts plus framework tables">
+  <title>The schema map — 91 tables in nine bounded contexts</title>
+  <defs>
+    <pattern id="sdots" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.1" fill="#ffffff" fill-opacity="0.04"/>
+    </pattern>
+    <clipPath id="scard"><rect x="0" y="0" width="1200" height="620" rx="20"/></clipPath>
+  </defs>
+
+  <style>
+    .mono { font-family: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace; }
+    .sans { font-family: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+
+    /* Ten clusters lighting in turn, 12s cycle. */
+    .c1  { animation: cl 12s linear infinite; animation-delay: 0.0s; }
+    .c2  { animation: cl 12s linear infinite; animation-delay: 1.1s; }
+    .c3  { animation: cl 12s linear infinite; animation-delay: 2.2s; }
+    .c4  { animation: cl 12s linear infinite; animation-delay: 3.3s; }
+    .c5  { animation: cl 12s linear infinite; animation-delay: 4.4s; }
+    .c6  { animation: cl 12s linear infinite; animation-delay: 5.5s; }
+    .c7  { animation: cl 12s linear infinite; animation-delay: 6.6s; }
+    .c8  { animation: cl 12s linear infinite; animation-delay: 7.7s; }
+    .c9  { animation: cl 12s linear infinite; animation-delay: 8.8s; }
+    .c10 { animation: cl 12s linear infinite; animation-delay: 9.9s; }
+    @keyframes cl {
+      0%, 100% { stroke: #2a2c30; }
+      1%       { stroke: #dcfb4b; }
+      8%       { stroke: #6b7a0a; }
+      15%, 99% { stroke: #2a2c30; }
+    }
+
+    .n1  { animation: nm 12s linear infinite; animation-delay: 0.0s; }
+    .n2  { animation: nm 12s linear infinite; animation-delay: 1.1s; }
+    .n3  { animation: nm 12s linear infinite; animation-delay: 2.2s; }
+    .n4  { animation: nm 12s linear infinite; animation-delay: 3.3s; }
+    .n5  { animation: nm 12s linear infinite; animation-delay: 4.4s; }
+    .n6  { animation: nm 12s linear infinite; animation-delay: 5.5s; }
+    .n7  { animation: nm 12s linear infinite; animation-delay: 6.6s; }
+    .n8  { animation: nm 12s linear infinite; animation-delay: 7.7s; }
+    .n9  { animation: nm 12s linear infinite; animation-delay: 8.8s; }
+    .n10 { animation: nm 12s linear infinite; animation-delay: 9.9s; }
+    @keyframes nm {
+      0%, 100% { fill: #f2f4f6; }
+      1%, 8%   { fill: #dcfb4b; }
+      15%, 99% { fill: #f2f4f6; }
+    }
+
+    .spine { stroke-dasharray: 4 7; animation: crawl 1.3s linear infinite; }
+    @keyframes crawl { to { stroke-dashoffset: -11; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .c1,.c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9,.c10,
+      .n1,.n2,.n3,.n4,.n5,.n6,.n7,.n8,.n9,.n10,.spine { animation: none; }
+    }
+  </style>
+
+  <g clip-path="url(#scard)">
+    <rect width="1200" height="620" fill="#0b0b0c"/>
+    <rect width="1200" height="620" fill="url(#sdots)"/>
+
+    <text class="mono" x="48" y="46" font-size="11.5" fill="#63666c" letter-spacing="1.6">91 TABLES · 104 FLYWAY MIGRATIONS · EVERY ONE APPLIED FORWARD, NONE EDITED AFTER RELEASE</text>
+    <text class="sans" x="48" y="80" font-size="26" font-weight="700" fill="#f2f4f6" letter-spacing="-0.5">The schema, by bounded context</text>
+
+    <!-- ── row 1 ── -->
+    <g transform="translate(48, 118)">
+      <g>
+        <rect class="c1" x="0" y="0" width="208" height="148" rx="14" fill="#111316" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="sans n1" x="18" y="32" font-size="15" font-weight="700" fill="#f2f4f6">Identity &amp; access</text>
+        <text class="sans" x="190" y="32" font-size="15" font-weight="700" fill="#dcfb4b" text-anchor="end">11</text>
+        <text class="mono" x="18" y="60"  font-size="10.5" fill="#63666c">auth_user</text>
+        <text class="mono" x="18" y="78"  font-size="10.5" fill="#63666c">auth_credential</text>
+        <text class="mono" x="18" y="96"  font-size="10.5" fill="#63666c">auth_role_permission</text>
+        <text class="mono" x="18" y="114" font-size="10.5" fill="#63666c">auth_login_attempt</text>
+        <text class="mono" x="18" y="134" font-size="10" fill="#4a4d52">referenced by 9 contexts</text>
+      </g>
+
+      <g transform="translate(224, 0)">
+        <rect class="c2" x="0" y="0" width="208" height="148" rx="14" fill="#111316" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="sans n2" x="18" y="32" font-size="15" font-weight="700" fill="#f2f4f6">Workspace &amp; org</text>
+        <text class="sans" x="190" y="32" font-size="15" font-weight="700" fill="#dcfb4b" text-anchor="end">10</text>
+        <text class="mono" x="18" y="60"  font-size="10.5" fill="#63666c">workspace</text>
+        <text class="mono" x="18" y="78"  font-size="10.5" fill="#63666c">workspace_membership</text>
+        <text class="mono" x="18" y="96"  font-size="10.5" fill="#63666c">department</text>
+        <text class="mono" x="18" y="114" font-size="10.5" fill="#63666c">functional_role</text>
+        <text class="mono" x="18" y="134" font-size="10" fill="#4a4d52">the tenancy boundary</text>
+      </g>
+
+      <g transform="translate(448, 0)">
+        <rect class="c3" x="0" y="0" width="208" height="148" rx="14" fill="#111316" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="sans n3" x="18" y="32" font-size="15" font-weight="700" fill="#f2f4f6">Task</text>
+        <text class="sans" x="190" y="32" font-size="15" font-weight="700" fill="#dcfb4b" text-anchor="end">13</text>
+        <text class="mono" x="18" y="60"  font-size="10.5" fill="#63666c">task</text>
+        <text class="mono" x="18" y="78"  font-size="10.5" fill="#63666c">task_phase_timer</text>
+        <text class="mono" x="18" y="96"  font-size="10.5" fill="#63666c">task_state_transition</text>
+        <text class="mono" x="18" y="114" font-size="10.5" fill="#63666c">task_event</text>
+        <text class="mono" x="18" y="134" font-size="10" fill="#4a4d52">the analytical core</text>
+      </g>
+
+      <g transform="translate(672, 0)">
+        <rect class="c4" x="0" y="0" width="208" height="148" rx="14" fill="#111316" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="sans n4" x="18" y="32" font-size="15" font-weight="700" fill="#f2f4f6">Process</text>
+        <text class="sans" x="190" y="32" font-size="15" font-weight="700" fill="#dcfb4b" text-anchor="end">8</text>
+        <text class="mono" x="18" y="60"  font-size="10.5" fill="#63666c">process_template</text>
+        <text class="mono" x="18" y="78"  font-size="10.5" fill="#63666c">step_definition</text>
+        <text class="mono" x="18" y="96"  font-size="10.5" fill="#63666c">process_instance</text>
+        <text class="mono" x="18" y="114" font-size="10.5" fill="#63666c">instance_step</text>
+        <text class="mono" x="18" y="134" font-size="10" fill="#4a4d52">template and run, kept apart</text>
+      </g>
+
+      <g transform="translate(896, 0)">
+        <rect class="c5" x="0" y="0" width="208" height="148" rx="14" fill="#111316" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="sans n5" x="18" y="32" font-size="15" font-weight="700" fill="#f2f4f6">Template library</text>
+        <text class="sans" x="190" y="32" font-size="15" font-weight="700" fill="#dcfb4b" text-anchor="end">6</text>
+        <text class="mono" x="18" y="60"  font-size="10.5" fill="#63666c">task_template</text>
+        <text class="mono" x="18" y="78"  font-size="10.5" fill="#63666c">template_schedule</text>
+        <text class="mono" x="18" y="96"  font-size="10.5" fill="#63666c">work_type_vocabulary</text>
+        <text class="mono" x="18" y="114" font-size="10.5" fill="#63666c">work_type_family</text>
+        <text class="mono" x="18" y="134" font-size="10" fill="#4a4d52">one approved name each</text>
+      </g>
+    </g>
+
+    <!-- ── row 2 ── -->
+    <g transform="translate(48, 286)">
+      <g>
+        <rect class="c6" x="0" y="0" width="208" height="148" rx="14" fill="#111316" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="sans n6" x="18" y="32" font-size="15" font-weight="700" fill="#f2f4f6">Chat</text>
+        <text class="sans" x="190" y="32" font-size="15" font-weight="700" fill="#dcfb4b" text-anchor="end">5</text>
+        <text class="mono" x="18" y="60"  font-size="10.5" fill="#63666c">conversation</text>
+        <text class="mono" x="18" y="78"  font-size="10.5" fill="#63666c">message</text>
+        <text class="mono" x="18" y="96"  font-size="10.5" fill="#63666c">conversation_participant</text>
+        <text class="mono" x="18" y="114" font-size="10.5" fill="#63666c">chat_event</text>
+        <text class="mono" x="18" y="134" font-size="10" fill="#4a4d52">where the evidence starts</text>
+      </g>
+
+      <g transform="translate(224, 0)">
+        <rect class="c7" x="0" y="0" width="208" height="148" rx="14" fill="#111316" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="sans n7" x="18" y="32" font-size="15" font-weight="700" fill="#f2f4f6">Discovery</text>
+        <text class="sans" x="190" y="32" font-size="15" font-weight="700" fill="#dcfb4b" text-anchor="end">19</text>
+        <text class="mono" x="18" y="60"  font-size="10.5" fill="#63666c">work_node · work_edge</text>
+        <text class="mono" x="18" y="78"  font-size="10.5" fill="#63666c">work_bracket · job</text>
+        <text class="mono" x="18" y="96"  font-size="10.5" fill="#63666c">track · activity</text>
+        <text class="mono" x="18" y="114" font-size="10.5" fill="#63666c">work_node_evidence</text>
+        <text class="mono" x="18" y="134" font-size="10" fill="#4a4d52">the bracket model</text>
+      </g>
+
+      <g transform="translate(448, 0)">
+        <rect class="c8" x="0" y="0" width="208" height="148" rx="14" fill="#111316" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="sans n8" x="18" y="32" font-size="15" font-weight="700" fill="#f2f4f6">Analysis &amp; pipeline</text>
+        <text class="sans" x="190" y="32" font-size="15" font-weight="700" fill="#dcfb4b" text-anchor="end">13</text>
+        <text class="mono" x="18" y="60"  font-size="10.5" fill="#63666c">analysis_run</text>
+        <text class="mono" x="18" y="78"  font-size="10.5" fill="#63666c">analysis_finding</text>
+        <text class="mono" x="18" y="96"  font-size="10.5" fill="#63666c">finding_subject</text>
+        <text class="mono" x="18" y="114" font-size="10.5" fill="#63666c">analyser_precondition</text>
+        <text class="mono" x="18" y="134" font-size="10" fill="#4a4d52">records why it was silent</text>
+      </g>
+
+      <g transform="translate(672, 0)">
+        <rect class="c9" x="0" y="0" width="208" height="148" rx="14" fill="#111316" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="sans n9" x="18" y="32" font-size="15" font-weight="700" fill="#f2f4f6">Notification</text>
+        <text class="sans" x="190" y="32" font-size="15" font-weight="700" fill="#dcfb4b" text-anchor="end">3</text>
+        <text class="mono" x="18" y="60"  font-size="10.5" fill="#63666c">notification</text>
+        <text class="mono" x="18" y="78"  font-size="10.5" fill="#63666c">notification_preference</text>
+        <text class="mono" x="18" y="96"  font-size="10.5" fill="#63666c">automation_event</text>
+        <text class="mono" x="18" y="134" font-size="10" fill="#4a4d52">one thing at a time</text>
+      </g>
+
+      <g transform="translate(896, 0)">
+        <rect class="c10" x="0" y="0" width="208" height="148" rx="14" fill="#0e1013" stroke="#2a2c30" stroke-width="1.75" stroke-dasharray="5 5"/>
+        <text class="sans n10" x="18" y="32" font-size="15" font-weight="700" fill="#f2f4f6">Framework</text>
+        <text class="sans" x="190" y="32" font-size="15" font-weight="700" fill="#63666c" text-anchor="end">3</text>
+        <text class="mono" x="18" y="60"  font-size="10.5" fill="#63666c">flyway_schema_history</text>
+        <text class="mono" x="18" y="78"  font-size="10.5" fill="#63666c">spring_session</text>
+        <text class="mono" x="18" y="96"  font-size="10.5" fill="#63666c">spring_session_attributes</text>
+        <text class="mono" x="18" y="134" font-size="10" fill="#4a4d52">owned by the platform</text>
+      </g>
+    </g>
+
+    <!-- the spine -->
+    <g transform="translate(48, 478)">
+      <line class="spine" x1="0" y1="0" x2="1104" y2="0" stroke="#4a4d52" stroke-width="1.5"/>
+      <text class="mono" x="0" y="30" font-size="11" fill="#63666c" letter-spacing="1.4">THE TWO EDGES EVERY CONTEXT SHARES</text>
+
+      <g transform="translate(0, 48)">
+        <rect x="0" y="0" width="544" height="66" rx="12" fill="#111316" stroke="#2a2c30" stroke-width="1.5"/>
+        <rect x="0" y="0" width="4" height="66" rx="2" fill="#dcfb4b"/>
+        <text class="sans" x="20" y="27" font-size="13.5" font-weight="700" fill="#f2f4f6">Every actor column is a real person</text>
+        <text class="sans" x="20" y="48" font-size="12" fill="#63666c">Nine contexts carry a foreign key to <tspan class="mono" font-size="11.5" fill="#b4b8bf">auth_user</tspan>. Nothing records "somebody".</text>
+      </g>
+
+      <g transform="translate(560, 48)">
+        <rect x="0" y="0" width="544" height="66" rx="12" fill="#111316" stroke="#2a2c30" stroke-width="1.5"/>
+        <rect x="0" y="0" width="4" height="66" rx="2" fill="#6c8cf5"/>
+        <text class="sans" x="20" y="27" font-size="13.5" font-weight="700" fill="#f2f4f6">Every readable row belongs to one workspace</text>
+        <text class="sans" x="20" y="48" font-size="12" fill="#63666c">Task, process, chat and category all key on <tspan class="mono" font-size="11.5" fill="#b4b8bf">workspace</tspan>. That is the tenancy line.</text>
+      </g>
+    </g>
+
+    <rect x="0.75" y="0.75" width="1198.5" height="618.5" rx="19.25" fill="none" stroke="#2a2c30" stroke-width="1.5"/>
+  </g>
+</svg>

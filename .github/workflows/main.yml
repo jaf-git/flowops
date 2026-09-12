@@ -1,0 +1,100 @@
+name: main
+
+# On merge to main: the full suite, plus the container image build. The deployment
+# target arrives after the thesis; adding it is a new job here, not a rework
+# (OPERATIONS-01).
+
+# Suspended on 2026-08-20 by DECISION-DEMO-FOCUS-01, along with the pull-request gates. Restoring it
+# is uncommenting two lines.
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main
+  cancel-in-progress: false
+
+env:
+  JAVA_VERSION: '21'
+  # Pinned to the patch and matching `.nvmrc`, for the reason `pull-request.yml` gives at length: the
+  # two workflows must not resolve to different Nodes, and neither may drift from a developer's.
+  NODE_VERSION: '22.22.2'
+
+jobs:
+  backend:
+    name: backend build and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      # `-P full` is named rather than relied on. It selects what the default already does, so this
+      # changes nothing today — and it means the round trips cannot be switched off here by a change to
+      # a property in the pom. Until 2026-08-22 they were: this step ran with no profile while the
+      # default excluded the `roundtrip` tag, so the step's own name and this file's header both said
+      # "the full suite" while forty-six of them were skipped. A migration dropped a column, an endpoint
+      # went on querying it, and every build stayed green.
+      - name: Build, verify and test
+        working-directory: app/backend
+        run: ./mvnw -B --no-transfer-progress -P full clean verify
+
+      - name: Publish coverage
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-coverage
+          path: app/backend/target/site/jacoco/
+          if-no-files-found: error
+
+  frontend:
+    name: frontend build and tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/frontend
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: app/frontend/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+  images:
+    name: container images
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v7
+
+      # Built and left in the runner's local image store. Publishing to a registry
+      # is a later stage, once a deployment target exists.
+      - name: Build the backend image
+        run: docker build -t flowops-backend:${{ github.sha }} app/backend
+
+      - name: Build the frontend image
+        run: docker build -t flowops-frontend:${{ github.sha }} app/frontend

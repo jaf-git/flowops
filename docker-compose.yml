@@ -1,0 +1,51 @@
+name: flowops
+
+# Local equivalents of every external service the product depends on
+# (CONSTRAINT-LOCALHOST-01). Nothing here is a paid or cloud service, and every
+# setting is supplied from the environment so a later swap is configuration.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: flowops-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-flowops}
+      POSTGRES_USER: ${POSTGRES_USER:-flowops}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-flowops}
+    ports:
+      # 5432 and 5433 are commonly taken by a locally installed PostgreSQL and by
+      # other projects' containers, so this stack claims neither by default.
+      - "${POSTGRES_HOST_PORT:-5434}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-flowops} -d ${POSTGRES_DB:-flowops}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: flowops-mailpit
+    ports:
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"
+      - "${MAILPIT_UI_PORT:-8025}:8025"
+    environment:
+      MP_MAX_MESSAGES: 500
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: flowops-ollama
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  ollama-models:

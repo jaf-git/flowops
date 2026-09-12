@@ -1,0 +1,163 @@
+### AUTH — every endpoint this feature exposes, plus the failure probes.
+###
+### REST Client format; runs from the IDE with no external tool. It versions with the code, so it
+### never drifts from the routes it probes (QUALITY-01). The round-trip tests are the guarantee that
+### runs in CI; this is the manual probe for when something still surprises you.
+###
+### Run the requests in order. The session and the cross-site token are both cookies, so the client
+### carries them forward on its own once request 1 has been refused — that refusal is what mints the
+### token. It is read back out of the jar with {{$cookie XSRF-TOKEN}}: minted per session by the
+### server, so it cannot live in an env file and must not be pasted by hand.
+###
+### The passcode is not in any response by design — it exists only in the delivered message. Read it
+### from Mailpit at http://localhost:8025.
+###
+### Two things to know before the answers look wrong. Signup closes once the installation has an
+### owner (DECISION-BOOTSTRAP-GATE-01), so on a claimed installation request 2 answers 202 and no
+### code arrives — that is the gate working, not a fault. And an unknown address answers 401 rather
+### than 404, deliberately, so an anonymous caller learns nothing about which addresses exist.
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@password = a-long-enough-passphrase
+@newPassword = corect-cal-baterie-capsator
+
+### 1. Who am I? 401 before signing in — and the cookie it sets is the point.
+GET {{host}}/api/auth/session
+
+### 2. Request a signup passcode, then read it from Mailpit. Expect 202, always.
+POST {{host}}/api/auth/signup/passcode
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"email": "{{owner}}"}
+
+### 3. Become the owner. Paste the passcode from Mailpit. Expect 201 and a SESSION cookie.
+POST {{host}}/api/auth/signup
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"email": "{{owner}}", "passcode": "PASTE-FROM-MAILPIT", "password": "{{password}}"}
+
+### 4. Who am I now? Expect 200: identity, permissions, landing target — and no session identifier.
+GET {{host}}/api/auth/session
+
+### 5. My own sessions. Expect 200 and one entry marked current, named by an opaque reference.
+GET {{host}}/api/auth/sessions
+
+### 6. Confirm my password. Expect 200 and the instant the window closes.
+POST {{host}}/api/auth/reauthenticate
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"password": "{{password}}"}
+
+### 7. Change my password. Expect 204 — and note the SESSION cookie changes: every session is
+### evicted and a fresh one opened, so a copy of the old identifier stops working.
+POST {{host}}/api/auth/password
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"newPassword": "{{newPassword}}"}
+
+### 8. Somebody else's sessions, owner-only. Replace the identifier with a real one from the
+### directory. Expect 200 — and the look is recorded, which is the point of the endpoint.
+GET {{host}}/api/auth/users/00000000-0000-0000-0000-000000000000/sessions
+
+### 9. End a session by its reference, owner-only and re-authentication required. Expect 204.
+DELETE {{host}}/api/auth/sessions/00000000-0000-0000-0000-000000000000
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+### 10. Sign out. Expect 204.
+POST {{host}}/api/auth/logout
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+### 11. Sign in. Expect 200 and the landing target.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"email": "{{owner}}", "password": "{{newPassword}}"}
+
+### --- Failure probes. Each one exists so a live 404 versus 403 versus 500 is one keystroke away. ---
+
+### 12. No session. Expect 401 and no body — the chain refuses before the endpoint runs.
+### A 404 here would mean the route is not registered at all, which is the failure this probe is for.
+GET {{host}}/api/auth/sessions
+Cookie:
+
+### 13. Sign out with no session. Expect 204, not 401 — a person who has already got what they
+### asked for is not shown an error. This is why the permission is enforced in the use case.
+POST {{host}}/api/auth/logout
+Content-Type: application/json
+Cookie:
+
+### 14. No cross-site token. Expect 401 anonymously, 403 once signed in.
+POST {{host}}/api/auth/signup/passcode
+Content-Type: application/json
+
+{"email": "{{owner}}"}
+
+### 15. A wrong cross-site token. Same answer as 14.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+X-XSRF-TOKEN: not-the-token-you-were-given
+
+{"email": "{{owner}}", "password": "{{password}}"}
+
+### 16. A wrong password. Expect 401 — and compare the body with probe 17: they must be identical.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"email": "{{owner}}", "password": "not-the-right-passphrase"}
+
+### 17. An address that holds no account. Expect 401 and the same body as probe 16, byte for byte.
+### A difference between these two makes the endpoint an oracle for who holds an account.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"email": "nobody@atelier.ro", "password": "{{password}}"}
+
+### 18. A malformed address. Expect 400 and the shared envelope naming the field.
+POST {{host}}/api/auth/signup/passcode
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"email": "not-an-address"}
+
+### 19. Invalid body — no password at all. Expect 400, never a stack trace.
+POST {{host}}/api/auth/reauthenticate
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{}
+
+### 20. Change a password without confirming it first. Expect 403 and REAUTHENTICATION_REQUIRED —
+### named rather than uniform, because the caller is being told what to do next, not tested.
+POST {{host}}/api/auth/password
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"newPassword": "another-long-enough-passphrase"}
+
+### 21. A password that fails the policy. Expect 400 and the unmet rule named in the details.
+POST {{host}}/api/auth/password
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"newPassword": "short"}
+
+### 22. A malformed identifier where one is expected. Expect 400, not 500.
+GET {{host}}/api/auth/users/not-an-identifier/sessions
+
+### 23. A reference naming no live session. Expect 204 and a recorded attempt — deliberately
+### indistinguishable from ending a real one, or the endpoint becomes an oracle.
+DELETE {{host}}/api/auth/sessions/11111111-1111-1111-1111-111111111111
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+### 24. An address that is not a route at all. Expect 401, not 404 — an anonymous caller learns
+### nothing about what exists here.
+GET {{host}}/api/auth/there-is-nothing-here

@@ -1,0 +1,119 @@
+### AI_EXPORT — the one endpoint this feature exposes, plus its refusals.
+###
+### REST Client format; runs from the IDE with no external tool. It versions with the code, so it
+### never drifts from the route it probes (QUALITY-01). The round-trip test is the guarantee that runs
+### in CI; this is the manual probe for when something still surprises you.
+###
+### Run the requests in order. The session and the cross-site token are both cookies, so the client
+### carries them forward on its own once request 1 has been refused — that refusal is what mints the
+### token, read back out of the jar with {{$cookie XSRF-TOKEN}}.
+###
+### **The response is a zip archive, not JSON.** Most REST clients will offer to save it. Open it and
+### you get one JSONL file per record type: header, tasks, instances, steps, conversions. There is no
+### templates.jsonl and that is deliberate — TASKLIB is not built, and an absent record type says the
+### feature does not exist where an empty file would say the workspace has no templates.
+###
+### Two things to know before the answers look wrong. The export is **owner only and non-delegable**,
+### so a manager gets 403 NOT_PERMITTED however senior they are; the archive is the whole workspace's
+### history and cannot be scoped once it has left the building. And a workspace with no tasks answers
+### **409 NO_HISTORY** rather than producing empty files, because five empty files look like a complete
+### export of a business that has done nothing.
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@password = a-long-enough-passphrase
+
+### 1. Who am I? 401 before signing in — and the cookie it sets is the point.
+GET {{host}}/api/auth/session
+
+### 2. Sign in as the owner. Expect 200 and a SESSION cookie.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"email": "{{owner}}", "password": "{{password}}"}
+
+### 3. Export everything. Expect 200 and a zip. An empty body means the whole history.
+POST {{host}}/api/ai-export
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{}
+
+### 4. Export a window. A task created **before** `from` but closed inside it is included — excluding
+### it would silently drop exactly the long-running work an analysis most wants (UC_01 extension 1a).
+POST {{host}}/api/ai-export
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"from": "2026-05-01T00:00:00Z", "to": "2026-07-01T00:00:00Z"}
+
+### 5. Take it twice and compare any `assignee_ref` between the two files. They **differ**, for the
+### same person, because the pseudonym is salted per export. That is what makes following one
+### individual across two files impossible rather than merely disallowed (AI_EXPORT_03 section 3).
+POST {{host}}/api/ai-export
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{}
+
+### --- Failure probes. Each one exists so a live 403 versus 409 versus 500 is one keystroke away. ---
+
+### 6. As somebody who is not the owner. Sign in as an employee first, then send this.
+### Expect 403 NOT_PERMITTED. A 500 here means this feature's exception handler has lost its
+### AuthorizationDeniedException arm — which is exactly how this endpoint first behaved, and the
+### round trip is what found it.
+POST {{host}}/api/ai-export
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{}
+
+### 7. Against a workspace with no tasks. Expect 409 NO_HISTORY and no archive.
+POST {{host}}/api/ai-export
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{}
+
+### 8. No session at all. Expect 401 from the security chain, with no body.
+POST {{host}}/api/ai-export
+Content-Type: application/json
+
+{}
+
+### --- AI-EXPORT-SCOPED-01: one template's history, so a finding can be checked by hand ---
+
+### 9. Scope the export to one process template. Expect 200 and a smaller archive carrying the same
+### record shapes — one code path produces both, which is why a person checking a claim against a
+### scoped file is reading the dataset the claim came from.
+###
+### Against the demo seed this answers 7 instances, 33 steps and 33 tasks where the full export
+### answers 12, 61 and 92. Group steps.jsonl by origin=attached and you get "5 of 7", which is the
+### sentence the insight card shows.
+POST {{host}}/api/ai-export/scoped
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"subjectType": "process_template", "subjectId": "REPLACE-WITH-A-TEMPLATE-id"}
+
+### 10. A subject nobody authored. Expect 404 NOT_FOUND — byte for byte what an unpermitted caller
+### gets, because a different answer for "does not exist" and "not yours" tells an unpermitted caller
+### which templates exist.
+POST {{host}}/api/ai-export/scoped
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"subjectType": "process_template", "subjectId": "00000000-0000-0000-0000-000000000000"}
+
+### 11. A task template. Valid in the specification, and unanswerable until TASKLIB is built — so it
+### answers 404 like any other subject this product cannot find, rather than naming the gap.
+POST {{host}}/api/ai-export/scoped
+Content-Type: application/json
+X-XSRF-TOKEN: {{$cookie XSRF-TOKEN}}
+
+{"subjectType": "task_template", "subjectId": "00000000-0000-0000-0000-000000000000"}
+
+### 12. Take a scoped export and a full one and compare any `assignee_ref` between them. They differ,
+### because the pseudonym is salted per export — so a scoped file and a full one **cannot be joined
+### to re-identify anybody**. That property is deliberate rather than incidental (UC_02 security).

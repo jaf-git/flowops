@@ -1,0 +1,217 @@
+{
+  "corpus": "multichat-medium",
+  "producedBy": "sim/cold.py coarse_steps + discover_processes, AI off",
+  "config": {
+    "STEP_MIN_NODES": 3,
+    "PROC_MIN_RUNS": 3,
+    "PROC_MIN_STEPS": 3,
+    "CORE_COVER": 0.66,
+    "CORE_PURITY": 0.5,
+    "ORDER_MIN_RUNS": 6,
+    "chat_split": true,
+    "concept_split": false,
+    "finished_only": true,
+    "churn_first": true,
+    "merge_subs": true,
+    "SPLIT_AT": 0.15
+  },
+  "churnExcluded": [],
+  "stepKinds": [
+    {
+      "id": "K:ACCOUNTS",
+      "workType": "ACCOUNTS",
+      "outputType": "TEXT",
+      "conversation": null,
+      "nodeIds": [
+        "m0001",
+        "m0011",
+        "m0024",
+        "m0037"
+      ],
+      "jobIds": [
+        "D01",
+        "D03",
+        "D04",
+        "D06"
+      ],
+      "cohesion": 0.178,
+      "certainty": 0.52
+    },
+    {
+      "id": "K:WRITER/dm-sk",
+      "workType": "WRITER",
+      "outputType": "TEXT",
+      "conversation": "dm-sk",
+      "nodeIds": [
+        "m0003",
+        "m0014",
+        "m0026"
+      ],
+      "jobIds": [
+        "D01",
+        "D03",
+        "D04"
+      ],
+      "cohesion": 0.393,
+      "certainty": 0.507
+    },
+    {
+      "id": "K:WRITER",
+      "workType": "WRITER",
+      "outputType": "TEXT",
+      "conversation": null,
+      "nodeIds": [
+        "m0002",
+        "m0013",
+        "m0025",
+        "m0033",
+        "m0038"
+      ],
+      "jobIds": [
+        "D01",
+        "D03",
+        "D04",
+        "D05",
+        "D06"
+      ],
+      "cohesion": 0.3,
+      "certainty": 0.685
+    },
+    {
+      "id": "K:DESIGN",
+      "workType": "DESIGN",
+      "outputType": "DESIGN",
+      "conversation": null,
+      "nodeIds": [
+        "m0004",
+        "m0009",
+        "m0017",
+        "m0018",
+        "m0027",
+        "m0034",
+        "m0039",
+        "m0045",
+        "m0048"
+      ],
+      "jobIds": [
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D05",
+        "D06",
+        "D07",
+        "D08"
+      ],
+      "cohesion": 0.172,
+      "certainty": 0.957
+    },
+    {
+      "id": "K:TEAM_LEAD",
+      "workType": "TEAM_LEAD",
+      "outputType": "NONE",
+      "conversation": null,
+      "nodeIds": [
+        "m0006",
+        "m0022",
+        "m0029",
+        "m0041"
+      ],
+      "jobIds": [
+        "D01",
+        "D03",
+        "D04",
+        "D06"
+      ],
+      "cohesion": 0.5,
+      "certainty": 0.665
+    },
+    {
+      "id": "K:REPORTING",
+      "workType": "REPORTING",
+      "outputType": "REPORT",
+      "conversation": null,
+      "nodeIds": [
+        "m0007",
+        "m0012",
+        "m0023",
+        "m0030",
+        "m0042"
+      ],
+      "jobIds": [
+        "D01",
+        "D03",
+        "D04",
+        "D06"
+      ],
+      "cohesion": 0.213,
+      "certainty": 0.536
+    },
+    {
+      "id": "K:SCHEDULING",
+      "workType": "SCHEDULING",
+      "outputType": "SCHEDULE",
+      "conversation": null,
+      "nodeIds": [
+        "m0010",
+        "m0021",
+        "m0028",
+        "m0035",
+        "m0040",
+        "m0046",
+        "m0049"
+      ],
+      "jobIds": [
+        "D02",
+        "D03",
+        "D04",
+        "D05",
+        "D06",
+        "D07",
+        "D08"
+      ],
+      "cohesion": 0.285,
+      "certainty": 0.898
+    },
+    {
+      "id": "K:PHOTO",
+      "workType": "PHOTO",
+      "outputType": "DESIGN",
+      "conversation": null,
+      "nodeIds": [
+        "m0015",
+        "m0016",
+        "m0047"
+      ],
+      "jobIds": [
+        "D03",
+        "D08"
+      ],
+      "cohesion": 0.012,
+      "certainty": 0.226
+    }
+  ],
+  "processes": [
+    {
+      "core": [
+        "K:ACCOUNTS:TEXT",
+        "K:WRITER:TEXT",
+        "K:WRITER:TEXT/dm-sk",
+        "K:DESIGN:DESIGN",
+        "K:SCHEDULING:SCHEDULE",
+        "K:REPORTING:REPORT",
+        "K:TEAM_LEAD:NONE"
+      ],
+      "runs": 4,
+      "jobIds": [
+        "D03",
+        "D04",
+        "D01",
+        "D06"
+      ],
+      "orderConfidence": 0.897,
+      "orderReliable": false,
+      "certainty": 0.836
+    }
+  ]
+}

@@ -1,0 +1,472 @@
+{
+  "corpus": "multichat-extreme",
+  "producedBy": "sim/cold.py coarse_steps + discover_processes, AI off",
+  "config": {
+    "STEP_MIN_NODES": 3,
+    "PROC_MIN_RUNS": 3,
+    "PROC_MIN_STEPS": 3,
+    "CORE_COVER": 0.66,
+    "CORE_PURITY": 0.5,
+    "ORDER_MIN_RUNS": 6,
+    "chat_split": true,
+    "concept_split": false,
+    "finished_only": true,
+    "churn_first": true,
+    "merge_subs": true,
+    "SPLIT_AT": 0.15
+  },
+  "churnExcluded": [
+    "e0089",
+    "e0090",
+    "e0091",
+    "e0092",
+    "e0093",
+    "e0094",
+    "e0095",
+    "e0096",
+    "e0097",
+    "e0098",
+    "e0099",
+    "e0100",
+    "e0101",
+    "e0102",
+    "e0103",
+    "e0104",
+    "e0105",
+    "e0106",
+    "e0107"
+  ],
+  "stepKinds": [
+    {
+      "id": "K:ACCOUNTS",
+      "workType": "ACCOUNTS",
+      "outputType": "TEXT",
+      "conversation": null,
+      "nodeIds": [
+        "e0001",
+        "e0018",
+        "e0031",
+        "e0040",
+        "e0047",
+        "e0055",
+        "e0068",
+        "e0113",
+        "e0127",
+        "e0135"
+      ],
+      "jobIds": [
+        "E01",
+        "E03",
+        "E04",
+        "E06",
+        "E07",
+        "E08",
+        "E10",
+        "E17",
+        "E20",
+        "E21"
+      ],
+      "cohesion": 0.167,
+      "certainty": 1.0
+    },
+    {
+      "id": "K:REPORTING",
+      "workType": "REPORTING",
+      "outputType": "REPORT",
+      "conversation": null,
+      "nodeIds": [
+        "e0002",
+        "e0013",
+        "e0019",
+        "e0030",
+        "e0037",
+        "e0046",
+        "e0053",
+        "e0061",
+        "e0069",
+        "e0080",
+        "e0119",
+        "e0133",
+        "e0136"
+      ],
+      "jobIds": [
+        "E01",
+        "E03",
+        "E04",
+        "E06",
+        "E07",
+        "E08",
+        "E10",
+        "E17",
+        "E20",
+        "E21"
+      ],
+      "cohesion": 0.179,
+      "certainty": 1.0
+    },
+    {
+      "id": "K:WRITER/dm-sk",
+      "workType": "WRITER",
+      "outputType": "TEXT",
+      "conversation": "dm-sk",
+      "nodeIds": [
+        "e0004",
+        "e0021",
+        "e0033",
+        "e0049",
+        "e0057",
+        "e0071",
+        "e0084",
+        "e0115",
+        "e0129",
+        "e0138"
+      ],
+      "jobIds": [
+        "E01",
+        "E03",
+        "E04",
+        "E07",
+        "E08",
+        "E10",
+        "E11",
+        "E17",
+        "E20",
+        "E21"
+      ],
+      "cohesion": 0.31,
+      "certainty": 1.0
+    },
+    {
+      "id": "K:WRITER",
+      "workType": "WRITER",
+      "outputType": "TEXT",
+      "conversation": null,
+      "nodeIds": [
+        "e0003",
+        "e0014",
+        "e0020",
+        "e0032",
+        "e0038",
+        "e0041",
+        "e0048",
+        "e0056",
+        "e0063",
+        "e0070",
+        "e0083",
+        "e0111",
+        "e0114",
+        "e0124",
+        "e0128",
+        "e0137",
+        "e0149"
+      ],
+      "jobIds": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "E16",
+        "E17",
+        "E19",
+        "E20",
+        "E21",
+        "E22"
+      ],
+      "cohesion": 0.205,
+      "certainty": 1.0
+    },
+    {
+      "id": "K:PHOTO/dm-tk",
+      "workType": "PHOTO",
+      "outputType": "DESIGN",
+      "conversation": "dm-tk",
+      "nodeIds": [
+        "e0006",
+        "e0023",
+        "e0073",
+        "e0109"
+      ],
+      "jobIds": [
+        "E01",
+        "E03",
+        "E10",
+        "E15"
+      ],
+      "cohesion": 0.5,
+      "certainty": 0.665
+    },
+    {
+      "id": "K:PHOTO",
+      "workType": "PHOTO",
+      "outputType": "DESIGN",
+      "conversation": null,
+      "nodeIds": [
+        "e0005",
+        "e0022",
+        "e0072",
+        "e0108",
+        "e0120"
+      ],
+      "jobIds": [
+        "E01",
+        "E03",
+        "E10",
+        "E15",
+        "E18"
+      ],
+      "cohesion": 0.237,
+      "certainty": 0.656
+    },
+    {
+      "id": "K:DESIGN/dm-ka",
+      "workType": "DESIGN",
+      "outputType": "DESIGN",
+      "conversation": "dm-ka",
+      "nodeIds": [
+        "e0008",
+        "e0025",
+        "e0075"
+      ],
+      "jobIds": [
+        "E01",
+        "E03",
+        "E10"
+      ],
+      "cohesion": 1.0,
+      "certainty": 0.78
+    },
+    {
+      "id": "K:DESIGN",
+      "workType": "DESIGN",
+      "outputType": "DESIGN",
+      "conversation": null,
+      "nodeIds": [
+        "e0007",
+        "e0015",
+        "e0024",
+        "e0034",
+        "e0043",
+        "e0050",
+        "e0058",
+        "e0064",
+        "e0074",
+        "e0085",
+        "e0116",
+        "e0121",
+        "e0125",
+        "e0130",
+        "e0141",
+        "e0150"
+      ],
+      "jobIds": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "E17",
+        "E18",
+        "E19",
+        "E20",
+        "E21",
+        "E22"
+      ],
+      "cohesion": 0.201,
+      "certainty": 1.0
+    },
+    {
+      "id": "K:VIDEO",
+      "workType": "VIDEO",
+      "outputType": "DESIGN",
+      "conversation": null,
+      "nodeIds": [
+        "e0009",
+        "e0026",
+        "e0076",
+        "e0143"
+      ],
+      "jobIds": [
+        "E01",
+        "E03",
+        "E10",
+        "E21"
+      ],
+      "cohesion": 1.0,
+      "certainty": 0.89
+    },
+    {
+      "id": "K:ADS",
+      "workType": "ADS",
+      "outputType": "REPORT",
+      "conversation": null,
+      "nodeIds": [
+        "e0010",
+        "e0027",
+        "e0077",
+        "e0144"
+      ],
+      "jobIds": [
+        "E01",
+        "E03",
+        "E10",
+        "E21"
+      ],
+      "cohesion": 0.185,
+      "certainty": 0.523
+    },
+    {
+      "id": "K:SCHEDULING",
+      "workType": "SCHEDULING",
+      "outputType": "SCHEDULE",
+      "conversation": null,
+      "nodeIds": [
+        "e0011",
+        "e0016",
+        "e0028",
+        "e0035",
+        "e0039",
+        "e0044",
+        "e0051",
+        "e0059",
+        "e0078",
+        "e0086",
+        "e0112",
+        "e0117",
+        "e0126",
+        "e0131",
+        "e0145",
+        "e0151"
+      ],
+      "jobIds": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E10",
+        "E11",
+        "E16",
+        "E17",
+        "E19",
+        "E20",
+        "E21",
+        "E22"
+      ],
+      "cohesion": 0.307,
+      "certainty": 1.0
+    },
+    {
+      "id": "K:TEAM_LEAD",
+      "workType": "TEAM_LEAD",
+      "outputType": "NONE",
+      "conversation": null,
+      "nodeIds": [
+        "e0012",
+        "e0029",
+        "e0045",
+        "e0052",
+        "e0060",
+        "e0079",
+        "e0087",
+        "e0118",
+        "e0132",
+        "e0146"
+      ],
+      "jobIds": [
+        "E01",
+        "E03",
+        "E06",
+        "E07",
+        "E08",
+        "E10",
+        "E11",
+        "E17",
+        "E20",
+        "E21"
+      ],
+      "cohesion": 0.327,
+      "certainty": 1.0
+    }
+  ],
+  "processes": [
+    {
+      "core": [
+        "K:ACCOUNTS:TEXT",
+        "K:REPORTING:REPORT",
+        "K:WRITER:TEXT",
+        "K:WRITER:TEXT/dm-sk",
+        "K:PHOTO:DESIGN",
+        "K:PHOTO:DESIGN/dm-tk",
+        "K:DESIGN:DESIGN",
+        "K:DESIGN:DESIGN/dm-ka",
+        "K:VIDEO:DESIGN",
+        "K:ADS:REPORT",
+        "K:SCHEDULING:SCHEDULE",
+        "K:TEAM_LEAD:NONE"
+      ],
+      "runs": 4,
+      "jobIds": [
+        "E01",
+        "E03",
+        "E10",
+        "E21"
+      ],
+      "orderConfidence": 0.889,
+      "orderReliable": false,
+      "certainty": 1.0
+    },
+    {
+      "core": [
+        "K:ACCOUNTS:TEXT",
+        "K:WRITER:TEXT",
+        "K:WRITER:TEXT/dm-sk",
+        "K:DESIGN:DESIGN",
+        "K:SCHEDULING:SCHEDULE",
+        "K:TEAM_LEAD:NONE",
+        "K:REPORTING:REPORT"
+      ],
+      "runs": 5,
+      "jobIds": [
+        "E17",
+        "E20",
+        "E04",
+        "E06",
+        "E11"
+      ],
+      "orderConfidence": 1.0,
+      "orderReliable": false,
+      "certainty": 0.95
+    },
+    {
+      "core": [
+        "K:WRITER:TEXT",
+        "K:DESIGN:DESIGN",
+        "K:SCHEDULING:SCHEDULE"
+      ],
+      "runs": 3,
+      "jobIds": [
+        "E02",
+        "E19",
+        "E22"
+      ],
+      "orderConfidence": 1.0,
+      "orderReliable": false,
+      "certainty": 0.65
+    }
+  ]
+}

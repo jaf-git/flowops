@@ -1,0 +1,28 @@
+title = "FlowOps secret scanning"
+
+# Start from the maintained default rules and narrow only what is provably safe.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Paths that hold no secret by construction"
+paths = [
+    '''\.env\.example$''',
+    '''package-lock\.json$''',
+    '''app/frontend/dist/.*''',
+]
+
+# A request file's "Relates to" row is a comma-separated list of our own identifiers, and the
+# generic-api-key rule fires on its entropy — 3.50 for
+# "AUTH_NOTE_06, AUTH_REQ_CLARIFICATION_15, AUTH_UC_01_SIGNUP, DECISION-PERSISTENCE-01".
+#
+# Allowlisted by shape rather than by path. Exempting specs/ wholesale would mean a real credential
+# pasted into a specification goes unseen, and specifications are exactly where someone would paste
+# one while writing up an incident. This matches only strings made entirely of upper-case
+# identifier characters that also carry one of our own prefixes: a real key has lower case, or
+# base64 padding, or symbols outside this set, and cannot match.
+[[allowlists]]
+description = "Our own identifier vocabulary, which is high-entropy and public by design"
+regexes = [
+    '''^[A-Z0-9_\-,\.\s]*(_(NOTE|REQ|UC|PLAN)_|DECISION-|CONSTRAINT-|FLOW-|SHAPE-|IMPL-SOP-|SOP-)[A-Z0-9_\-,\.\s]*$''',
+]

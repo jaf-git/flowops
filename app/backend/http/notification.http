@@ -1,0 +1,129 @@
+### FEATURE_NOTIFICATION — one person's own inbox, and nobody else's
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects. The demo backend runs on 8081 — Tomcat9 owns 8080
+### on this machine.
+###
+### **Read the absences in this file as carefully as the requests.** There are five routes and there is
+### no sixth, because four of the things a notification API usually offers are refused by name:
+###
+###   - **No route takes a person.** Not `?personId=`, not `/people/{id}/notifications`. An inbox is a
+###     record of what somebody was chased about — which work, how often, how far up the ladder it
+###     climbed — and read by a manager it is a performance history containing only the moments
+###     something went wrong (`NOTIFICATION_02` §2). The absence is the enforcement, and
+###     `NoRouteServesAnotherPersonsInboxTest` is where it is asserted rather than intended.
+###   - **No mark-all-read.** It is the control people press instead of reading, and a channel that is
+###     bulk-dismissed has already failed. If volume is high enough to want it, the fix is fewer
+###     notifications.
+###   - **No filter, no search, no grouping by kind.** A list short enough to need none of those is the
+###     design goal.
+###   - **No escalation switch**, in the preferences payload or anywhere else. Not a disabled toggle —
+###     absent. A disabled control implies a permission that could be granted, and this one cannot.
+###
+### **AUTOMATION has no file here because it has no endpoint at all.** All six of its use cases say so:
+### it is invoked by the scheduler and hands its findings to this feature through `NotifyUseCase`.
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@manager = ionut@atelier.ro
+@employee = andrei@atelier.ro
+@password = a-long-enough-passphrase
+
+### Copy a real identifier out of the inbox response into this.
+@notificationId = 00000000-0000-0000-0000-000000000000
+
+### Sign in. `NOTIFICATION_VIEW_OWN` is granted to all three roles in V67 — there is no tier here,
+### because everybody has an inbox and nobody has anybody else's.
+# @name signIn
+POST {{host}}/api/auth/sessions
+Content-Type: application/json
+
+{
+  "email": "{{employee}}",
+  "password": "{{password}}"
+}
+
+###
+
+@csrf = {{signIn.response.headers.X-CSRF-TOKEN}}
+
+### The inbox — unread first, then newest first, read rows dimmed rather than removed.
+###
+### A row whose `items` is non-empty is a **digest**: more notices released at one instant than the
+### workspace's `digest_threshold`, folded into one expandable line. Escalations are never inside one —
+### they are extracted and delivered individually however many there are.
+###
+### A row whose `subjectId` is null is one whose subject has gone. It renders as *This is no longer
+### available*, never as stale text describing a task that has since changed. No message body is stored
+### anywhere, so the sentence is composed by the screen from `kind` and nothing has travelled past the
+### access checks that govern the original.
+GET {{host}}/api/notifications
+
+### The bell's number. A plain count, and the screen renders nothing at all when it is zero — the bell
+### stays, the number goes. No red dot, no pulse, no growth: those are pressure, and pressure applied to
+### a notification list produces bulk dismissal, which takes the escalations with it.
+GET {{host}}/api/notifications/unread-count
+
+### Open one. Two acts, one gesture: it is marked read and the screen goes to the subject. A separate
+### acknowledge step is a step people stop taking, and then the unread count reports a backlog nobody
+### has.
+###
+### Idempotent — the first instant is the true one, and pressing again does not move it.
+###
+### Try it with somebody else's identifier and the answer is **404, the same as one that does not
+### exist**. Distinguishing them would confirm that a colleague was chased about something.
+POST {{host}}/api/notifications/{{notificationId}}/read
+X-CSRF-TOKEN: {{csrf}}
+
+### My four switches. Absent from storage means enabled, so somebody who has never opened the screen
+### gets four `true`s back.
+GET {{host}}/api/notification-preferences
+
+### Switch off assignment notices. **Disabling a group stops creation, not just delivery** — no row is
+### written for a suppressed notice, so nothing anywhere is counting what somebody declined.
+###
+### **And disabling never hides a marker.** At-risk, blocked and stalled are derived and render on every
+### screen regardless. A person who mutes loses the prompt, not the information, which is what makes
+### muting a reasonable choice rather than a way to hide from work.
+PUT {{host}}/api/notification-preferences
+Content-Type: application/json
+X-CSRF-TOKEN: {{csrf}}
+
+{
+  "assignment": false,
+  "time": true,
+  "process": true,
+  "weekly": true
+}
+
+### The refusal worth seeing. There is no `escalation` field, and sending one is **422
+### NOT_DISABLEABLE** rather than a silent 204 — a client told it succeeded would render a control that
+### appeared to work, and a person would believe they had silenced the one mechanism that cannot be
+### silenced. `V67`'s check constraint refuses the row as well, so the same rule holds one layer below
+### anything an endpoint could do.
+PUT {{host}}/api/notification-preferences
+Content-Type: application/json
+X-CSRF-TOKEN: {{csrf}}
+
+{
+  "assignment": true,
+  "time": true,
+  "process": true,
+  "weekly": true,
+  "escalation": false
+}
+
+### Walking the hold and the re-check by hand, which is the only way to see the feature's argument.
+###
+### 1. Set the workspace's working hours to a window that has already closed today.
+### 2. As the owner, assign the employee a task. Nothing arrives — `GET /api/notifications` as the
+###    employee is unchanged, and the row sits in `notification` with `state = 'HELD'` and a
+###    `deliver_after` at the next working instant.
+### 3. As the employee, accept that task. The work was never hidden; it was always on their list.
+### 4. Wait for the release pass — a minute, or `flowops.notification.release-pass-ms` — or advance
+###    past `deliver_after`.
+### 5. The row is now `CANCELLED` with `cancel_reason = 'SUBJECT_ALREADY_ACTED_ON'`, and the employee's
+###    inbox is still empty.
+###
+### **That is the whole feature.** A prompt to do something already done is noise, and noise is what
+### teaches a person to mute a channel — a lesson that does not reverse.

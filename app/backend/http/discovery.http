@@ -1,0 +1,363 @@
+### FEATURE_DISCOVERY — the work a business does, discovered from what its people said
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects. The demo backend runs on 8081 — Tomcat9 owns 8080
+### on this machine.
+###
+### **Two endpoints, and between them they are the entire input to this zone.** Everything downstream —
+### threading, clocks, fingerprints, clustering, discovered patterns — is computed from what these two
+### produce, and none of it asks anybody anything.
+###
+### **Nothing here can reach a task.** DECISION-DISCOVERY-ZONE-01 draws two zones and lets exactly one
+### thing cross, one way: an approved template. A node never becomes a task. There is no route from
+### these packages to TASK's write surface and `NoRouteFromDiscoveryToATaskTest` asserts its absence
+### rather than leaving it as an intention — so no request you can write in this file will create one.
+###
+### Seed the workspace in discovery mode first, or there will be no messages to mark:
+###   ./mvnw spring-boot:run -Dspring-boot.run.arguments="--discovery"
+### That mode seeds seven people, seventeen conversations and 656 messages, and **zero task templates,
+### zero process templates, zero tasks and zero runs**. That emptiness is the point: a zone that claims
+### to find process structure nobody typed cannot be demonstrated next to a library somebody typed.
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@manager = ionut@atelier.ro
+@employee = andrei@atelier.ro
+@password = a-long-enough-passphrase
+
+### Copy real identifiers out of the two GETs below into these three.
+@messageId = 00000000-0000-0000-0000-000000000000
+@secondMessageId = 00000000-0000-0000-0000-000000000000
+@jobId = 00000000-0000-0000-0000-000000000000
+@secondJobId = 00000000-0000-0000-0000-000000000000
+@performerId = 00000000-0000-0000-0000-000000000000
+@conversationId = 00000000-0000-0000-0000-000000000000
+@nodeId = 00000000-0000-0000-0000-000000000000
+
+### Sign in as the manager who runs the client work.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{manager}}",
+  "password": "{{password}}"
+}
+
+### Your own conversations. Take an id from here — there is no route that lists anybody else's.
+GET {{host}}/api/conversations
+
+### The messages in one of them. Every one of these is markable by you and by nobody outside it.
+GET {{host}}/api/conversations/00000000-0000-0000-0000-000000000000/messages
+
+### Who is in the workspace, for the performer id below.
+GET {{host}}/api/workspace/members
+
+###############################################################################
+### DISCOVERY-OPEN-JOB-01 — the one click nothing can infer
+###############################################################################
+
+### 201. The engagement, its first unit of work, and the thread that work opened.
+###
+### **This is the single most valuable click in the product.** Recovering which instance an event
+### belongs to is the hardest known problem in process mining and the literature's heuristics for doing
+### it from an unlabelled log are unreliable. One tap settles it, from the person who actually knows.
+###
+### The message becomes the engagement's first unit of work — STANDALONE, of kind JOB_START, kept for
+### the person who marked it. Pasting a brief is somebody recording that an engagement now exists; it is
+### not a request made of another person, and reading it as one would invent a handover that never
+### happened and put a phantom edge at the start of every engagement in the workspace.
+###
+### Copy `jobId` out of the response into the variable above.
+POST {{host}}/api/discovery/jobs
+Content-Type: application/json
+
+{
+  "messageId": "{{messageId}}",
+  "name": "Aurora Coffee — autumn campaign",
+  "projectLabel": "Autumn campaign"
+}
+
+### S3 — `projectLabel` is OPTIONAL, and omitting it is an ordinary path rather than a degraded one.
+###
+### PRINCIPLE-NEVER-BLOCK: an employee opens an engagement in one click and a manager names the project
+### afterwards. `Job.tracks` is settable after opening for exactly that reason.
+###
+### **It is part of the bracket address (D1), and it is applied BEFORE the boundary's address is
+### composed.** An address is frozen at open, so setting it afterwards would key the container on a null
+### project while every bracket opened a second later keys on the real one — two addresses for one
+### engagement, and nothing on any screen saying so. A later change re-keys nothing that already exists;
+### it decides what NEW brackets key on.
+POST {{host}}/api/discovery/jobs
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "messageId": "{{messageId}}",
+  "name": "Aurora Coffee — autumn campaign"
+}
+
+### 422 MESSAGE_NOT_MARKABLE, for a message that does not exist.
+###
+### **The same answer you get for a message that is not yours, and for one that was deleted.** Three
+### distinguishable refusals would let somebody learn which message identifiers exist by watching which
+### one comes back. Try it as the employee below and compare: identical.
+POST {{host}}/api/discovery/jobs
+Content-Type: application/json
+
+{
+  "messageId": "11111111-1111-1111-1111-111111111111",
+  "name": "An engagement that will not be created"
+}
+
+###############################################################################
+### DISCOVERY-MARK-MESSAGE-01 — the circle
+###############################################################################
+
+### 201. A request of a colleague. The thread comes back and you were asked nothing to get it.
+###
+### **The direction is yours, and it is never read out of the words.** Classifying by content is refused
+### outright: a wrong direction does not merely mislabel, it fabricates a duration by pairing a
+### completion with a request that was never its own — and because the same mistake repeats on every
+### client, that false edge accumulates evidence rather than washing out.
+POST {{host}}/api/discovery/nodes
+Content-Type: application/json
+
+{
+  "messageId": "{{secondMessageId}}",
+  "jobId": "{{jobId}}",
+  "direction": "REQUEST",
+  "performerId": "{{performerId}}"
+}
+
+### 201, and **the same trackId as the request above** — this is the thing to watch in a demonstration.
+###
+### Threads are inferred from who exchanged work with whom, never from what anybody wrote. Two pieces of
+### work by the same pair in the same engagement belong together, and nobody was asked to say so.
+###
+### The key is the role pair *and the performer*, and the performer is the half that gets forgotten: two
+### content writers working for the same account manager share a role pair exactly, so keyed on roles
+### alone their work lands in one thread and the inferred order reads *blog requested → social requested
+### → blog done → social done* — two edges that never happened.
+POST {{host}}/api/discovery/nodes
+Content-Type: application/json
+
+{
+  "messageId": "{{secondMessageId}}",
+  "jobId": "{{jobId}}",
+  "direction": "COMPLETION",
+  "performerId": "{{performerId}}"
+}
+
+### 201 with **no trackId at all**, and the emptiness is a real answer rather than a failure.
+###
+### A status question never opens or joins a thread — invariant I11. It contributes no duration and no
+### coverage denominator, so a thread containing one would carry an observation that must never be
+### counted, and the exclusion would then have to be remembered by every query downstream instead of
+### being impossible. `V65` refuses the combination in the schema rather than trusting anybody to
+### remember it.
+POST {{host}}/api/discovery/nodes
+Content-Type: application/json
+
+{
+  "messageId": "{{secondMessageId}}",
+  "jobId": "{{jobId}}",
+  "direction": "QUERY",
+  "performerId": null
+}
+
+### 201. Self-directed work nobody requested — which in a business of seven is a great deal of what an
+### owner actually does. It still opens a thread, or it would be homeless.
+POST {{host}}/api/discovery/nodes
+Content-Type: application/json
+
+{
+  "messageId": "{{secondMessageId}}",
+  "jobId": "{{jobId}}",
+  "direction": "STANDALONE",
+  "performerId": null
+}
+
+### 422 UNKNOWN_JOB. **Refused rather than created silently.**
+###
+### Creating the engagement here would put work into one nobody opened, and the outer boundary is the
+### one piece of structure this zone insists a human supplies. Everything else it infers for free; this
+### it will not guess.
+POST {{host}}/api/discovery/nodes
+Content-Type: application/json
+
+{
+  "messageId": "{{messageId}}",
+  "jobId": "22222222-2222-2222-2222-222222222222",
+  "direction": "REQUEST",
+  "performerId": "{{performerId}}"
+}
+
+###############################################################################
+### The subject chip — pre-selected, pre-guessed, and shown as a guess
+###############################################################################
+
+### 200. What the strip offers, and which one it is guessing.
+###
+### **The chip is a guess and is shown as one.** At most one entry comes back with `guessed: true` —
+### the engagement this conversation has already produced work in, failing that the workspace's most
+### recently touched open engagement, and failing that **nothing at all**: an empty array, no flag, and
+### no pretending.
+###
+### **Nothing here is applied.** The flag stays a flag and no unit of work is written. Silently linking
+### a node to an engagement the person did not see builds a relationship nobody can detect afterwards,
+### and *losing a signal beats building a false one* — a missing link is visibly missing, a wrong one
+### looks identical to a right one forever.
+###
+### Copy the guessed `jobId` into `@jobId` above; this is exactly what the strip does.
+GET {{host}}/api/discovery/jobs?conversationId={{conversationId}}
+
+### 200. The guess was right, and saying so is worth a write.
+###
+### Naming the engagement the work already carries records `subject_source = CONFIRMED` and moves
+### nothing. *The guess was right* is evidence; silence is not, and a guess nobody looked at and a
+### choice somebody made are otherwise the same identifier in the same column.
+###
+### Copy a `nodeId` from one of the 201s above into `@nodeId`.
+PATCH {{host}}/api/discovery/nodes/{{nodeId}}/job
+Content-Type: application/json
+
+{
+  "jobId": "{{jobId}}"
+}
+
+### 200, and **the trackId comes back different** — this is the thing to watch here.
+###
+### Naming a different engagement records `CORRECTED` and **re-runs the thread inference against the
+### new engagement**. A thread is the inner case identifier and never spans two engagements: work left
+### pointing at its old thread would sit among work it has nothing to do with, and every duration and
+### ordering drawn over that thread afterwards would be wrong with nothing to show for it.
+###
+### The thread the work left is deleted if it had nothing else in it. A thread with no work in it
+### describes nothing, and the next click on the same key would join it.
+###
+### Open a second engagement first and put its id in `@secondJobId`.
+PATCH {{host}}/api/discovery/nodes/{{nodeId}}/job
+Content-Type: application/json
+
+{
+  "jobId": "{{secondJobId}}"
+}
+
+### 422 UNKNOWN_JOB. **Refused rather than created**, exactly as marking is.
+###
+### The outer boundary is the one piece of structure this zone insists a human supplies, and a chip
+### able to conjure an engagement would be the silent creation the other door already refuses.
+PATCH {{host}}/api/discovery/nodes/{{nodeId}}/job
+Content-Type: application/json
+
+{
+  "jobId": "22222222-2222-2222-2222-222222222222"
+}
+
+###############################################################################
+### The ten-second undo — a full delete, not a tombstone
+###############################################################################
+
+### 204. Marked by accident, taken back, and nothing is left behind.
+###
+### **A full delete.** There is no fact to preserve in a click somebody withdrew before anything else
+### happened, and a tombstone would leave a row every later query has to remember to filter — the first
+### query that forgets counts a click nobody meant as a unit of work.
+###
+### It reaches further than the node, and it has to: the evidence goes with it, the thread goes if the
+### withdrawn work was its only member, and the engagement goes if this was the click that opened it.
+### The message itself is untouched — the node is editable, the message is evidence.
+DELETE {{host}}/api/discovery/nodes/{{nodeId}}
+
+### 409 UNDO_WINDOW_CLOSED, once ten seconds have passed. Mark something, wait, and try this.
+###
+### **The window is measured on the server, against the row's own creation instant.** The countdown in
+### the toast is presentation; a refusal that trusted it would let a tab left open overnight delete work
+### that has since been threaded, fingerprinted and counted towards a proposal.
+###
+### **Ten seconds is not a threshold and must never become one** (`DISCOVERY_07` §5). It sits beside
+### *one nudge per node* on the list of things that stay constants: it is an interaction affordance, not
+### a tuning knob, and a workspace able to set it to a week would have built a delete button without
+### ever calling it one.
+DELETE {{host}}/api/discovery/nodes/{{nodeId}}
+
+### 422 UNKNOWN_WORK_NODE, for a unit of work that is not there.
+###
+### Answering 204 would tell you something false about the graph, and a screen that had drifted would go
+### on offering undo on work that never existed.
+DELETE {{host}}/api/discovery/nodes/33333333-3333-3333-3333-333333333333
+
+###############################################################################
+### The permission, and why an employee holds it
+###############################################################################
+
+### Sign in as an employee.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{employee}}",
+  "password": "{{password}}"
+}
+
+### 201 — an employee may mark. **Every role in the workspace holds `WORK_NODE_MARK`, deliberately.**
+###
+### This zone has nothing to analyse unless the people doing the work click, and the design's largest
+### recorded risk is that they stop. A permission gate on the circle would be a gate on the product's
+### whole supply of evidence.
+###
+### The rule that decides it is in DISCOVERY_02_ACCESS_CONTROL: ask an employee only what they can
+### answer by **recognition**, and a manager anything requiring **classification**. *Which engagement is
+### this?* is recognition. *Is Aurora a client or a prospect?* is classification. Naming a discovered
+### type is the owner's, because no template is ever created without a human — invariant I7.
+POST {{host}}/api/discovery/nodes
+Content-Type: application/json
+
+{
+  "messageId": "{{messageId}}",
+  "jobId": "{{jobId}}",
+  "direction": "COMPLETION",
+  "performerId": null
+}
+
+### 422 MESSAGE_NOT_MARKABLE, on a message in a conversation this employee is not in.
+###
+### **Marking is bounded by what the caller can already see, and the rule is CHAT's — called rather than
+### copied.** A second implementation of the same rule is the one that goes stale. This widens nothing;
+### it lets somebody act on what was already in front of them.
+POST {{host}}/api/discovery/nodes
+Content-Type: application/json
+
+{
+  "messageId": "{{messageId}}",
+  "jobId": "{{jobId}}",
+  "direction": "REQUEST",
+  "performerId": "{{performerId}}"
+}
+
+###############################################################################
+### What is not here yet, so its absence is not read as a fault
+###############################################################################
+
+### **Nothing in this file draws anything.** There is no canvas read — DISCOVERY-VIEW-CANVAS-01 — so the
+### lanes, the cards and the loops that collapse to one box with a counter have nothing to answer them
+### yet. Neither has the weekly digest.
+###
+### **Nothing here discovers a pattern either.** The fingerprint's six components, the clustering that
+### groups threads by them, the proposals that reach the owner's weekly and the naming that turns one
+### into a word the workspace uses — DISCOVERY-PROPOSE-TYPE-01 and DISCOVERY-NAME-TYPE-01 — are all
+### still ahead. Until they ship the graph accumulates and nothing is read out of it, which is the
+### honest state rather than a fault.
+###
+### **And nothing here crosses into the application.** DISCOVERY-FORMALISE-WORK-01 and
+### DISCOVERY-COMPOSE-PROCESS-01 are the one thing that crosses zones, one way, under the receiving
+### zone's own permissions. There is no request you can write in this file that creates a template, a
+### process or a task, and `NoRouteFromDiscoveryToATaskTest` asserts that absence rather than trusting
+### it.
+###
+### **The clocks and closures are here, in the two files beside this one.** Recording what a unit of
+### work produced, blocking and resuming it and the one nudge it ever gets are in
+### `discovery-progress.http`; ending a thread, pairing a completion with its request and the manager's
+### orphan queue are in `discovery-tracks.http`. This file stays the capture story — the circle, the
+### chip and the undo — because a single file holding every request in the zone is one nobody reads
+### from the top.

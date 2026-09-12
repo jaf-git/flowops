@@ -1,0 +1,23 @@
+package com.flowops.workspace.domain.enums;
+
+public enum WorkspaceAction {
+    SETUP_COMPLETED,
+
+    INVITATION_CREATED,
+
+    INVITATION_REVOKED,
+
+    INVITATION_ACCEPTED,
+
+    INVITATION_DECLINED,
+
+    REPORTING_LINE_CHANGED,
+
+    PERSON_DEACTIVATED,
+
+    PERSON_ERASED,
+
+    PROFILE_CHANGED,
+
+    SETTINGS_CHANGED
+}

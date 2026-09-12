@@ -1,0 +1,6868 @@
+{
+ "corpus": "brutal",
+ "producedBy": "sim/v6.py match_node, AI off",
+ "config": {
+  "W_TEXT": 0.5,
+  "W_ROLE": 0.2,
+  "W_SHAPE": 0.2,
+  "W_OUTPUT": 0.1,
+  "SCORE_FLOOR": 0.7,
+  "CONF_FLOOR": 0.6,
+  "SEP_MIN": 0.06,
+  "TEXT_VETO": 0.45,
+  "TQ_MIN": 0.25,
+  "FINALISTS": 4,
+  "PLAUSIBLE_MIN": 0.5,
+  "UNIQ_MIN": 0.5,
+  "KW_CORROB": 0.3,
+  "shape_feature": true,
+  "output_map": true,
+  "keywords": true,
+  "intent_gate": true,
+  "boundary_gate": true,
+  "lapsed_gate": true,
+  "marker_address": true,
+  "post_close_gate": false,
+  "direction_gate": true,
+  "type_contradiction": true,
+  "semantic": false
+ },
+ "roleKinship": [
+  [
+   "Designer",
+   "Junior designer",
+   0.7
+  ],
+  [
+   "Content writer",
+   "Editor",
+   0.7
+  ],
+  [
+   "Account manager",
+   "Strategy",
+   0.6
+  ],
+  [
+   "Designer",
+   "Strategy",
+   0.2
+  ]
+ ],
+ "typeWords": {
+  "VIDEO": [
+   "video",
+   "teaser",
+   "promo video",
+   "reel",
+   "rough cut"
+  ],
+  "PHOTO": [
+   "photo",
+   "shoot",
+   "packshot",
+   "retouch"
+  ],
+  "WRITER": [
+   "caption",
+   "copy",
+   "article",
+   "newsletter"
+  ],
+  "DESIGN": [
+   "design",
+   "key visual",
+   "mood board",
+   "layout"
+  ],
+  "ADS": [
+   "ads",
+   "campaign",
+   "ad variants"
+  ],
+  "SCHEDULING": [
+   "schedule",
+   "publish",
+   "queue"
+  ],
+  "RESEARCH": [
+   "competitor",
+   "research",
+   "landscape"
+  ],
+  "REPORTING": [
+   "report",
+   "recap"
+  ]
+ },
+ "genericTokens": [
+  "asap",
+  "final",
+  "misc",
+  "new",
+  "ok",
+  "stuff",
+  "task",
+  "tbd",
+  "thanks",
+  "todo",
+  "update",
+  "urgent",
+  "v2",
+  "work"
+ ],
+ "tierCounts": {
+  "ABSTAIN": 110,
+  "NUDGE": 13
+ },
+ "templates": [
+  {
+   "id": "T-CAPS",
+   "title": "Captions",
+   "description": "Captions for a set of posts",
+   "work_type": "WRITER",
+   "responsible_role": "WRITER",
+   "output_kind": "TEXT",
+   "expected_output": "a caption doc",
+   "required_input": "the post list",
+   "completion_criteria": "approved",
+   "checklist": [
+    "draft",
+    "review"
+   ],
+   "status": "APPROVED",
+   "approved_at": "2026-03-01",
+   "keywords": [
+    "captions",
+    "copy"
+   ],
+   "shape_preceding_role": null,
+   "shape_following_role": null,
+   "shape_position": null
+  },
+  {
+   "id": "T-SHOOT",
+   "title": "Shoot",
+   "description": "Photograph the client's products",
+   "work_type": "PHOTO",
+   "responsible_role": "PHOTO",
+   "output_kind": "DESIGN",
+   "expected_output": "edited images",
+   "required_input": "products, shot list",
+   "completion_criteria": "client picks",
+   "checklist": [
+    "shot list",
+    "shoot",
+    "retouch"
+   ],
+   "status": "APPROVED",
+   "approved_at": "2026-03-01",
+   "keywords": [
+    "shoot",
+    "photos"
+   ],
+   "shape_preceding_role": null,
+   "shape_following_role": null,
+   "shape_position": null
+  },
+  {
+   "id": "T-REPORT",
+   "title": "Monthly report",
+   "description": "Monthly numbers for a client",
+   "work_type": "REPORTING",
+   "responsible_role": "REPORTING",
+   "output_kind": "REPORT",
+   "expected_output": "a client PDF",
+   "required_input": "platform data",
+   "completion_criteria": "sent",
+   "checklist": [
+    "pull",
+    "write",
+    "send"
+   ],
+   "status": "APPROVED",
+   "approved_at": "2026-03-01",
+   "keywords": [
+    "report",
+    "numbers"
+   ],
+   "shape_preceding_role": null,
+   "shape_following_role": null,
+   "shape_position": null
+  },
+  {
+   "id": "T-ADS",
+   "title": "Paid run",
+   "description": "Set up and run a paid campaign",
+   "work_type": "ADS",
+   "responsible_role": "ADS",
+   "output_kind": "REPORT",
+   "expected_output": "a live campaign",
+   "required_input": "budget and audience",
+   "completion_criteria": "live and tracked",
+   "checklist": [
+    "build",
+    "launch",
+    "track"
+   ],
+   "status": "APPROVED",
+   "approved_at": "2026-03-01",
+   "keywords": [
+    "ads",
+    "campaign"
+   ],
+   "shape_preceding_role": null,
+   "shape_following_role": null,
+   "shape_position": null
+  }
+ ],
+ "nodes": [
+  {
+   "id": "g001",
+   "job_id": "G01",
+   "text": "so dana rang, new range end of teh month, usual bits plus a bit more",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "tariq",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-02",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "REPORTING",
+   "shape_position": 1,
+   "truth": null
+  },
+  {
+   "id": "g002",
+   "job_id": "G01",
+   "text": "who else is playing in this space",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-05-04",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ACCOUNTS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "WRITER",
+   "shape_position": 2,
+   "truth": null
+  },
+  {
+   "id": "g003",
+   "job_id": "G01",
+   "text": "copy done for all of them, stories too",
+   "detail": null,
+   "creator_id": "sara",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-05-06",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "REPORTING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "PHOTO",
+   "shape_position": 3,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "g004",
+   "job_id": "G01",
+   "text": "photos in the drive !!",
+   "detail": null,
+   "creator_id": "tariq",
+   "marker_id": "tariq",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "PHOTO",
+   "created_at": "2026-05-08",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "PHOTO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "WRITER",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 4,
+   "truth": "T-SHOOT"
+  },
+  {
+   "id": "g005",
+   "job_id": "G01",
+   "text": "COMPS ARE READY",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-05-10",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "PHOTO",
+   "shape_preceding_dir": null,
+   "shape_following_role": "VIDEO",
+   "shape_position": 5,
+   "truth": null
+  },
+  {
+   "id": "g006",
+   "job_id": "G01",
+   "text": "sizzle is half done",
+   "detail": null,
+   "creator_id": "nour",
+   "marker_id": "nour",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "VIDEO",
+   "created_at": "2026-05-12",
+   "state": "LAPSED",
+   "closure": "LAPSED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "VIDEO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ADS",
+   "shape_position": 6,
+   "truth": null
+  },
+  {
+   "id": "g007",
+   "job_id": "G01",
+   "text": "BOOSTED THE TOP THREE POSTS",
+   "detail": null,
+   "creator_id": "ali",
+   "marker_id": "ali",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ADS",
+   "created_at": "2026-05-14",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "ADS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "VIDEO",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 7,
+   "truth": "T-ADS"
+  },
+  {
+   "id": "g008",
+   "job_id": "G01",
+   "text": "slotted in",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-16",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ADS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "TEAM_LEAD",
+   "shape_position": 8,
+   "truth": null
+  },
+  {
+   "id": "g009",
+   "job_id": "G01",
+   "text": "reading over before it goes",
+   "detail": null,
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-05-18",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "REPORTING",
+   "shape_position": 9,
+   "truth": null
+  },
+  {
+   "id": "g010",
+   "job_id": "G01",
+   "text": "perf summary done",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-05-20",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "TEAM_LEAD",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 10,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "g011",
+   "job_id": "G01",
+   "text": "👍👍",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-22",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "REPORTING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 11,
+   "truth": null
+  },
+  {
+   "id": "g012",
+   "job_id": "G02",
+   "text": "UGC captions drafted",
+   "detail": null,
+   "creator_id": "sara",
+   "marker_id": "ali",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-05-04",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 1,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "g013",
+   "job_id": "G02",
+   "text": "artwork coming along, 3 directions",
+   "detail": null,
+   "creator_id": "dana",
+   "marker_id": "dana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-05-06",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "WRITER",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 2,
+   "truth": null
+  },
+  {
+   "id": "g014",
+   "job_id": "G02",
+   "text": "lined up for next week",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-08",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 3,
+   "truth": null
+  },
+  {
+   "id": "g015",
+   "job_id": "G03",
+   "text": "pulled the ask into the doc, few gaps still",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-06",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "REPORTING",
+   "shape_position": 1,
+   "truth": null
+  },
+  {
+   "id": "g016",
+   "job_id": "G03",
+   "text": "did the landscape thing, rough but usable",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-05-08",
+   "state": "COMPLETED",
+   "closure": "DROPPED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ACCOUNTS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "WRITER",
+   "shape_position": 2,
+   "truth": null
+  },
+  {
+   "id": "g017",
+   "job_id": "G03",
+   "text": "WORDS FOR THE SIX ARE DRAFTED",
+   "detail": null,
+   "creator_id": "yuki",
+   "marker_id": "yuki",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-05-10",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "REPORTING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "PHOTO",
+   "shape_position": 3,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "g018",
+   "job_id": "G03",
+   "text": "shot teh range, retouching now",
+   "detail": null,
+   "creator_id": "tariq",
+   "marker_id": "tariq",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "PHOTO",
+   "created_at": "2026-05-12",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "PHOTO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "WRITER",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 4,
+   "truth": "T-SHOOT"
+  },
+  {
+   "id": "g019",
+   "job_id": "G03",
+   "text": "comps are ready",
+   "detail": null,
+   "creator_id": "dana",
+   "marker_id": "dana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-05-14",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "PHOTO",
+   "shape_preceding_dir": null,
+   "shape_following_role": "VIDEO",
+   "shape_position": 5,
+   "truth": null
+  },
+  {
+   "id": "g020",
+   "job_id": "G03",
+   "text": "sizzle is half done",
+   "detail": null,
+   "creator_id": "nour",
+   "marker_id": "nour",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "VIDEO",
+   "created_at": "2026-05-16",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "VIDEO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ADS",
+   "shape_position": 6,
+   "truth": null
+  },
+  {
+   "id": "g021",
+   "job_id": "G03",
+   "text": "SPEND GOES LIVE TOMORROW",
+   "detail": null,
+   "creator_id": "zain",
+   "marker_id": "hala",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ADS",
+   "created_at": "2026-05-18",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "ADS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "VIDEO",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 7,
+   "truth": "T-ADS"
+  },
+  {
+   "id": "g022",
+   "job_id": "G03",
+   "text": "slotted in",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-20",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ADS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "TEAM_LEAD",
+   "shape_position": 8,
+   "truth": null
+  },
+  {
+   "id": "g023",
+   "job_id": "G03",
+   "text": "final check, two typos",
+   "detail": null,
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-05-22",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "REPORTING",
+   "shape_position": 9,
+   "truth": null
+  },
+  {
+   "id": "g024",
+   "job_id": "G03",
+   "text": "writing up how it went",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-05-24",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "TEAM_LEAD",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 10,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "g025",
+   "job_id": "G03",
+   "text": "so the thing is dana changed her mind again halfway through which is fine but it means the brief we wrote is not the brief anymore and karim will build something nobody asked for so we should sit down and go through it properly this time so the thing is dana changed her mind again halfway through which is fine but it means the brief we wrote is not the brief anymore and karim will build something nobody asked for so we should sit down and go through it properly this time so the thing is dana changed her mind again halfway through which is fine but it means the brief we wrote is not the brief anymore and karim will build something nobody asked for so we should sit down and go through it properly this time ",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-26",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "REPORTING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 11,
+   "truth": null
+  },
+  {
+   "id": "g026",
+   "job_id": "G04",
+   "text": "client wants a one-pager and the usual set",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "hala",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-08",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "WRITER",
+   "shape_position": 1,
+   "truth": null
+  },
+  {
+   "id": "g027",
+   "job_id": "G04",
+   "text": "copy done for all of them, stories too",
+   "detail": null,
+   "creator_id": "yuki",
+   "marker_id": "yuki",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-05-10",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ACCOUNTS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 2,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "g028",
+   "job_id": "G04",
+   "text": "put the layouts together !!",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-05-12",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "WRITER",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 3,
+   "truth": null
+  },
+  {
+   "id": "g029",
+   "job_id": "G04",
+   "text": "ALL IN THE CALENDAR WAITING ON ASSETS",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-14",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "TEAM_LEAD",
+   "shape_position": 4,
+   "truth": null
+  },
+  {
+   "id": "g030",
+   "job_id": "G04",
+   "text": "GAVE IT A ONCE OVER thx",
+   "detail": null,
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-05-16",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "REPORTING",
+   "shape_position": 5,
+   "truth": null
+  },
+  {
+   "id": "g031",
+   "job_id": "G04",
+   "text": "numbers in, engagement up 12 !!",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-05-18",
+   "state": "COMPLETED",
+   "closure": "DROPPED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "TEAM_LEAD",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 6,
+   "truth": null
+  },
+  {
+   "id": "g032",
+   "job_id": "G05",
+   "text": "wrote the lines this morning",
+   "detail": null,
+   "creator_id": "sara",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-05-13",
+   "state": "COMPLETED",
+   "closure": "DROPPED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 1,
+   "truth": null
+  },
+  {
+   "id": "g033",
+   "job_id": "G05",
+   "text": "queueing fro the 1st !!",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-15",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "WRITER",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 2,
+   "truth": null
+  },
+  {
+   "id": "g034",
+   "job_id": "G05",
+   "text": "is this the right template",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "hala",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-17",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 3,
+   "truth": null
+  },
+  {
+   "id": "g035",
+   "job_id": "G06",
+   "text": "brief is in, they want it live by the 1st",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-16",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "WRITER",
+   "shape_position": 1,
+   "truth": null
+  },
+  {
+   "id": "g036",
+   "job_id": "G06",
+   "text": "UGC captions drafted",
+   "detail": null,
+   "creator_id": "sara",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-05-18",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ACCOUNTS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 2,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "g037",
+   "job_id": "G06",
+   "text": "laying out the tiles, first pass thurs",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-05-20",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "WRITER",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 3,
+   "truth": null
+  },
+  {
+   "id": "g038",
+   "job_id": "G06",
+   "text": "all in the calendar waiting on assets",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-22",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "TEAM_LEAD",
+   "shape_position": 4,
+   "truth": null
+  },
+  {
+   "id": "g039",
+   "job_id": "G06",
+   "text": "final check, two typos",
+   "detail": null,
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-05-24",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "REPORTING",
+   "shape_position": 5,
+   "truth": null
+  },
+  {
+   "id": "g040",
+   "job_id": "G06",
+   "text": "numbers in, engagement up 12",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-05-26",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "TEAM_LEAD",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 6,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "g041",
+   "job_id": "G07",
+   "text": "pulled the ask into the doc, few gaps still pls",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-10",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "WRITER",
+   "shape_position": 1,
+   "truth": null
+  },
+  {
+   "id": "g042",
+   "job_id": "G07",
+   "text": "UGC captions drafted",
+   "detail": null,
+   "creator_id": "sara",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-05-12",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ACCOUNTS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 2,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "g043",
+   "job_id": "G07",
+   "text": "artwork coming along, 3 directions",
+   "detail": null,
+   "creator_id": "dana",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-05-14",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "WRITER",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 3,
+   "truth": null
+  },
+  {
+   "id": "g044",
+   "job_id": "G07",
+   "text": "queueing for the 1st ta",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-16",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "TEAM_LEAD",
+   "shape_position": 4,
+   "truth": null
+  },
+  {
+   "id": "g045",
+   "job_id": "G07",
+   "text": "reading over before it goes ta",
+   "detail": null,
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-05-18",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "REPORTING",
+   "shape_position": 5,
+   "truth": null
+  },
+  {
+   "id": "g046",
+   "job_id": "G07",
+   "text": "monthly wrap drafted",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-05-20",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "TEAM_LEAD",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 6,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "g047",
+   "job_id": "G08",
+   "text": "pulled the ask into the doc, few gaps still",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-21",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "WRITER",
+   "shape_position": 1,
+   "truth": null
+  },
+  {
+   "id": "g048",
+   "job_id": "G08",
+   "text": "SWIPE-UP COPY IS WRITTEN",
+   "detail": null,
+   "creator_id": "yuki",
+   "marker_id": "yuki",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-05-23",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ACCOUNTS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 2,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "g049",
+   "job_id": "G08",
+   "text": "comps are ready",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-05-25",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "WRITER",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 3,
+   "truth": null
+  },
+  {
+   "id": "g050",
+   "job_id": "G08",
+   "text": "lined up fro next week",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-27",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "TEAM_LEAD",
+   "shape_position": 4,
+   "truth": null
+  },
+  {
+   "id": "g051",
+   "job_id": "G08",
+   "text": "reading over before it goes",
+   "detail": null,
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-06-01",
+   "state": "COMPLETED",
+   "closure": "DROPPED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "REPORTING",
+   "shape_position": 5,
+   "truth": null
+  },
+  {
+   "id": "g052",
+   "job_id": "G08",
+   "text": "numbers in, engagement up 12",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-06-03",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "TEAM_LEAD",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 6,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "g053",
+   "job_id": "G08",
+   "text": "so the thing is dana changed her mind again halfway through which is fine but it means the brief we wrote is not the brief anymore adn karim will build something nobody asked for so we should sit down and go through it properly this time so the thing is dana changed her mind again halfway through which is fine but it means the brief we wrote is not the brief anymore and karim will build something nobody asked for so we should sit down and go through it properly this time so the thing is dana changed her mind again halfway through which is fine but it means the brief we wrote is not the brief anymore and karim will build something nobody asked for so we should sit down and go through it properly this time ",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-05",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "REPORTING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 7,
+   "truth": null
+  },
+  {
+   "id": "g054",
+   "job_id": "G09",
+   "text": "UGC CAPTIONS DRAFTED !!",
+   "detail": null,
+   "creator_id": "yuki",
+   "marker_id": "yuki",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-05-23",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 1,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "g055",
+   "job_id": "G09",
+   "text": "put the layouts together",
+   "detail": null,
+   "creator_id": "dana",
+   "marker_id": "dana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-05-25",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "WRITER",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 2,
+   "truth": null
+  },
+  {
+   "id": "g056",
+   "job_id": "G09",
+   "text": "all in the calendar waiting on assets",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-27",
+   "state": "COMPLETED",
+   "closure": "DROPPED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "TEAM_LEAD",
+   "shape_position": 3,
+   "truth": null
+  },
+  {
+   "id": "g057",
+   "job_id": "G09",
+   "text": "final check, two typos",
+   "detail": null,
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-06-01",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 4,
+   "truth": null
+  },
+  {
+   "id": "g058",
+   "job_id": "G10",
+   "text": "client wants a one-pager and teh usual set",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-25",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "REPORTING",
+   "shape_position": 1,
+   "truth": null
+  },
+  {
+   "id": "g059",
+   "job_id": "G10",
+   "text": "had a nose at what the others are up to",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-05-27",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ACCOUNTS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "WRITER",
+   "shape_position": 2,
+   "truth": null
+  },
+  {
+   "id": "g060",
+   "job_id": "G10",
+   "text": "swipe-up copy is written",
+   "detail": null,
+   "creator_id": "yuki",
+   "marker_id": "yuki",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-06-01",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "REPORTING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "PHOTO",
+   "shape_position": 3,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "g061",
+   "job_id": "G10",
+   "text": "studio day fine, 12 shots best 10 picked",
+   "detail": null,
+   "creator_id": "tariq",
+   "marker_id": "tariq",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "PHOTO",
+   "created_at": "2026-06-03",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "PHOTO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "WRITER",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 4,
+   "truth": "T-SHOOT"
+  },
+  {
+   "id": "g062",
+   "job_id": "G10",
+   "text": "laying out the tiles, first pass thurs",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "dana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-06-05",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "PHOTO",
+   "shape_preceding_dir": null,
+   "shape_following_role": "VIDEO",
+   "shape_position": 5,
+   "truth": null
+  },
+  {
+   "id": "g063",
+   "job_id": "G10",
+   "text": "ROUGH EDIT TONIGHT !!",
+   "detail": null,
+   "creator_id": "nour",
+   "marker_id": "nour",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "VIDEO",
+   "created_at": "2026-06-07",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "VIDEO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ADS",
+   "shape_position": 6,
+   "truth": null
+  },
+  {
+   "id": "g064",
+   "job_id": "G10",
+   "text": "pushed to meta, two creatives",
+   "detail": null,
+   "creator_id": "ali",
+   "marker_id": "ali",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ADS",
+   "created_at": "2026-06-09",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "ADS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "VIDEO",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 7,
+   "truth": "T-ADS"
+  },
+  {
+   "id": "g065",
+   "job_id": "G10",
+   "text": "all in the calendar waiting on assets",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-11",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ADS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "TEAM_LEAD",
+   "shape_position": 8,
+   "truth": null
+  },
+  {
+   "id": "g066",
+   "job_id": "G10",
+   "text": "reading over before it goes ta",
+   "detail": null,
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-06-13",
+   "state": "COMPLETED",
+   "closure": "DROPPED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "TEAM_LEAD",
+   "shape_position": 9,
+   "truth": null
+  },
+  {
+   "id": "g067",
+   "job_id": "G10",
+   "text": "quick debrief, notes attached",
+   "detail": null,
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-06-15",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "TEAM_LEAD",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 10,
+   "truth": null
+  },
+  {
+   "id": "g068",
+   "job_id": "G10",
+   "text": "who is covering next week",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-17",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "TEAM_LEAD",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 11,
+   "truth": null
+  },
+  {
+   "id": "g069",
+   "job_id": "G11",
+   "text": "SO DANA RANG, NEW RANGE END OF TEH MONTH, USUAL BITS PLUS A BIT MORE",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "zain",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-27",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "WRITER",
+   "shape_position": 1,
+   "truth": null
+  },
+  {
+   "id": "g070",
+   "job_id": "G11",
+   "text": "wrote the lines this morning",
+   "detail": null,
+   "creator_id": "sara",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-06-01",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ACCOUNTS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 2,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "g071",
+   "job_id": "G11",
+   "text": "laying out the tiles, first pass thurs",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-06-03",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "WRITER",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 3,
+   "truth": null
+  },
+  {
+   "id": "g072",
+   "job_id": "G11",
+   "text": "all in the calendar waiting on assets",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-05",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "TEAM_LEAD",
+   "shape_position": 4,
+   "truth": null
+  },
+  {
+   "id": "g073",
+   "job_id": "G11",
+   "text": "final check, two typos",
+   "detail": null,
+   "creator_id": "lena",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-06-07",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "REPORTING",
+   "shape_position": 5,
+   "truth": null
+  },
+  {
+   "id": "g074",
+   "job_id": "G11",
+   "text": "writing up how it went",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-06-09",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "TEAM_LEAD",
+   "shape_preceding_dir": null,
+   "shape_following_role": "TEAM_LEAD",
+   "shape_position": 6,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "g075",
+   "job_id": "G11",
+   "text": "reading over before it goes",
+   "detail": null,
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-06-11",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "REPORTING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 7,
+   "truth": null
+  },
+  {
+   "id": "g076",
+   "job_id": "G11",
+   "text": "asjkdh askjd 22 zz",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-13",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ACCOUNTS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 9,
+   "truth": null
+  },
+  {
+   "id": "g077",
+   "job_id": "G12",
+   "text": "comps are ready",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-05-03",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 1,
+   "truth": null
+  },
+  {
+   "id": "g078",
+   "job_id": "G12",
+   "text": "all in the calendar waiting on assets",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-05",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 2,
+   "truth": null
+  },
+  {
+   "id": "g079",
+   "job_id": "G12",
+   "text": "https://drive.example.com/x/y/z",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-07",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 3,
+   "truth": null
+  },
+  {
+   "id": "g080",
+   "job_id": "G13",
+   "text": "so dana rang, new range end of the month, usual bits plus a bit more",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-11",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "WRITER",
+   "shape_position": 1,
+   "truth": null
+  },
+  {
+   "id": "g081",
+   "job_id": "G13",
+   "text": "words for the six are drafted",
+   "detail": null,
+   "creator_id": "sara",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-05-13",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ACCOUNTS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 2,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "g082",
+   "job_id": "G13",
+   "text": "deck is drafted",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-05-15",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "WRITER",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 3,
+   "truth": null
+  },
+  {
+   "id": "g083",
+   "job_id": "G13",
+   "text": "slotted in !!",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-17",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "REPORTING",
+   "shape_position": 4,
+   "truth": null
+  },
+  {
+   "id": "g084",
+   "job_id": "G13",
+   "text": "monthly wrap drafted",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-05-19",
+   "state": "COMPLETED",
+   "closure": "DROPPED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 5,
+   "truth": null
+  },
+  {
+   "id": "g085",
+   "job_id": "G13",
+   "text": "👍👍",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-05-21",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "REPORTING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 6,
+   "truth": null
+  },
+  {
+   "id": "g086",
+   "job_id": "G14",
+   "text": "client wants a one-pager and the usual set ta",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-17",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "WRITER",
+   "shape_position": 1,
+   "truth": null
+  },
+  {
+   "id": "g087",
+   "job_id": "G14",
+   "text": "words for the six are drafted",
+   "detail": null,
+   "creator_id": "sara",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-06-19",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ACCOUNTS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 2,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "g088",
+   "job_id": "G14",
+   "text": "put the layouts together",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-06-21",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "WRITER",
+   "shape_preceding_dir": null,
+   "shape_following_role": "TEAM_LEAD",
+   "shape_position": 3,
+   "truth": null
+  },
+  {
+   "id": "g089",
+   "job_id": "G14",
+   "text": "final check, two typos",
+   "detail": null,
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-06-23",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "REPORTING",
+   "shape_position": 4,
+   "truth": null
+  },
+  {
+   "id": "g090",
+   "job_id": "G14",
+   "text": "numbers in, engagement up 12",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-06-25",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "TEAM_LEAD",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 5,
+   "truth": "T-REPORT"
+  },
+  {
+   "id": "g091",
+   "job_id": "G14",
+   "text": "12 40 2026",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-27",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "REPORTING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 6,
+   "truth": null
+  },
+  {
+   "id": "g092",
+   "job_id": "G15",
+   "text": "photos in the drive",
+   "detail": null,
+   "creator_id": "tariq",
+   "marker_id": "tariq",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "PHOTO",
+   "created_at": "2026-06-03",
+   "state": "COMPLETED",
+   "closure": "DROPPED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "PHOTO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 1,
+   "truth": null
+  },
+  {
+   "id": "g093",
+   "job_id": "G15",
+   "text": "key art is up for review",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-06-05",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "PHOTO",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 2,
+   "truth": null
+  },
+  {
+   "id": "g094",
+   "job_id": "G15",
+   "text": "all in the calendar waiting on assets",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-07",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 3,
+   "truth": null
+  },
+  {
+   "id": "g095",
+   "job_id": "G15",
+   "text": "   ",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-09",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 4,
+   "truth": null
+  },
+  {
+   "id": "g096",
+   "job_id": "G16",
+   "text": "4 OF 6 DONE REST TOMORROW",
+   "detail": null,
+   "creator_id": "yuki",
+   "marker_id": "yuki",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-06-05",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 1,
+   "truth": "T-CAPS"
+  },
+  {
+   "id": "g097",
+   "job_id": "G16",
+   "text": "key art is up for review",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-06-07",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "WRITER",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 2,
+   "truth": null
+  },
+  {
+   "id": "g098",
+   "job_id": "G16",
+   "text": "slotted in",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-09",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 3,
+   "truth": null
+  },
+  {
+   "id": "g099",
+   "job_id": "G16",
+   "text": "is this the right template",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-11",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 4,
+   "truth": null
+  },
+  {
+   "id": "g100",
+   "job_id": "G17",
+   "text": "photos in the drive",
+   "detail": null,
+   "creator_id": "tariq",
+   "marker_id": "tariq",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "PHOTO",
+   "created_at": "2026-06-07",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "PHOTO",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 1,
+   "truth": "T-SHOOT"
+  },
+  {
+   "id": "g101",
+   "job_id": "G17",
+   "text": "put the layouts together",
+   "detail": null,
+   "creator_id": "dana",
+   "marker_id": "dana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-06-09",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "PHOTO",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 2,
+   "truth": null
+  },
+  {
+   "id": "g102",
+   "job_id": "G17",
+   "text": "all in the calendar waiting on assets",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "maya",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-11",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 3,
+   "truth": null
+  },
+  {
+   "id": "g103",
+   "job_id": "G18",
+   "text": "kickoff notes are up",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-09",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "ACCOUNTS",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "START",
+   "shape_preceding_dir": null,
+   "shape_following_role": "WRITER",
+   "shape_position": 1,
+   "truth": null
+  },
+  {
+   "id": "g104",
+   "job_id": "G18",
+   "text": "copy done for all of them, stories too",
+   "detail": null,
+   "creator_id": "sara",
+   "marker_id": "sara",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "WRITER",
+   "created_at": "2026-06-11",
+   "state": "COMPLETED",
+   "closure": "DROPPED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "TEXT",
+   "work_type": "WRITER",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ACCOUNTS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "DESIGN",
+   "shape_position": 2,
+   "truth": null
+  },
+  {
+   "id": "g105",
+   "job_id": "G18",
+   "text": "key art is up for review",
+   "detail": null,
+   "creator_id": "karim",
+   "marker_id": "karim",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "DESIGN",
+   "created_at": "2026-06-13",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "DESIGN",
+   "work_type": "DESIGN",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "WRITER",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 3,
+   "truth": null
+  },
+  {
+   "id": "g106",
+   "job_id": "G18",
+   "text": "queueing for the 1st",
+   "detail": null,
+   "creator_id": "maya",
+   "marker_id": "omar",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "SCHEDULING",
+   "created_at": "2026-06-15",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "SCHEDULE",
+   "work_type": "SCHEDULING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "DESIGN",
+   "shape_preceding_dir": null,
+   "shape_following_role": "TEAM_LEAD",
+   "shape_position": 4,
+   "truth": null
+  },
+  {
+   "id": "g107",
+   "job_id": "G18",
+   "text": "reading over before it goes",
+   "detail": null,
+   "creator_id": "lena",
+   "marker_id": "lena",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "TEAM_LEAD",
+   "created_at": "2026-06-17",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "NONE",
+   "work_type": "TEAM_LEAD",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "REPORTING",
+   "shape_position": 5,
+   "truth": null
+  },
+  {
+   "id": "g108",
+   "job_id": "G18",
+   "text": "numbers in, engagement up 12 ta",
+   "detail": null,
+   "creator_id": "rana",
+   "marker_id": "rana",
+   "kind": "WORK",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "REPORTING",
+   "created_at": "2026-06-19",
+   "state": "COMPLETED",
+   "closure": "DROPPED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": "REPORT",
+   "work_type": "REPORTING",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "TEAM_LEAD",
+   "shape_preceding_dir": null,
+   "shape_following_role": "ACCOUNTS",
+   "shape_position": 6,
+   "truth": null
+  },
+  {
+   "id": "g109",
+   "job_id": "G01",
+   "text": "done",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "JOB_END",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-22",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": null,
+   "work_type": "CLIENT_INTAKE",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 12,
+   "truth": null
+  },
+  {
+   "id": "g110",
+   "job_id": "G02",
+   "text": "done",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "hala",
+   "kind": "JOB_END",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-10",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": null,
+   "work_type": "CLIENT_INTAKE",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 4,
+   "truth": null
+  },
+  {
+   "id": "g111",
+   "job_id": "G03",
+   "text": "done",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "JOB_END",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-26",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": null,
+   "work_type": "CLIENT_INTAKE",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 12,
+   "truth": null
+  },
+  {
+   "id": "g112",
+   "job_id": "G04",
+   "text": "done",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "JOB_END",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-20",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": null,
+   "work_type": "CLIENT_INTAKE",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "REPORTING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 7,
+   "truth": null
+  },
+  {
+   "id": "g113",
+   "job_id": "G05",
+   "text": "done",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "hala",
+   "kind": "JOB_END",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-19",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": null,
+   "work_type": "CLIENT_INTAKE",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ACCOUNTS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 4,
+   "truth": null
+  },
+  {
+   "id": "g114",
+   "job_id": "G06",
+   "text": "done",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "JOB_END",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-28",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": null,
+   "work_type": "CLIENT_INTAKE",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "REPORTING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 7,
+   "truth": null
+  },
+  {
+   "id": "g115",
+   "job_id": "G07",
+   "text": "done",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "JOB_END",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-05-22",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": null,
+   "work_type": "CLIENT_INTAKE",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "REPORTING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 7,
+   "truth": null
+  },
+  {
+   "id": "g116",
+   "job_id": "G08",
+   "text": "done",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "JOB_END",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-05",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": null,
+   "work_type": "CLIENT_INTAKE",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 8,
+   "truth": null
+  },
+  {
+   "id": "g117",
+   "job_id": "G09",
+   "text": "done",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "JOB_END",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-01",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": null,
+   "work_type": "CLIENT_INTAKE",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "TEAM_LEAD",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 5,
+   "truth": null
+  },
+  {
+   "id": "g118",
+   "job_id": "G10",
+   "text": "done",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "hala",
+   "kind": "JOB_END",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-17",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": null,
+   "work_type": "CLIENT_INTAKE",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ACCOUNTS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 12,
+   "truth": null
+  },
+  {
+   "id": "g119",
+   "job_id": "G11",
+   "text": "done",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "hala",
+   "kind": "JOB_END",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-11",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": null,
+   "work_type": "CLIENT_INTAKE",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "TEAM_LEAD",
+   "shape_preceding_dir": null,
+   "shape_following_role": "SCHEDULING",
+   "shape_position": 8,
+   "truth": null
+  },
+  {
+   "id": "g120",
+   "job_id": "G15",
+   "text": "done",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "JOB_END",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-09",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": null,
+   "work_type": "CLIENT_INTAKE",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 5,
+   "truth": null
+  },
+  {
+   "id": "g121",
+   "job_id": "G16",
+   "text": "done",
+   "detail": null,
+   "creator_id": "hala",
+   "marker_id": "hala",
+   "kind": "JOB_END",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-11",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": null,
+   "work_type": "CLIENT_INTAKE",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "ACCOUNTS",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 5,
+   "truth": null
+  },
+  {
+   "id": "g122",
+   "job_id": "G17",
+   "text": "done",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "JOB_END",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-13",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": null,
+   "work_type": "CLIENT_INTAKE",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "SCHEDULING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 4,
+   "truth": null
+  },
+  {
+   "id": "g123",
+   "job_id": "G18",
+   "text": "done",
+   "detail": null,
+   "creator_id": "omar",
+   "marker_id": "omar",
+   "kind": "JOB_END",
+   "creator_role_id": null,
+   "performer_id": null,
+   "performer_role_id": "ACCOUNTS",
+   "created_at": "2026-06-21",
+   "state": "COMPLETED",
+   "closure": "MARKED",
+   "direction": "REQUEST",
+   "post_close": false,
+   "output_type": null,
+   "work_type": "CLIENT_INTAKE",
+   "task_template_id": null,
+   "weight": 1.0,
+   "disrupted": false,
+   "bracket_id": null,
+   "conversation_id": null,
+   "shape_preceding_role": "REPORTING",
+   "shape_preceding_dir": null,
+   "shape_following_role": "END",
+   "shape_position": 7,
+   "truth": null
+  }
+ ],
+ "expected": [
+  {
+   "id": "g001",
+   "tier": "ABSTAIN",
+   "why": "below_floor",
+   "top": "T-ADS",
+   "score": 0.292,
+   "conf": 0.737,
+   "sep": 0.064,
+   "cov": 1.0,
+   "txt": 0.58,
+   "address": "tariq",
+   "finalists": [
+    [
+     "T-ADS",
+     0.292
+    ],
+    [
+     "T-CAPS",
+     0.228
+    ],
+    [
+     "T-REPORT",
+     0.041
+    ],
+    [
+     "T-SHOOT",
+     0.013
+    ]
+   ]
+  },
+  {
+   "id": "g002",
+   "tier": "ABSTAIN",
+   "why": "gate:intent:question",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "rana",
+   "finalists": []
+  },
+  {
+   "id": "g003",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.833,
+   "conf": 1.0,
+   "sep": 0.796,
+   "cov": 1.0,
+   "txt": 0.67,
+   "address": "sara",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.833
+    ],
+    [
+     "T-REPORT",
+     0.038
+    ],
+    [
+     "T-SHOOT",
+     0.017
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g004",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SHOOT",
+   "score": 0.858,
+   "conf": 1.0,
+   "sep": 0.834,
+   "cov": 1.0,
+   "txt": 0.72,
+   "address": "tariq",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.858
+    ],
+    [
+     "T-ADS",
+     0.024
+    ],
+    [
+     "T-REPORT",
+     0.024
+    ],
+    [
+     "T-CAPS",
+     0.023
+    ]
+   ]
+  },
+  {
+   "id": "g005",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.228,
+   "conf": 0.807,
+   "sep": 0.196,
+   "cov": 1.0,
+   "txt": 0.06,
+   "address": "karim",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.228
+    ],
+    [
+     "T-CAPS",
+     0.031
+    ],
+    [
+     "T-REPORT",
+     0.025
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g006",
+   "tier": "ABSTAIN",
+   "why": "gate:lapsed",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "nour",
+   "finalists": []
+  },
+  {
+   "id": "g007",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-ADS",
+   "score": 0.521,
+   "conf": 0.88,
+   "sep": 0.321,
+   "cov": 1.0,
+   "txt": 0.04,
+   "address": "ali",
+   "finalists": [
+    [
+     "T-ADS",
+     0.521
+    ],
+    [
+     "T-REPORT",
+     0.2
+    ],
+    [
+     "T-CAPS",
+     0.061
+    ],
+    [
+     "T-SHOOT",
+     0.044
+    ]
+   ]
+  },
+  {
+   "id": "g008",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.052,
+   "conf": 0.476,
+   "sep": 0.005,
+   "cov": 0.9,
+   "txt": 0.09,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.052
+    ],
+    [
+     "T-REPORT",
+     0.047
+    ],
+    [
+     "T-ADS",
+     0.017
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g009",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.043,
+   "conf": 0.602,
+   "sep": 0.001,
+   "cov": 0.9,
+   "txt": 0.08,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.043
+    ],
+    [
+     "T-SHOOT",
+     0.042
+    ],
+    [
+     "T-REPORT",
+     0.02
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g010",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-REPORT",
+   "score": 0.529,
+   "conf": 0.821,
+   "sep": 0.3,
+   "cov": 1.0,
+   "txt": 0.06,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.529
+    ],
+    [
+     "T-ADS",
+     0.229
+    ],
+    [
+     "T-SHOOT",
+     0.012
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g011",
+   "tier": "ABSTAIN",
+   "why": "gate:text_no_signal",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "maya",
+   "finalists": []
+  },
+  {
+   "id": "g012",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.95,
+   "conf": 0.961,
+   "sep": 0.938,
+   "cov": 1.0,
+   "txt": 0.9,
+   "address": "ali",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.95
+    ],
+    [
+     "T-ADS",
+     0.012
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ],
+    [
+     "T-SHOOT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g013",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.2,
+   "conf": 0.838,
+   "sep": 0.125,
+   "cov": 1.0,
+   "txt": 0.0,
+   "address": "dana",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.2
+    ],
+    [
+     "T-CAPS",
+     0.075
+    ],
+    [
+     "T-ADS",
+     0.0
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g014",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.042,
+   "conf": 0.601,
+   "sep": 0.001,
+   "cov": 0.9,
+   "txt": 0.08,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.042
+    ],
+    [
+     "T-REPORT",
+     0.041
+    ],
+    [
+     "T-ADS",
+     0.026
+    ],
+    [
+     "T-SHOOT",
+     0.022
+    ]
+   ]
+  },
+  {
+   "id": "g015",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.214,
+   "conf": 0.856,
+   "sep": 0.136,
+   "cov": 1.0,
+   "txt": 0.03,
+   "address": "omar",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.214
+    ],
+    [
+     "T-REPORT",
+     0.078
+    ],
+    [
+     "T-SHOOT",
+     0.034
+    ],
+    [
+     "T-ADS",
+     0.015
+    ]
+   ]
+  },
+  {
+   "id": "g016",
+   "tier": "ABSTAIN",
+   "why": "gate:dropped",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "rana",
+   "finalists": []
+  },
+  {
+   "id": "g017",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.58,
+   "conf": 0.88,
+   "sep": 0.536,
+   "cov": 1.0,
+   "txt": 0.16,
+   "address": "yuki",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.58
+    ],
+    [
+     "T-REPORT",
+     0.044
+    ],
+    [
+     "T-SHOOT",
+     0.03
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g018",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.616,
+   "conf": 0.88,
+   "sep": 0.598,
+   "cov": 1.0,
+   "txt": 0.23,
+   "address": "tariq",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.616
+    ],
+    [
+     "T-REPORT",
+     0.018
+    ],
+    [
+     "T-CAPS",
+     0.017
+    ],
+    [
+     "T-ADS",
+     0.01
+    ]
+   ]
+  },
+  {
+   "id": "g019",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.228,
+   "conf": 0.807,
+   "sep": 0.196,
+   "cov": 1.0,
+   "txt": 0.06,
+   "address": "dana",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.228
+    ],
+    [
+     "T-CAPS",
+     0.031
+    ],
+    [
+     "T-REPORT",
+     0.025
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g020",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.23,
+   "conf": 0.86,
+   "sep": 0.203,
+   "cov": 1.0,
+   "txt": 0.06,
+   "address": "nour",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.23
+    ],
+    [
+     "T-REPORT",
+     0.027
+    ],
+    [
+     "T-ADS",
+     0.012
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g021",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-ADS",
+   "score": 0.523,
+   "conf": 0.88,
+   "sep": 0.252,
+   "cov": 1.0,
+   "txt": 0.05,
+   "address": "hala",
+   "finalists": [
+    [
+     "T-ADS",
+     0.523
+    ],
+    [
+     "T-REPORT",
+     0.271
+    ],
+    [
+     "T-SHOOT",
+     0.039
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g022",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.052,
+   "conf": 0.476,
+   "sep": 0.005,
+   "cov": 0.9,
+   "txt": 0.09,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.052
+    ],
+    [
+     "T-REPORT",
+     0.047
+    ],
+    [
+     "T-ADS",
+     0.017
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g023",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.013,
+   "conf": 0.572,
+   "sep": 0.013,
+   "cov": 0.9,
+   "txt": 0.02,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.013
+    ],
+    [
+     "T-ADS",
+     0.0
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ],
+    [
+     "T-SHOOT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g024",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-REPORT",
+   "score": 0.602,
+   "conf": 0.88,
+   "sep": 0.378,
+   "cov": 1.0,
+   "txt": 0.2,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.602
+    ],
+    [
+     "T-ADS",
+     0.224
+    ],
+    [
+     "T-SHOOT",
+     0.011
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g025",
+   "tier": "ABSTAIN",
+   "why": "gate:text_no_signal",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "maya",
+   "finalists": []
+  },
+  {
+   "id": "g026",
+   "tier": "ABSTAIN",
+   "why": "below_floor",
+   "top": "T-ADS",
+   "score": 0.328,
+   "conf": 0.854,
+   "sep": 0.062,
+   "cov": 1.0,
+   "txt": 0.66,
+   "address": "hala",
+   "finalists": [
+    [
+     "T-ADS",
+     0.328
+    ],
+    [
+     "T-CAPS",
+     0.266
+    ],
+    [
+     "T-SHOOT",
+     0.081
+    ],
+    [
+     "T-REPORT",
+     0.075
+    ]
+   ]
+  },
+  {
+   "id": "g027",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.833,
+   "conf": 1.0,
+   "sep": 0.796,
+   "cov": 1.0,
+   "txt": 0.67,
+   "address": "yuki",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.833
+    ],
+    [
+     "T-REPORT",
+     0.038
+    ],
+    [
+     "T-SHOOT",
+     0.017
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g028",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.267,
+   "conf": 0.88,
+   "sep": 0.224,
+   "cov": 1.0,
+   "txt": 0.13,
+   "address": "karim",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.267
+    ],
+    [
+     "T-REPORT",
+     0.042
+    ],
+    [
+     "T-ADS",
+     0.021
+    ],
+    [
+     "T-CAPS",
+     0.011
+    ]
+   ]
+  },
+  {
+   "id": "g029",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.051,
+   "conf": 0.631,
+   "sep": 0.019,
+   "cov": 0.9,
+   "txt": 0.09,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.051
+    ],
+    [
+     "T-CAPS",
+     0.032
+    ],
+    [
+     "T-ADS",
+     0.031
+    ],
+    [
+     "T-REPORT",
+     0.017
+    ]
+   ]
+  },
+  {
+   "id": "g030",
+   "tier": "ABSTAIN",
+   "why": "below_floor",
+   "top": "T-ADS",
+   "score": 0.316,
+   "conf": 0.85,
+   "sep": 0.303,
+   "cov": 0.9,
+   "txt": 0.57,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-ADS",
+     0.316
+    ],
+    [
+     "T-CAPS",
+     0.013
+    ],
+    [
+     "T-REPORT",
+     0.013
+    ],
+    [
+     "T-SHOOT",
+     0.012
+    ]
+   ]
+  },
+  {
+   "id": "g031",
+   "tier": "ABSTAIN",
+   "why": "gate:dropped",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "rana",
+   "finalists": []
+  },
+  {
+   "id": "g032",
+   "tier": "ABSTAIN",
+   "why": "gate:dropped",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "sara",
+   "finalists": []
+  },
+  {
+   "id": "g033",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.037,
+   "conf": 0.644,
+   "sep": 0.037,
+   "cov": 0.9,
+   "txt": 0.07,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.037
+    ],
+    [
+     "T-ADS",
+     0.0
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g034",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.037,
+   "conf": 0.621,
+   "sep": 0.013,
+   "cov": 0.9,
+   "txt": 0.07,
+   "address": "hala",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.037
+    ],
+    [
+     "T-REPORT",
+     0.024
+    ],
+    [
+     "T-ADS",
+     0.0
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g035",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.2,
+   "conf": 0.88,
+   "sep": 0.159,
+   "cov": 1.0,
+   "txt": 0.0,
+   "address": "omar",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.2
+    ],
+    [
+     "T-SHOOT",
+     0.041
+    ],
+    [
+     "T-ADS",
+     0.014
+    ],
+    [
+     "T-REPORT",
+     0.009
+    ]
+   ]
+  },
+  {
+   "id": "g036",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.95,
+   "conf": 0.961,
+   "sep": 0.938,
+   "cov": 1.0,
+   "txt": 0.9,
+   "address": "sara",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.95
+    ],
+    [
+     "T-ADS",
+     0.012
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ],
+    [
+     "T-SHOOT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g037",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.226,
+   "conf": 0.88,
+   "sep": 0.197,
+   "cov": 1.0,
+   "txt": 0.05,
+   "address": "karim",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.226
+    ],
+    [
+     "T-ADS",
+     0.03
+    ],
+    [
+     "T-REPORT",
+     0.009
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g038",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.051,
+   "conf": 0.631,
+   "sep": 0.019,
+   "cov": 0.9,
+   "txt": 0.09,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.051
+    ],
+    [
+     "T-CAPS",
+     0.032
+    ],
+    [
+     "T-ADS",
+     0.031
+    ],
+    [
+     "T-REPORT",
+     0.017
+    ]
+   ]
+  },
+  {
+   "id": "g039",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.013,
+   "conf": 0.572,
+   "sep": 0.013,
+   "cov": 0.9,
+   "txt": 0.02,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.013
+    ],
+    [
+     "T-ADS",
+     0.0
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ],
+    [
+     "T-SHOOT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g040",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-REPORT",
+   "score": 0.86,
+   "conf": 1.0,
+   "sep": 0.628,
+   "cov": 1.0,
+   "txt": 0.72,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.86
+    ],
+    [
+     "T-ADS",
+     0.232
+    ],
+    [
+     "T-SHOOT",
+     0.01
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g041",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.213,
+   "conf": 0.866,
+   "sep": 0.142,
+   "cov": 1.0,
+   "txt": 0.03,
+   "address": "sara",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.213
+    ],
+    [
+     "T-REPORT",
+     0.071
+    ],
+    [
+     "T-SHOOT",
+     0.032
+    ],
+    [
+     "T-ADS",
+     0.014
+    ]
+   ]
+  },
+  {
+   "id": "g042",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.95,
+   "conf": 0.961,
+   "sep": 0.938,
+   "cov": 1.0,
+   "txt": 0.9,
+   "address": "sara",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.95
+    ],
+    [
+     "T-ADS",
+     0.012
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ],
+    [
+     "T-SHOOT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g043",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.2,
+   "conf": 0.838,
+   "sep": 0.125,
+   "cov": 1.0,
+   "txt": 0.0,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.2
+    ],
+    [
+     "T-CAPS",
+     0.075
+    ],
+    [
+     "T-ADS",
+     0.0
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g044",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.041,
+   "conf": 0.601,
+   "sep": 0.001,
+   "cov": 0.9,
+   "txt": 0.07,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.041
+    ],
+    [
+     "T-REPORT",
+     0.04
+    ],
+    [
+     "T-SHOOT",
+     0.037
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g045",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.039,
+   "conf": 0.602,
+   "sep": 0.001,
+   "cov": 0.9,
+   "txt": 0.07,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.039
+    ],
+    [
+     "T-SHOOT",
+     0.038
+    ],
+    [
+     "T-REPORT",
+     0.019
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g046",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-REPORT",
+   "score": 0.714,
+   "conf": 0.816,
+   "sep": 0.514,
+   "cov": 1.0,
+   "txt": 0.43,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.714
+    ],
+    [
+     "T-ADS",
+     0.2
+    ],
+    [
+     "T-CAPS",
+     0.111
+    ],
+    [
+     "T-SHOOT",
+     0.011
+    ]
+   ]
+  },
+  {
+   "id": "g047",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.214,
+   "conf": 0.856,
+   "sep": 0.136,
+   "cov": 1.0,
+   "txt": 0.03,
+   "address": "omar",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.214
+    ],
+    [
+     "T-REPORT",
+     0.078
+    ],
+    [
+     "T-SHOOT",
+     0.034
+    ],
+    [
+     "T-ADS",
+     0.015
+    ]
+   ]
+  },
+  {
+   "id": "g048",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.775,
+   "conf": 0.869,
+   "sep": 0.707,
+   "cov": 1.0,
+   "txt": 0.55,
+   "address": "yuki",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.775
+    ],
+    [
+     "T-REPORT",
+     0.068
+    ],
+    [
+     "T-SHOOT",
+     0.025
+    ],
+    [
+     "T-ADS",
+     0.023
+    ]
+   ]
+  },
+  {
+   "id": "g049",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.228,
+   "conf": 0.807,
+   "sep": 0.196,
+   "cov": 1.0,
+   "txt": 0.06,
+   "address": "karim",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.228
+    ],
+    [
+     "T-CAPS",
+     0.031
+    ],
+    [
+     "T-REPORT",
+     0.025
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g050",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-ADS",
+   "score": 0.026,
+   "conf": 0.607,
+   "sep": 0.004,
+   "cov": 0.9,
+   "txt": 0.05,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-ADS",
+     0.026
+    ],
+    [
+     "T-SHOOT",
+     0.022
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g051",
+   "tier": "ABSTAIN",
+   "why": "gate:dropped",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "lena",
+   "finalists": []
+  },
+  {
+   "id": "g052",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-REPORT",
+   "score": 0.86,
+   "conf": 1.0,
+   "sep": 0.628,
+   "cov": 1.0,
+   "txt": 0.72,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.86
+    ],
+    [
+     "T-ADS",
+     0.232
+    ],
+    [
+     "T-SHOOT",
+     0.01
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g053",
+   "tier": "ABSTAIN",
+   "why": "gate:text_no_signal",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "maya",
+   "finalists": []
+  },
+  {
+   "id": "g054",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.95,
+   "conf": 0.982,
+   "sep": 0.939,
+   "cov": 1.0,
+   "txt": 0.9,
+   "address": "yuki",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.95
+    ],
+    [
+     "T-ADS",
+     0.011
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ],
+    [
+     "T-SHOOT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g055",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.271,
+   "conf": 0.88,
+   "sep": 0.223,
+   "cov": 1.0,
+   "txt": 0.14,
+   "address": "dana",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.271
+    ],
+    [
+     "T-REPORT",
+     0.047
+    ],
+    [
+     "T-ADS",
+     0.023
+    ],
+    [
+     "T-CAPS",
+     0.012
+    ]
+   ]
+  },
+  {
+   "id": "g056",
+   "tier": "ABSTAIN",
+   "why": "gate:dropped",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "maya",
+   "finalists": []
+  },
+  {
+   "id": "g057",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.013,
+   "conf": 0.572,
+   "sep": 0.013,
+   "cov": 0.9,
+   "txt": 0.02,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.013
+    ],
+    [
+     "T-ADS",
+     0.0
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ],
+    [
+     "T-SHOOT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g058",
+   "tier": "ABSTAIN",
+   "why": "below_floor",
+   "top": "T-ADS",
+   "score": 0.328,
+   "conf": 0.854,
+   "sep": 0.062,
+   "cov": 1.0,
+   "txt": 0.66,
+   "address": "omar",
+   "finalists": [
+    [
+     "T-ADS",
+     0.328
+    ],
+    [
+     "T-CAPS",
+     0.266
+    ],
+    [
+     "T-REPORT",
+     0.075
+    ],
+    [
+     "T-SHOOT",
+     0.051
+    ]
+   ]
+  },
+  {
+   "id": "g059",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-REPORT",
+   "score": 0.528,
+   "conf": 0.68,
+   "sep": 0.03,
+   "cov": 1.0,
+   "txt": 0.06,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.528
+    ],
+    [
+     "T-ADS",
+     0.498
+    ],
+    [
+     "T-SHOOT",
+     0.026
+    ],
+    [
+     "T-CAPS",
+     0.009
+    ]
+   ]
+  },
+  {
+   "id": "g060",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-CAPS",
+   "score": 0.775,
+   "conf": 0.869,
+   "sep": 0.707,
+   "cov": 1.0,
+   "txt": 0.55,
+   "address": "yuki",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.775
+    ],
+    [
+     "T-REPORT",
+     0.068
+    ],
+    [
+     "T-SHOOT",
+     0.025
+    ],
+    [
+     "T-ADS",
+     0.023
+    ]
+   ]
+  },
+  {
+   "id": "g061",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.569,
+   "conf": 0.88,
+   "sep": 0.555,
+   "cov": 1.0,
+   "txt": 0.14,
+   "address": "tariq",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.569
+    ],
+    [
+     "T-REPORT",
+     0.014
+    ],
+    [
+     "T-CAPS",
+     0.009
+    ],
+    [
+     "T-ADS",
+     0.009
+    ]
+   ]
+  },
+  {
+   "id": "g062",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.226,
+   "conf": 0.88,
+   "sep": 0.197,
+   "cov": 1.0,
+   "txt": 0.05,
+   "address": "dana",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.226
+    ],
+    [
+     "T-ADS",
+     0.03
+    ],
+    [
+     "T-REPORT",
+     0.009
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g063",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.222,
+   "conf": 0.848,
+   "sep": 0.199,
+   "cov": 1.0,
+   "txt": 0.04,
+   "address": "nour",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.222
+    ],
+    [
+     "T-CAPS",
+     0.023
+    ],
+    [
+     "T-ADS",
+     0.0
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g064",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-ADS",
+   "score": 0.52,
+   "conf": 0.88,
+   "sep": 0.281,
+   "cov": 1.0,
+   "txt": 0.04,
+   "address": "ali",
+   "finalists": [
+    [
+     "T-ADS",
+     0.52
+    ],
+    [
+     "T-REPORT",
+     0.239
+    ],
+    [
+     "T-SHOOT",
+     0.01
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g065",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.051,
+   "conf": 0.631,
+   "sep": 0.019,
+   "cov": 0.9,
+   "txt": 0.09,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.051
+    ],
+    [
+     "T-CAPS",
+     0.032
+    ],
+    [
+     "T-ADS",
+     0.031
+    ],
+    [
+     "T-REPORT",
+     0.017
+    ]
+   ]
+  },
+  {
+   "id": "g066",
+   "tier": "ABSTAIN",
+   "why": "gate:dropped",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "lena",
+   "finalists": []
+  },
+  {
+   "id": "g067",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-ADS",
+   "score": 0.02,
+   "conf": 0.634,
+   "sep": 0.02,
+   "cov": 0.9,
+   "txt": 0.04,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-ADS",
+     0.02
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ],
+    [
+     "T-SHOOT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g068",
+   "tier": "ABSTAIN",
+   "why": "gate:intent:question",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "sara",
+   "finalists": []
+  },
+  {
+   "id": "g069",
+   "tier": "ABSTAIN",
+   "why": "below_floor",
+   "top": "T-ADS",
+   "score": 0.292,
+   "conf": 0.737,
+   "sep": 0.064,
+   "cov": 1.0,
+   "txt": 0.58,
+   "address": "zain",
+   "finalists": [
+    [
+     "T-ADS",
+     0.292
+    ],
+    [
+     "T-CAPS",
+     0.228
+    ],
+    [
+     "T-REPORT",
+     0.041
+    ],
+    [
+     "T-SHOOT",
+     0.013
+    ]
+   ]
+  },
+  {
+   "id": "g070",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.5,
+   "conf": 0.88,
+   "sep": 0.438,
+   "cov": 1.0,
+   "txt": 0.0,
+   "address": "sara",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.5
+    ],
+    [
+     "T-REPORT",
+     0.062
+    ],
+    [
+     "T-SHOOT",
+     0.031
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g071",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.226,
+   "conf": 0.88,
+   "sep": 0.197,
+   "cov": 1.0,
+   "txt": 0.05,
+   "address": "karim",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.226
+    ],
+    [
+     "T-ADS",
+     0.03
+    ],
+    [
+     "T-REPORT",
+     0.009
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g072",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.051,
+   "conf": 0.631,
+   "sep": 0.019,
+   "cov": 0.9,
+   "txt": 0.09,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.051
+    ],
+    [
+     "T-CAPS",
+     0.032
+    ],
+    [
+     "T-ADS",
+     0.031
+    ],
+    [
+     "T-REPORT",
+     0.017
+    ]
+   ]
+  },
+  {
+   "id": "g073",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.013,
+   "conf": 0.572,
+   "sep": 0.013,
+   "cov": 0.9,
+   "txt": 0.02,
+   "address": "omar",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.013
+    ],
+    [
+     "T-ADS",
+     0.0
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ],
+    [
+     "T-SHOOT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g074",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-REPORT",
+   "score": 0.602,
+   "conf": 0.88,
+   "sep": 0.378,
+   "cov": 1.0,
+   "txt": 0.2,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.602
+    ],
+    [
+     "T-ADS",
+     0.224
+    ],
+    [
+     "T-SHOOT",
+     0.011
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g075",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.043,
+   "conf": 0.602,
+   "sep": 0.001,
+   "cov": 0.9,
+   "txt": 0.08,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.043
+    ],
+    [
+     "T-SHOOT",
+     0.042
+    ],
+    [
+     "T-REPORT",
+     0.02
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g076",
+   "tier": "ABSTAIN",
+   "why": "gate:text_no_signal",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "maya",
+   "finalists": []
+  },
+  {
+   "id": "g077",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.228,
+   "conf": 0.807,
+   "sep": 0.196,
+   "cov": 1.0,
+   "txt": 0.06,
+   "address": "karim",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.228
+    ],
+    [
+     "T-CAPS",
+     0.031
+    ],
+    [
+     "T-REPORT",
+     0.025
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g078",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.051,
+   "conf": 0.631,
+   "sep": 0.019,
+   "cov": 0.9,
+   "txt": 0.09,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.051
+    ],
+    [
+     "T-CAPS",
+     0.032
+    ],
+    [
+     "T-ADS",
+     0.031
+    ],
+    [
+     "T-REPORT",
+     0.017
+    ]
+   ]
+  },
+  {
+   "id": "g079",
+   "tier": "ABSTAIN",
+   "why": "gate:text_no_signal",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "maya",
+   "finalists": []
+  },
+  {
+   "id": "g080",
+   "tier": "ABSTAIN",
+   "why": "below_floor",
+   "top": "T-ADS",
+   "score": 0.292,
+   "conf": 0.737,
+   "sep": 0.064,
+   "cov": 1.0,
+   "txt": 0.58,
+   "address": "omar",
+   "finalists": [
+    [
+     "T-ADS",
+     0.292
+    ],
+    [
+     "T-CAPS",
+     0.228
+    ],
+    [
+     "T-REPORT",
+     0.041
+    ],
+    [
+     "T-SHOOT",
+     0.033
+    ]
+   ]
+  },
+  {
+   "id": "g081",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.58,
+   "conf": 0.88,
+   "sep": 0.536,
+   "cov": 1.0,
+   "txt": 0.16,
+   "address": "sara",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.58
+    ],
+    [
+     "T-REPORT",
+     0.044
+    ],
+    [
+     "T-SHOOT",
+     0.03
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g082",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.2,
+   "conf": 0.578,
+   "sep": 0.013,
+   "cov": 1.0,
+   "txt": 0.0,
+   "address": "karim",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.2
+    ],
+    [
+     "T-CAPS",
+     0.188
+    ],
+    [
+     "T-ADS",
+     0.03
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g083",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.044,
+   "conf": 0.496,
+   "sep": 0.005,
+   "cov": 0.9,
+   "txt": 0.08,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.044
+    ],
+    [
+     "T-REPORT",
+     0.039
+    ],
+    [
+     "T-ADS",
+     0.016
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g084",
+   "tier": "ABSTAIN",
+   "why": "gate:dropped",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "rana",
+   "finalists": []
+  },
+  {
+   "id": "g085",
+   "tier": "ABSTAIN",
+   "why": "gate:text_no_signal",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "maya",
+   "finalists": []
+  },
+  {
+   "id": "g086",
+   "tier": "ABSTAIN",
+   "why": "below_floor",
+   "top": "T-ADS",
+   "score": 0.326,
+   "conf": 0.855,
+   "sep": 0.063,
+   "cov": 1.0,
+   "txt": 0.65,
+   "address": "omar",
+   "finalists": [
+    [
+     "T-ADS",
+     0.326
+    ],
+    [
+     "T-CAPS",
+     0.263
+    ],
+    [
+     "T-SHOOT",
+     0.077
+    ],
+    [
+     "T-REPORT",
+     0.072
+    ]
+   ]
+  },
+  {
+   "id": "g087",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.58,
+   "conf": 0.88,
+   "sep": 0.536,
+   "cov": 1.0,
+   "txt": 0.16,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.58
+    ],
+    [
+     "T-REPORT",
+     0.044
+    ],
+    [
+     "T-SHOOT",
+     0.03
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g088",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.271,
+   "conf": 0.88,
+   "sep": 0.223,
+   "cov": 1.0,
+   "txt": 0.14,
+   "address": "karim",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.271
+    ],
+    [
+     "T-REPORT",
+     0.047
+    ],
+    [
+     "T-ADS",
+     0.023
+    ],
+    [
+     "T-CAPS",
+     0.012
+    ]
+   ]
+  },
+  {
+   "id": "g089",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.013,
+   "conf": 0.572,
+   "sep": 0.013,
+   "cov": 0.9,
+   "txt": 0.02,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.013
+    ],
+    [
+     "T-ADS",
+     0.0
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ],
+    [
+     "T-SHOOT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g090",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-REPORT",
+   "score": 0.86,
+   "conf": 1.0,
+   "sep": 0.628,
+   "cov": 1.0,
+   "txt": 0.72,
+   "address": "rana",
+   "finalists": [
+    [
+     "T-REPORT",
+     0.86
+    ],
+    [
+     "T-ADS",
+     0.232
+    ],
+    [
+     "T-SHOOT",
+     0.01
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g091",
+   "tier": "ABSTAIN",
+   "why": "gate:text_no_signal",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "maya",
+   "finalists": []
+  },
+  {
+   "id": "g092",
+   "tier": "ABSTAIN",
+   "why": "gate:dropped",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "tariq",
+   "finalists": []
+  },
+  {
+   "id": "g093",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.22,
+   "conf": 0.751,
+   "sep": 0.073,
+   "cov": 1.0,
+   "txt": 0.04,
+   "address": "karim",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.22
+    ],
+    [
+     "T-CAPS",
+     0.147
+    ],
+    [
+     "T-REPORT",
+     0.039
+    ],
+    [
+     "T-ADS",
+     0.023
+    ]
+   ]
+  },
+  {
+   "id": "g094",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.051,
+   "conf": 0.631,
+   "sep": 0.019,
+   "cov": 0.9,
+   "txt": 0.09,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.051
+    ],
+    [
+     "T-CAPS",
+     0.032
+    ],
+    [
+     "T-ADS",
+     0.031
+    ],
+    [
+     "T-REPORT",
+     0.017
+    ]
+   ]
+  },
+  {
+   "id": "g095",
+   "tier": "ABSTAIN",
+   "why": "gate:no_text",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "karim",
+   "finalists": []
+  },
+  {
+   "id": "g096",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.523,
+   "conf": 0.88,
+   "sep": 0.504,
+   "cov": 1.0,
+   "txt": 0.05,
+   "address": "yuki",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.523
+    ],
+    [
+     "T-SHOOT",
+     0.019
+    ],
+    [
+     "T-REPORT",
+     0.019
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g097",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.22,
+   "conf": 0.751,
+   "sep": 0.073,
+   "cov": 1.0,
+   "txt": 0.04,
+   "address": "karim",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.22
+    ],
+    [
+     "T-CAPS",
+     0.147
+    ],
+    [
+     "T-REPORT",
+     0.039
+    ],
+    [
+     "T-ADS",
+     0.023
+    ]
+   ]
+  },
+  {
+   "id": "g098",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.052,
+   "conf": 0.476,
+   "sep": 0.005,
+   "cov": 0.9,
+   "txt": 0.09,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.052
+    ],
+    [
+     "T-REPORT",
+     0.047
+    ],
+    [
+     "T-ADS",
+     0.017
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g099",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.037,
+   "conf": 0.621,
+   "sep": 0.013,
+   "cov": 0.9,
+   "txt": 0.07,
+   "address": "omar",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.037
+    ],
+    [
+     "T-REPORT",
+     0.024
+    ],
+    [
+     "T-ADS",
+     0.0
+    ],
+    [
+     "T-CAPS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g100",
+   "tier": "NUDGE",
+   "why": "matched_ad_hoc",
+   "top": "T-SHOOT",
+   "score": 0.86,
+   "conf": 0.98,
+   "sep": 0.833,
+   "cov": 1.0,
+   "txt": 0.72,
+   "address": "tariq",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.86
+    ],
+    [
+     "T-ADS",
+     0.027
+    ],
+    [
+     "T-REPORT",
+     0.027
+    ],
+    [
+     "T-CAPS",
+     0.026
+    ]
+   ]
+  },
+  {
+   "id": "g101",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.271,
+   "conf": 0.88,
+   "sep": 0.223,
+   "cov": 1.0,
+   "txt": 0.14,
+   "address": "dana",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.271
+    ],
+    [
+     "T-REPORT",
+     0.047
+    ],
+    [
+     "T-ADS",
+     0.023
+    ],
+    [
+     "T-CAPS",
+     0.012
+    ]
+   ]
+  },
+  {
+   "id": "g102",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.051,
+   "conf": 0.631,
+   "sep": 0.019,
+   "cov": 0.9,
+   "txt": 0.09,
+   "address": "maya",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.051
+    ],
+    [
+     "T-CAPS",
+     0.032
+    ],
+    [
+     "T-ADS",
+     0.031
+    ],
+    [
+     "T-REPORT",
+     0.017
+    ]
+   ]
+  },
+  {
+   "id": "g103",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.2,
+   "conf": 0.866,
+   "sep": 0.176,
+   "cov": 1.0,
+   "txt": 0.0,
+   "address": "omar",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.2
+    ],
+    [
+     "T-ADS",
+     0.024
+    ],
+    [
+     "T-REPORT",
+     0.0
+    ],
+    [
+     "T-SHOOT",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g104",
+   "tier": "ABSTAIN",
+   "why": "gate:dropped",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "sara",
+   "finalists": []
+  },
+  {
+   "id": "g105",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-SHOOT",
+   "score": 0.22,
+   "conf": 0.751,
+   "sep": 0.073,
+   "cov": 1.0,
+   "txt": 0.04,
+   "address": "karim",
+   "finalists": [
+    [
+     "T-SHOOT",
+     0.22
+    ],
+    [
+     "T-CAPS",
+     0.147
+    ],
+    [
+     "T-REPORT",
+     0.039
+    ],
+    [
+     "T-ADS",
+     0.023
+    ]
+   ]
+  },
+  {
+   "id": "g106",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.043,
+   "conf": 0.563,
+   "sep": 0.001,
+   "cov": 0.9,
+   "txt": 0.08,
+   "address": "omar",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.043
+    ],
+    [
+     "T-REPORT",
+     0.043
+    ],
+    [
+     "T-SHOOT",
+     0.039
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g107",
+   "tier": "ABSTAIN",
+   "why": "veto:text_floor",
+   "top": "T-CAPS",
+   "score": 0.043,
+   "conf": 0.602,
+   "sep": 0.001,
+   "cov": 0.9,
+   "txt": 0.08,
+   "address": "lena",
+   "finalists": [
+    [
+     "T-CAPS",
+     0.043
+    ],
+    [
+     "T-SHOOT",
+     0.042
+    ],
+    [
+     "T-REPORT",
+     0.02
+    ],
+    [
+     "T-ADS",
+     0.0
+    ]
+   ]
+  },
+  {
+   "id": "g108",
+   "tier": "ABSTAIN",
+   "why": "gate:dropped",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "rana",
+   "finalists": []
+  },
+  {
+   "id": "g109",
+   "tier": "ABSTAIN",
+   "why": "gate:job_boundary",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  },
+  {
+   "id": "g110",
+   "tier": "ABSTAIN",
+   "why": "gate:job_boundary",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "hala",
+   "finalists": []
+  },
+  {
+   "id": "g111",
+   "tier": "ABSTAIN",
+   "why": "gate:job_boundary",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  },
+  {
+   "id": "g112",
+   "tier": "ABSTAIN",
+   "why": "gate:job_boundary",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  },
+  {
+   "id": "g113",
+   "tier": "ABSTAIN",
+   "why": "gate:job_boundary",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "hala",
+   "finalists": []
+  },
+  {
+   "id": "g114",
+   "tier": "ABSTAIN",
+   "why": "gate:job_boundary",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  },
+  {
+   "id": "g115",
+   "tier": "ABSTAIN",
+   "why": "gate:job_boundary",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  },
+  {
+   "id": "g116",
+   "tier": "ABSTAIN",
+   "why": "gate:job_boundary",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  },
+  {
+   "id": "g117",
+   "tier": "ABSTAIN",
+   "why": "gate:job_boundary",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  },
+  {
+   "id": "g118",
+   "tier": "ABSTAIN",
+   "why": "gate:job_boundary",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "hala",
+   "finalists": []
+  },
+  {
+   "id": "g119",
+   "tier": "ABSTAIN",
+   "why": "gate:job_boundary",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "hala",
+   "finalists": []
+  },
+  {
+   "id": "g120",
+   "tier": "ABSTAIN",
+   "why": "gate:job_boundary",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  },
+  {
+   "id": "g121",
+   "tier": "ABSTAIN",
+   "why": "gate:job_boundary",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "hala",
+   "finalists": []
+  },
+  {
+   "id": "g122",
+   "tier": "ABSTAIN",
+   "why": "gate:job_boundary",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  },
+  {
+   "id": "g123",
+   "tier": "ABSTAIN",
+   "why": "gate:job_boundary",
+   "top": null,
+   "score": null,
+   "conf": null,
+   "sep": null,
+   "cov": null,
+   "txt": null,
+   "address": "omar",
+   "finalists": []
+  }
+ ]
+}

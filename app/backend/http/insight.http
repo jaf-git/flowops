@@ -1,0 +1,275 @@
+### FEATURE_AI_INSIGHT — what the history says, and what a person decides about it
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects, and a request without them answers 401 for a
+### reason that has nothing to do with the endpoint being right.
+###
+### Ports: the demo backend runs on 8081 (Tomcat9 owns 8080 on this machine).
+###
+### **No model is involved in any request in this file.** Every finding below is arithmetic over the
+### product's own history — a median, a count, a date subtraction — computed locally, reproducible, and
+### checkable by hand against a scoped export. That is DECISION-AI-PROVIDER-BOUNDARY-01's claim made
+### walkable: most of this product's analytical value needs no provider at all.
+###
+### One permission governs the reading: AI_INSIGHT_VIEW, held by the owner and by managers, and
+### delegable. **It grants no authority to change anything.** Applying a finding requires whatever
+### permission the subject's own feature demands for that edit, checked by that feature — so signing in
+### as somebody who holds the view and not the edit is the only honest way to see that the refusal is
+### real. The last section does exactly that.
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@employee = andrei@atelier.ro
+@password = a-long-enough-passphrase
+
+### Copy identifiers out of the responses into these, and the rest of the file works.
+@processTemplateId = 00000000-0000-0000-0000-000000000000
+@taskTemplateId = 00000000-0000-0000-0000-000000000000
+
+### Sign in as somebody who may read findings and act on them.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{owner}}",
+  "password": "{{password}}"
+}
+
+###############################################################################
+### The reading — AI-INSIGHT-MISSING-STEP-01, SLOW-STEP-01, BLOCK-PATTERN-01,
+### FALSE-DEPENDENCY-01
+###############################################################################
+
+### Everything the runs of one process template say about it.
+###
+### An empty list is an answer and the commonest one: below its floor a finding does not exist, and the
+### product says nothing rather than hedging. A hedge is read as a recommendation by anybody in a hurry,
+### which is everybody — so a template with two completed runs answers `[]` and that is correct.
+###
+### Each finding carries `findingKey` and `action`. The key is what the two routes below name; `action`
+### is null on SLOW_STEP and BLOCK_PATTERN, where there is nothing for the product to apply and the card
+### therefore renders no Apply at all.
+GET {{host}}/api/insights?subject_type=process_template&subject_id={{processTemplateId}}
+
+###############################################################################
+### AI-INSIGHT-UNUSED-TEMPLATE-01 — the library's own finding
+###############################################################################
+
+### What the library says about one task template.
+###
+### Reported only for an approved template, only once ninety days have passed since it was approved, and
+### only if nothing has been stamped from it inside that window. A template approved last week and never
+### used is not stale — it is new, and saying otherwise a fortnight after somebody wrote it is how a
+### curation queue loses its contributors.
+###
+### `daysSinceLastUse` is -1 where there never was a use. Never used and long unused are different
+### findings and the card says different words.
+GET {{host}}/api/insights?subject_type=task_template&subject_id={{taskTemplateId}}
+
+### 400 — a subject this feature cannot reason about. An empty list would read as *there is nothing to
+### say about it*, which is a claim about the subject rather than about the request, and a caller with a
+### typo would spend an afternoon believing it.
+GET {{host}}/api/insights?subject_type=biscuit&subject_id={{taskTemplateId}}
+
+### 400 — the subject type is required. Not a 500: the server did not break, the request was short of
+### something the caller can add.
+GET {{host}}/api/insights?subject_id={{taskTemplateId}}
+
+###############################################################################
+### AI-INSIGHT-ACT-ON-INSIGHT-01 — Apply
+###############################################################################
+
+### Make the change the finding proposes. 204.
+###
+### **The request names a finding and never describes a change.** The product recomputes what that
+### finding proposes and does that — so there is no field here in which a caller could ask for a step of
+### their choosing at a position of their choosing, and two mutating ports sit safely behind a permission
+### that only grants reading.
+###
+### The change goes through the subject feature's own edit path: TASKLIB retires (it never deletes, so
+### the two hundred tasks stamped from a template keep their provenance), PROCESS inserts a step at the
+### position the runs kept adding it, or removes an edge with its cycle validation applying as ever.
+POST {{host}}/api/insights/apply
+Content-Type: application/json
+
+{
+  "subjectType": "task_template",
+  "subjectId": "{{taskTemplateId}}",
+  "kind": "UNUSED_TEMPLATE",
+  "findingKey": "unused"
+}
+
+### 409 — that finding is no longer current. Run the same request twice and the second answers this.
+###
+### Two situations arrive here and they are one: somebody edited the subject, or somebody else pressed
+### the same button first. Both mean the product no longer computes the finding, and the surface's
+### correct response is to recompute and show what is true now. Not a 404 — nothing is missing.
+POST {{host}}/api/insights/apply
+Content-Type: application/json
+
+{
+  "subjectType": "task_template",
+  "subjectId": "{{taskTemplateId}}",
+  "kind": "UNUSED_TEMPLATE",
+  "findingKey": "unused"
+}
+
+### 400 — a sort of finding this build does not produce. `UNKNOWN_INSIGHT_KIND`, pointing at `kind`.
+###
+### Its own code rather than the subject type's: a caller whose subject type is perfectly good and whose
+### kind is a typo would otherwise be sent to check the one field in their request that was not wrong.
+POST {{host}}/api/insights/dismiss
+Content-Type: application/json
+
+{
+  "subjectType": "task_template",
+  "subjectId": "{{taskTemplateId}}",
+  "kind": "BISCUIT",
+  "findingKey": "unused"
+}
+
+### 400 — that finding is informational and proposes no change.
+###
+### Unreachable from the product's own screens, where Apply is absent rather than disabled on these
+### kinds, and refused here anyway: a guarantee that holds only while every client behaves is not a
+### guarantee. The fix for a slow step is a judgement about how the business works, and inventing one at
+### the endpoint would be the product acting on a conclusion it never drew.
+POST {{host}}/api/insights/apply
+Content-Type: application/json
+
+{
+  "subjectType": "process_template",
+  "subjectId": "{{processTemplateId}}",
+  "kind": "SLOW_STEP",
+  "findingKey": "client sign off"
+}
+
+###############################################################################
+### AI-INSIGHT-ACT-ON-INSIGHT-01 — Dismiss
+###############################################################################
+
+### Put a finding away for good. 204, and nothing anywhere changes except the record of the judgement.
+###
+### **Permanent.** Not next month, not with a larger sample, not *you dismissed this but the evidence is
+### now stronger*. The person made a judgement the system cannot see — they know the sequence is a client
+### expectation, or the template is for work that comes round each January. Resurfacing it says *we think
+### you were wrong*, which the system has no grounds for, and one resurfaced dismissal teaches a person
+### that dismissing does not work.
+###
+### The single exception: the subject is re-authored. A dismissal about a process is a judgement about
+### the process somebody had, and editing its steps or its edges makes it a judgement about something
+### they no longer have. More completed runs of an unchanged template do **not** lift it — re-read the
+### finding above after a few more runs and it stays absent.
+POST {{host}}/api/insights/dismiss
+Content-Type: application/json
+
+{
+  "subjectType": "process_template",
+  "subjectId": "{{processTemplateId}}",
+  "kind": "SLOW_STEP",
+  "findingKey": "client sign off"
+}
+
+### Dismiss renders and works on every kind, including the two that cannot be applied. A finding nobody
+### can act on and nobody can silence is a finding that nags, and a layer that nags is one the reader
+### stops reading — permanently, and not as a bug.
+
+###############################################################################
+### The refusal that matters — UC-09 extension 2a
+###############################################################################
+
+### Sign in as somebody who may read findings and may not edit the subject.
+###
+### There is no role with that pair, and there is a **person**: AI_INSIGHT_VIEW is delegable and
+### TASK_TEMPLATE_RETIRE is not, so an employee covering for a manager on holiday holds exactly one of
+### the two. Lend the view first — through the delegation surface, or with
+### `insert into auth_user_permission (user_id, permission_name) select id, 'AI_INSIGHT_VIEW' from
+### auth_user where email = 'andrei@atelier.ro';` against the demo database.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{employee}}",
+  "password": "{{password}}"
+}
+
+### 200 — he may read the finding. That is what was lent to him.
+GET {{host}}/api/insights?subject_type=task_template&subject_id={{taskTemplateId}}
+
+### 403 — and it is TASKLIB refusing, not this feature.
+###
+### Seeing that something is wrong and being allowed to change it are different rights. This feature
+### grants no authority and re-implements no authorization: it asks, and the feature that owns the
+### subject answers. Deleting the check on TASKLIB's published surface turns this into a 204, which is
+### how it was proven rather than assumed.
+POST {{host}}/api/insights/apply
+Content-Type: application/json
+
+{
+  "subjectType": "task_template",
+  "subjectId": "{{taskTemplateId}}",
+  "kind": "UNUSED_TEMPLATE",
+  "findingKey": "unused"
+}
+
+### 204 — Dismiss still works for him. Putting a suggestion away is not an act of authority over
+### anybody's library, and withholding it would leave him with advice he can neither take nor silence.
+POST {{host}}/api/insights/dismiss
+Content-Type: application/json
+
+{
+  "subjectType": "task_template",
+  "subjectId": "{{taskTemplateId}}",
+  "kind": "UNUSED_TEMPLATE",
+  "findingKey": "unused"
+}
+
+###############################################################################
+### Slice E — the three deterministic corrections
+###############################################################################
+
+### The estimate correction, with the clause that stops it being applied blindly
+### (AI-INSIGHT-ESTIMATE-DIVERGENCE-01, DECISION-SAMPLE-DISCLOSURE-01).
+###
+### Read the evidence before the claim. Where `excludedRuns` is present, the template has stamped work
+### that never closed, and the median below is the median of what survived — which is not a random
+### sample of what was attempted. A template whose difficult half stopped closing and one whose work is
+### genuinely fast return the same `medianWorkMs`; only `excludedRuns` separates them.
+###
+### `excludedRuns` is **absent, never zero**, where nothing material was excluded. A response carrying
+### `"excludedRuns": 0` would be a defect: the card renders the second clause on presence alone, so a
+### zero would put "0 further tasks never closed" on every card in the product.
+GET {{host}}/api/insights?subject_type=task_template&subject_id={{taskTemplateId}}
+
+### 204 — Apply writes the observed median through TASKLIB's own edit path, with TASKLIB's own
+### permission (TASK_TEMPLATE_CREATE, the one its edit endpoint demands). Tasks already stamped keep
+### what they were told: a template edit reaches future stamps and future runs, never a run in flight.
+POST {{host}}/api/insights/apply
+Content-Type: application/json
+
+{
+  "subjectType": "task_template",
+  "subjectId": "{{taskTemplateId}}",
+  "kind": "ESTIMATE_DIVERGENCE",
+  "findingKey": "estimate"
+}
+
+### The cadence-aware idleness window (AI-INSIGHT-UNUSED-TEMPLATE-01, DECISION-CADENCE-WINDOW-01).
+###
+### On an UNUSED_TEMPLATE finding, `expectedIntervalDays` says which rule produced it. Present means a
+### rhythm was found in the template's own usage and the template has missed an expected occurrence;
+### absent means no rhythm was detectable and the workspace's configured window applied, exactly as it
+### did before the cadence rule existed.
+###
+### The case worth walking by hand: a template used at roughly 90-day intervals and last used 80 days
+### ago returns **nothing at all** for this kind. It is on schedule, not idle, and the fixed window
+### would have proposed retiring it.
+GET {{host}}/api/insights?subject_type=task_template&subject_id={{seasonalTemplateId}}
+
+### The two thresholds both of the above are judged by (WORKSPACE-CONFIGURE-01, V60).
+###
+### Owner-only and not delegable. Neither number is a constant anywhere in the insight layer: the
+### coverage share decides when a finding states what it could not see, and the idle window is the
+### fallback for templates with no detectable rhythm. Read fresh on every computation, never cached —
+### a held value is indistinguishable from a correct one until somebody changes the setting.
+GET {{host}}/api/workspace/settings

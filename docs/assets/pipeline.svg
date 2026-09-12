@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460" width="1200" height="460" role="img" aria-label="The analyser pipeline: six stages, each reading the one before it">
+  <title>The analyser pipeline</title>
+  <defs>
+    <pattern id="pdots" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.1" fill="#ffffff" fill-opacity="0.04"/>
+    </pattern>
+    <marker id="pArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4a4d52"/>
+    </marker>
+    <clipPath id="pcard"><rect x="0" y="0" width="1200" height="460" rx="20"/></clipPath>
+  </defs>
+
+  <style>
+    .mono { font-family: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace; }
+    .sans { font-family: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+
+    /* One run sweeping through the six stages. 9s cycle, 1.5s per stage. */
+    .st1 { animation: run 9s linear infinite; animation-delay: 0.0s; }
+    .st2 { animation: run 9s linear infinite; animation-delay: 1.5s; }
+    .st3 { animation: run 9s linear infinite; animation-delay: 3.0s; }
+    .st4 { animation: run 9s linear infinite; animation-delay: 4.5s; }
+    .st5 { animation: run 9s linear infinite; animation-delay: 6.0s; }
+    .st6 { animation: run 9s linear infinite; animation-delay: 7.5s; }
+    @keyframes run {
+      0%, 100%  { stroke: #2a2c30; fill: #14161a; }
+      1%        { stroke: #dcfb4b; fill: #1c2110; }
+      14%       { stroke: #6b7a0a; fill: #171a12; }
+      22%, 99%  { stroke: #2a2c30; fill: #14161a; }
+    }
+
+    .h1 { animation: hi 9s linear infinite; animation-delay: 0.0s; }
+    .h2 { animation: hi 9s linear infinite; animation-delay: 1.5s; }
+    .h3 { animation: hi 9s linear infinite; animation-delay: 3.0s; }
+    .h4 { animation: hi 9s linear infinite; animation-delay: 4.5s; }
+    .h5 { animation: hi 9s linear infinite; animation-delay: 6.0s; }
+    .h6 { animation: hi 9s linear infinite; animation-delay: 7.5s; }
+    @keyframes hi {
+      0%, 100% { fill: #b4b8bf; }
+      1%, 14%  { fill: #dcfb4b; }
+      22%, 99% { fill: #b4b8bf; }
+    }
+
+    /* The edges carry the result forward as a moving dash. */
+    .edge { stroke-dasharray: 5 6; animation: crawl 1.1s linear infinite; }
+    @keyframes crawl { to { stroke-dashoffset: -11; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .st1,.st2,.st3,.st4,.st5,.st6,.h1,.h2,.h3,.h4,.h5,.h6,.edge { animation: none; }
+    }
+  </style>
+
+  <g clip-path="url(#pcard)">
+    <rect width="1200" height="460" fill="#0b0b0c"/>
+    <rect width="1200" height="460" fill="url(#pdots)"/>
+
+    <text class="mono" x="48" y="46" font-size="11.5" fill="#63666c" letter-spacing="1.6">EACH STAGE READS THE ONE BEFORE IT · NINE ANALYSERS · NOTHING IS WRITTEN TO YOUR LIBRARIES</text>
+    <text class="sans" x="48" y="80" font-size="26" font-weight="700" fill="#f2f4f6" letter-spacing="-0.5">The analysis pipeline</text>
+
+    <!-- the six stages -->
+    <g transform="translate(48, 132)">
+      <!-- edges first, so the cards sit on top -->
+      <line class="edge" x1="176" y1="72" x2="188" y2="72" stroke="#4a4d52" stroke-width="1.5" marker-end="url(#pArrow)"/>
+      <line class="edge" x1="360" y1="72" x2="372" y2="72" stroke="#4a4d52" stroke-width="1.5" marker-end="url(#pArrow)"/>
+      <line class="edge" x1="544" y1="72" x2="556" y2="72" stroke="#4a4d52" stroke-width="1.5" marker-end="url(#pArrow)"/>
+      <line class="edge" x1="728" y1="72" x2="740" y2="72" stroke="#4a4d52" stroke-width="1.5" marker-end="url(#pArrow)"/>
+      <line class="edge" x1="912" y1="72" x2="924" y2="72" stroke="#4a4d52" stroke-width="1.5" marker-end="url(#pArrow)"/>
+
+      <g>
+        <rect class="st1" x="0"   y="0" width="172" height="144" rx="16" fill="#14161a" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="mono" x="18" y="30" font-size="10.5" fill="#63666c" letter-spacing="1.2">STAGE 1</text>
+        <text class="sans h1" x="18" y="58" font-size="18" font-weight="700" fill="#b4b8bf">Observe</text>
+        <text class="sans" x="18" y="84"  font-size="12.5" fill="#63666c">What is there</text>
+        <text class="sans" x="18" y="102" font-size="12.5" fill="#63666c">to look at?</text>
+        <text class="mono" x="18" y="128" font-size="10" fill="#4a4d52">148 marks read</text>
+      </g>
+
+      <g>
+        <rect class="st2" x="184" y="0" width="172" height="144" rx="16" fill="#14161a" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="mono" x="202" y="30" font-size="10.5" fill="#63666c" letter-spacing="1.2">STAGE 2</text>
+        <text class="sans h2" x="202" y="58" font-size="18" font-weight="700" fill="#b4b8bf">Normalise</text>
+        <text class="sans" x="202" y="84"  font-size="12.5" fill="#63666c">What is the</text>
+        <text class="sans" x="202" y="102" font-size="12.5" fill="#63666c">shape of it?</text>
+        <text class="mono" x="202" y="128" font-size="10" fill="#4a4d52">65 pieces of work</text>
+      </g>
+
+      <g>
+        <rect class="st3" x="368" y="0" width="172" height="144" rx="16" fill="#14161a" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="mono" x="386" y="30" font-size="10.5" fill="#63666c" letter-spacing="1.2">STAGE 3</text>
+        <text class="sans h3" x="386" y="58" font-size="18" font-weight="700" fill="#b4b8bf">Measure</text>
+        <text class="sans" x="386" y="84"  font-size="12.5" fill="#63666c">What are the</text>
+        <text class="sans" x="386" y="102" font-size="12.5" fill="#63666c">numbers?</text>
+        <text class="mono" x="386" y="128" font-size="10" fill="#4a4d52">work · wait · block</text>
+      </g>
+
+      <g>
+        <rect class="st4" x="552" y="0" width="172" height="144" rx="16" fill="#14161a" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="mono" x="570" y="30" font-size="10.5" fill="#63666c" letter-spacing="1.2">STAGE 4</text>
+        <text class="sans h4" x="570" y="58" font-size="18" font-weight="700" fill="#b4b8bf">Detect</text>
+        <text class="sans" x="570" y="84"  font-size="12.5" fill="#63666c">What is a</text>
+        <text class="sans" x="570" y="102" font-size="12.5" fill="#63666c">pattern?</text>
+        <text class="mono" x="570" y="128" font-size="10" fill="#4a4d52">13 findings</text>
+      </g>
+
+      <g>
+        <rect class="st5" x="736" y="0" width="172" height="144" rx="16" fill="#14161a" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="mono" x="754" y="30" font-size="10.5" fill="#63666c" letter-spacing="1.2">STAGE 5</text>
+        <text class="sans h5" x="754" y="58" font-size="18" font-weight="700" fill="#b4b8bf">Correlate</text>
+        <text class="sans" x="754" y="84"  font-size="12.5" fill="#63666c">Why?</text>
+        <text class="mono" x="754" y="128" font-size="10" fill="#4a4d52">crosses 3 depts</text>
+      </g>
+
+      <g>
+        <rect class="st6" x="920" y="0" width="172" height="144" rx="16" fill="#14161a" stroke="#2a2c30" stroke-width="1.75"/>
+        <text class="mono" x="938" y="30" font-size="10.5" fill="#63666c" letter-spacing="1.2">STAGE 6</text>
+        <text class="sans h6" x="938" y="58" font-size="18" font-weight="700" fill="#b4b8bf">Recommend</text>
+        <text class="sans" x="938" y="84"  font-size="12.5" fill="#63666c">What should</text>
+        <text class="sans" x="938" y="102" font-size="12.5" fill="#63666c">we do?</text>
+        <text class="mono" x="938" y="128" font-size="10" fill="#4a4d52">a draft, never live</text>
+      </g>
+    </g>
+
+    <!-- the three verdicts an analyser can return -->
+    <g transform="translate(48, 322)">
+      <text class="mono" x="0" y="0" font-size="11" fill="#63666c" letter-spacing="1.4">AN ANALYSER RETURNS ONE OF THREE ANSWERS — AND "NOTHING" IS AN ANSWER</text>
+
+      <g transform="translate(0, 30)">
+        <rect x="0" y="0" width="352" height="62" rx="12" fill="#111316" stroke="#2a2c30" stroke-width="1.5"/>
+        <rect x="0" y="0" width="4"   height="62" rx="2" fill="#a8efb5"/>
+        <text class="sans" x="20" y="26" font-size="13.5" font-weight="700" fill="#f2f4f6">Produced a finding</text>
+        <text class="sans" x="20" y="46" font-size="12" fill="#63666c">It queues in Findings with its evidence.</text>
+      </g>
+
+      <g transform="translate(372, 30)">
+        <rect x="0" y="0" width="352" height="62" rx="12" fill="#111316" stroke="#2a2c30" stroke-width="1.5"/>
+        <rect x="0" y="0" width="4"   height="62" rx="2" fill="#63666c"/>
+        <text class="sans" x="20" y="26" font-size="13.5" font-weight="700" fill="#f2f4f6">Ran, and said nothing</text>
+        <text class="sans" x="20" y="46" font-size="12" fill="#63666c">That is an answer, not a failure.</text>
+      </g>
+
+      <g transform="translate(744, 30)">
+        <rect x="0" y="0" width="352" height="62" rx="12" fill="#111316" stroke="#2a2c30" stroke-width="1.5"/>
+        <rect x="0" y="0" width="4"   height="62" rx="2" fill="#ffb454"/>
+        <text class="sans" x="20" y="26" font-size="13.5" font-weight="700" fill="#f2f4f6">Blocked</text>
+        <text class="sans" x="20" y="46" font-size="12" fill="#63666c">It names exactly what it needed and lacked.</text>
+      </g>
+    </g>
+
+    <rect x="0.75" y="0.75" width="1198.5" height="458.5" rx="19.25" fill="none" stroke="#2a2c30" stroke-width="1.5"/>
+  </g>
+</svg>

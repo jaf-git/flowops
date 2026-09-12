@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" width="1200" height="600" role="img" aria-label="Hexagonal architecture: dependencies point inward only, enforced by ArchUnit">
+  <title>The rings — dependencies point inward only</title>
+  <defs>
+    <pattern id="adots" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.1" fill="#ffffff" fill-opacity="0.04"/>
+    </pattern>
+    <marker id="arrowIn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#dcfb4b"/>
+    </marker>
+    <marker id="arrowGrey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#63666c"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#ff6b6b"/>
+    </marker>
+    <clipPath id="acard"><rect x="0" y="0" width="1200" height="600" rx="20"/></clipPath>
+  </defs>
+
+  <style>
+    .mono { font-family: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace; }
+    .sans { font-family: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+
+    /* Dependencies flow inward. The dash offset animates toward the centre on both sides. */
+    .flowIn { stroke-dasharray: 7 7; animation: dashIn 1.4s linear infinite; }
+    @keyframes dashIn { to { stroke-dashoffset: -14; } }
+
+    /* The rings breathe in sequence, outermost first, so the reader's eye travels inward. */
+    .ringA { animation: glow 6s ease-in-out infinite; animation-delay: 0s; }
+    .ringB { animation: glow 6s ease-in-out infinite; animation-delay: 0.9s; }
+    .ringC { animation: glow 6s ease-in-out infinite; animation-delay: 1.8s; }
+    @keyframes glow {
+      0%, 60%, 100% { stroke: #2a2c30; }
+      12%           { stroke: #6b7a0a; }
+      24%           { stroke: #2a2c30; }
+    }
+
+    /* The refused direction pulses red, briefly, so it reads as a prohibition. */
+    .refuse { animation: refuse 6s ease-in-out infinite; }
+    @keyframes refuse {
+      0%, 70%, 100% { opacity: 0.35; }
+      80%           { opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .flowIn, .ringA, .ringB, .ringC, .refuse { animation: none; }
+    }
+  </style>
+
+  <g clip-path="url(#acard)">
+    <rect width="1200" height="600" fill="#0b0b0c"/>
+    <rect width="1200" height="600" fill="url(#adots)"/>
+
+    <text class="mono" x="48" y="46" font-size="11.5" fill="#63666c" letter-spacing="1.6">ONE FEATURE, FOUR RINGS — REPEATED IDENTICALLY IN ALL 17 BOUNDED CONTEXTS</text>
+    <text class="sans" x="48" y="80" font-size="26" font-weight="700" fill="#f2f4f6" letter-spacing="-0.5">Dependencies point inward. Only inward.</text>
+
+    <!-- ───────────── the rings ───────────── -->
+    <g transform="translate(600, 320)">
+      <!-- outer ring: adapters -->
+      <rect class="ringA" x="-330" y="-170" width="660" height="340" rx="26" fill="#111316" stroke="#2a2c30" stroke-width="1.75"/>
+      <text class="mono" x="-312" y="-146" font-size="11" fill="#63666c" letter-spacing="1.4">ADAPTERS</text>
+
+      <!-- middle ring: application -->
+      <rect class="ringB" x="-232" y="-118" width="464" height="236" rx="22" fill="#14161a" stroke="#2a2c30" stroke-width="1.75"/>
+      <text class="mono" x="-214" y="-94" font-size="11" fill="#63666c" letter-spacing="1.4">APPLICATION</text>
+
+      <!-- inner ring: domain -->
+      <rect class="ringC" x="-140" y="-66" width="280" height="132" rx="18" fill="#181b1f" stroke="#2a2c30" stroke-width="1.75"/>
+
+      <text class="sans" x="0" y="-18" font-size="21" font-weight="700" fill="#dcfb4b" text-anchor="middle">domain</text>
+      <text class="sans" x="0" y="8"  font-size="13" fill="#b4b8bf" text-anchor="middle">entities · value objects</text>
+      <text class="sans" x="0" y="28" font-size="13" fill="#b4b8bf" text-anchor="middle">events · domain services</text>
+      <text class="mono" x="0" y="50" font-size="10.5" fill="#6b7a0a" text-anchor="middle" letter-spacing="0.8">NO FRAMEWORK IMPORTS</text>
+
+      <text class="sans" x="-186" y="-54" font-size="14" font-weight="700" fill="#f2f4f6" text-anchor="middle">use case</text>
+      <text class="mono" x="-186" y="-34" font-size="10" fill="#63666c" text-anchor="middle">UseCase</text>
+      <text class="mono" x="-186" y="-18" font-size="10" fill="#63666c" text-anchor="middle">Service</text>
+      <text class="mono" x="-186" y="-2"  font-size="10" fill="#63666c" text-anchor="middle">Command</text>
+      <text class="mono" x="-186" y="14"  font-size="10" fill="#63666c" text-anchor="middle">Result</text>
+      <text class="mono" x="-186" y="30"  font-size="10" fill="#63666c" text-anchor="middle">port/</text>
+
+      <text class="sans" x="186" y="-54" font-size="14" font-weight="700" fill="#f2f4f6" text-anchor="middle">one folder</text>
+      <text class="sans" x="186" y="-34" font-size="11.5" fill="#63666c" text-anchor="middle">one spec section</text>
+      <text class="sans" x="186" y="-16" font-size="11.5" fill="#63666c" text-anchor="middle">one test class</text>
+      <text class="sans" x="186" y="2"   font-size="11.5" fill="#63666c" text-anchor="middle">one scenario</text>
+
+      <!-- api, in the outer ring below the application ring -->
+      <g transform="translate(-186, 144)">
+        <text class="sans" x="0" y="0"  font-size="15" font-weight="700" fill="#f2f4f6" text-anchor="middle">api</text>
+        <text class="mono" x="0" y="19" font-size="10" fill="#63666c" text-anchor="middle" letter-spacing="0.6">INBOUND · REST</text>
+      </g>
+
+      <!-- infrastructure, in the outer ring below the application ring -->
+      <g transform="translate(186, 144)">
+        <text class="sans" x="0" y="0"  font-size="15" font-weight="700" fill="#f2f4f6" text-anchor="middle">infrastructure</text>
+        <text class="mono" x="0" y="19" font-size="10" fill="#63666c" text-anchor="middle" letter-spacing="0.6">OUTBOUND · JPA · SMTP</text>
+      </g>
+
+      <!-- the inward flows, routed below the use-case labels so nothing is crossed -->
+      <line class="flowIn" x1="-296" y1="104" x2="-146" y2="52" stroke="#dcfb4b" stroke-width="2" marker-end="url(#arrowIn)"/>
+      <line class="flowIn" x1="296"  y1="104" x2="146"  y2="52" stroke="#dcfb4b" stroke-width="2" marker-end="url(#arrowIn)"/>
+
+      <!-- the refused flow -->
+      <g class="refuse">
+        <line x1="-60" y1="-76" x2="-60" y2="-128" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrowRed)"/>
+        <g transform="translate(-60, -102)">
+          <circle r="11" fill="#0b0b0c" stroke="#ff6b6b" stroke-width="1.75"/>
+          <line x1="-5" y1="-5" x2="5" y2="5" stroke="#ff6b6b" stroke-width="2"/>
+          <line x1="5"  y1="-5" x2="-5" y2="5" stroke="#ff6b6b" stroke-width="2"/>
+        </g>
+      </g>
+    </g>
+
+    <!-- left caller -->
+    <g transform="translate(60, 390)">
+      <rect x="0" y="-30" width="150" height="60" rx="12" fill="#17181a" stroke="#2a2c30" stroke-width="1.5"/>
+      <text class="sans" x="75" y="-4" font-size="13" fill="#f2f4f6" text-anchor="middle">a browser</text>
+      <text class="mono" x="75" y="16" font-size="10" fill="#63666c" text-anchor="middle">HTTP · SESSION</text>
+    </g>
+    <line x1="212" y1="390" x2="266" y2="390" stroke="#4a4d52" stroke-width="1.5" marker-end="url(#arrowGrey)"/>
+
+    <!-- right dependencies -->
+    <g transform="translate(990, 390)">
+      <rect x="0" y="-30" width="150" height="60" rx="12" fill="#17181a" stroke="#2a2c30" stroke-width="1.5"/>
+      <text class="sans" x="75" y="-4" font-size="13" fill="#f2f4f6" text-anchor="middle">PostgreSQL 16</text>
+      <text class="mono" x="75" y="16" font-size="10" fill="#63666c" text-anchor="middle">MAILPIT · OLLAMA</text>
+    </g>
+    <line x1="934" y1="390" x2="988" y2="390" stroke="#4a4d52" stroke-width="1.5" marker-end="url(#arrowGrey)"/>
+
+    <!-- the enforcement note -->
+    <g transform="translate(48, 545)">
+      <rect x="0" y="-22" width="6" height="36" rx="3" fill="#dcfb4b"/>
+      <text class="sans" x="20" y="-4" font-size="13.5" fill="#f2f4f6">The rule is not a convention. <tspan class="mono" font-size="12" fill="#dcfb4b">ArchitectureRulesTest</tspan> fails the build when a ring reaches outward,</text>
+      <text class="sans" x="20" y="14" font-size="13.5" fill="#63666c">and CI reads the surefire report rather than the exit code — a report naming zero tests fails too.</text>
+    </g>
+
+    <rect x="0.75" y="0.75" width="1198.5" height="598.5" rx="19.25" fill="none" stroke="#2a2c30" stroke-width="1.5"/>
+  </g>
+</svg>

@@ -1,0 +1,86 @@
+name: dependency scan
+
+# The backend dependency scan, moved off the per-pull-request path on 2026-08-03.
+#
+# It is a real security gate and it still runs and still fails loudly — it just no longer
+# blocks a merge. The reason is measured rather than assumed: the job took 45 minutes on one
+# run and was still going at 75 on the next, on a pull request that changed no dependency at
+# all. A gate that costs an hour on every documentation change is one that gets worked around,
+# and a gate people work around protects nothing.
+#
+# The cost of the move is stated plainly in DECISION row 42 rather than buried here: a
+# vulnerable dependency can now reach `main` and sit there until the next scheduled run, up to
+# a week. That is accepted only because this build runs on one machine for one company under
+# CONSTRAINT-LOCALHOST-01 and takes no external contributions. Either of those changing is the
+# trigger to put it back on the pull-request path.
+
+# The weekly schedule is suspended by DECISION-DEMO-FOCUS-01, 2026-08-20. Nothing external consumes
+# this build and no dependency changes between now and the defence, so a scan nobody reads is a
+# scheduled cost with no reader. It stays runnable by hand.
+on:
+  workflow_dispatch:
+  # schedule:
+  #   # Monday 03:00 UTC. Weekly rather than nightly because the NVD data itself is the slow part
+  #   # and a week matches the cache bucket below, so the scheduled run is usually the one that
+  #   # refreshes it for everything else.
+  #   - cron: '0 3 * * 1'
+
+env:
+  JAVA_VERSION: '21'
+
+jobs:
+  dependency-scan-backend:
+    name: backend dependency scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # Deliberately no `cache: maven`. That option caches the whole of ~/.m2/repository, which
+      # *contains* the vulnerability database cached below — so the data would be stored twice,
+      # the second time under a key that moves whenever a pom does. At over a hundred megabytes
+      # a copy that is the quickest way to evict the dedicated cache under the repository's
+      # 10GB limit and silently restore the slow path. This job resolves one plugin.
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      # The plugin reads the key through <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey> in pom.xml.
+      # The environment variable alone would not reach it: Maven plugin configuration does not
+      # read the environment unless a parameter interpolates it. Fail with a clear message.
+      - name: Require the NVD key
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: |
+          if [ -z "$NVD_API_KEY" ]; then
+            echo "Repository secret NVD_API_KEY is not set. Add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
+      # Keyed on an ISO week, never on github.run_id. A run-scoped key can never hit, so every
+      # run was a restore-keys prefix match at best and re-saved its own copy afterwards — 21
+      # such entries had accumulated, one per run.
+      - name: Work out this week's vulnerability-data bucket
+        id: nvd
+        run: echo "week=$(date -u +'%G-W%V')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the vulnerability database
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: dependency-check-nvd-${{ steps.nvd.outputs.week }}
+          restore-keys: dependency-check-nvd-
+
+      - name: Run the dependency check
+        working-directory: app/backend
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: ./mvnw -B --no-transfer-progress dependency-check:check
+
+      - name: Publish the report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-dependency-check
+          path: app/backend/target/dependency-check-report.*
+          if-no-files-found: ignore

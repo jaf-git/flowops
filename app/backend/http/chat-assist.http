@@ -1,0 +1,118 @@
+### FEATURE_CHAT_ASSIST — turning a conversation you are in into a draft of the work it describes
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects.
+###
+### Ports: the demo backend runs on 8081 (Tomcat9 owns 8080 on this machine); the model is the
+### `flowops-ollama` container on 11434. Start the backend with `--flowops.ai.enabled=true` or this
+### feature answers `available: false` and nothing else, which is a supported configuration rather
+### than a fault.
+###
+### **This is the only feature in the product that reads a message body for any purpose beyond showing
+### it to the people in the conversation.** It exists under five binding conditions recorded in
+### DECISION-CHAT-ASSIST-LOCAL-01, and three of them can be checked from this file alone:
+###
+###   1. It takes a conversation and no person. Participation comes from the session, so there is no
+###      request that asks about somebody else's thread — see the 404 section at the foot.
+###   2. The model is inside the installation. Point `flowops.ai.ollama-url` at anything that is not
+###      and the application refuses to start, which is a louder answer than a runtime check.
+###   3. Nothing is written. Ask twice, ask fifty times: no task, no process, no row saying you asked.
+###
+### The other two — nothing auto-applied, and the product supplying every word — are visible in the
+### response: it carries a draft and no identifiers, and every `title` is a verbatim slice of the
+### conversation.
+
+@host = http://localhost:8081
+@manager = ionut@atelier.ro
+@stranger = cosmin@atelier.ro
+@password = a-long-enough-passphrase
+
+### Copy a conversation id out of the conversations list into this.
+@conversationId = 00000000-0000-0000-0000-000000000000
+
+### Sign in as somebody who is in the conversation.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{manager}}",
+  "password": "{{password}}"
+}
+
+### Your own conversations. Take an id from here — there is no route that lists anybody else's.
+GET {{host}}/api/conversations
+
+###############################################################################
+### CHAT-ASSIST-SUGGEST-WORK-01 — the question
+###############################################################################
+
+### What work does this conversation describe? 200, with a draft or with nothing.
+###
+### On the seeded demonstration, the Aurora Coffee thread is the one to try: Ionuț says the retainer is
+### signed and then names the whole engagement in one sentence — discovery workshop, competitor scan,
+### positioning, messaging framework — in the order it happens, the way somebody actually types it.
+###
+### **Every `title` in the answer is a slice of that sentence.** The model points at phrases; the
+### product looks them up and answers with the conversation's own characters. A phrase nobody typed is
+### dropped, and if more than half the answer fails to check, the whole draft is suppressed — a draft
+### assembled from the third of an answer that happened to be checkable is a different answer, one
+### nobody produced.
+POST {{host}}/api/chat-assist/conversations/{{conversationId}}/work-suggestion
+
+### The same request again. **Nothing accumulates**, because nothing was written the first time.
+### Compare the task count before and after if you want to see it rather than take it on trust.
+POST {{host}}/api/chat-assist/conversations/{{conversationId}}/work-suggestion
+
+### An empty list is an answer, and the commonest one.
+###
+### The seed writes a thread with no work in it — two people agreeing that Thursday suits them both.
+### Ask about that one and the answer is `steps: []`. A model that found a process there would have
+### found one that is not there, and the grounding rule is what stops it reaching anybody.
+
+###############################################################################
+### Where the draft goes
+###############################################################################
+
+### Nowhere, until a person sends it. The steps come back as words, and the composer that already
+### exists — the one used to start a process from tasks — is what turns them into work, with every
+### validation PROCESS applies and every refusal it makes.
+###
+### There is deliberately no endpoint here that creates anything. A route called
+### `/work-suggestion/accept` would be this feature growing a way to write, which is the one thing
+### DECISION-AI-NEVER-AUTO-APPLIES-01 and DECISION-CHAT-ASSIST-LOCAL-01 agree it must not have.
+
+###############################################################################
+### The refusal that is the whole guarantee
+###############################################################################
+
+### Sign in as somebody who is not in that conversation.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{stranger}}",
+  "password": "{{password}}"
+}
+
+### 404 — and it is the same 404 an invented identifier gives.
+###
+### **Told apart, these two answers would leak the workspace's conversations.** A caller who could tell
+### *not yours* from *no such thing* could enumerate every thread in the business by trying identifiers,
+### and learn who is talking to whom without reading a word. CHAT conflates them on its own routes and
+### this one inherits the conflation by inheriting the exception.
+POST {{host}}/api/chat-assist/conversations/{{conversationId}}/work-suggestion
+
+### The same 404, for a conversation that does not exist. Compare the two responses: identical.
+POST {{host}}/api/chat-assist/conversations/11111111-1111-1111-1111-111111111111/work-suggestion
+
+###############################################################################
+### The honest limitation, to rehearse rather than avoid
+###############################################################################
+
+### A 3B model is unreliable at this. Measured while building the sibling feature: right every time on
+### a clear handover, wrong about half the time on simple work. That is why the control is phrased as a
+### question, why the draft is fully editable, and why an empty result is silence rather than an
+### apology.
+###
+### If you are demonstrating this, ask the Aurora Coffee thread and the Thursday thread in that order.
+### The second one is the more interesting answer.

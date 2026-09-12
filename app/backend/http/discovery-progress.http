@@ -1,0 +1,327 @@
+### FEATURE_DISCOVERY — the two questions, and the one nudge
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects. The demo backend runs on 8081 — Tomcat9 owns 8080
+### on this machine.
+###
+### **These five endpoints are everything that happens to a unit of work after the circle.** `discovery.http`
+### covers the input — the click that opens an engagement and the click that marks a message. This file
+### covers what machine 4.1 does with the result: the work starts, it may wait on somebody, it ends
+### having produced something, and if it goes quiet the person is asked once and never again.
+###
+### **Nothing here has a free-text field, and that is the design rather than an omission.** A written
+### reason cannot be aggregated, and the whole purpose of the waiting-on answer is that a client's
+### silence never enters a figure about a person (invariant I4). Four buttons for the wait, five for the
+### output, four for the nudge.
+###
+### **Nothing here returns a total, and there is no total behind it.** Invariant I9 says a duration is
+### never presented without its phase, and its enforcement point is *phase rows, no total field*. Nine
+### days over work that spent one being written and eight waiting for a client is not a figure about the
+### writer — but as a single number it reads as one, and once added up no query can take it apart again.
+###
+### Seed the workspace in discovery mode first, or there will be no work to move:
+###   ./mvnw spring-boot:run -Dspring-boot.run.arguments="--discovery"
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@employee = andrei@atelier.ro
+@password = a-long-enough-passphrase
+
+### Copy real identifiers out of `discovery.http`'s two POSTs into these.
+@nodeId = 00000000-0000-0000-0000-000000000000
+@secondNodeId = 00000000-0000-0000-0000-000000000000
+
+### Sign in as the person who actually does the work. Every endpoint below requires WORK_NODE_MARK,
+### which every role in this installation holds — a permission gate here would be a gate on this zone's
+### only supply of evidence.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{employee}}",
+  "password": "{{password}}"
+}
+
+###############################################################################
+### DISCOVERY-RECORD-OUTPUT-01 — Done ▸ produced what?
+###############################################################################
+
+### 200. The highest-value single tap in the system.
+###
+### The answer is the strongest component of the fingerprint — what decides that two units of work with
+### different words are the same work — **and** it is the primary track-end signal. Neither is
+### recoverable afterwards from anything else in the data, and both are bought for one tap.
+###
+### **It is never inferred.** A fabricated output type is worse than a missing one: it is undetectable
+### downstream, and every median and every discovered type built on it is quietly wrong.
+###
+### **Two drawn arrows are walked in one call.** Nobody presses Start before writing a paragraph — they
+### write it and then say they are finished — so work sitting in Assigned or Self walks to InProgress
+### and then to Completed. Both are arrows machine 4.1 draws; nothing undrawn is added.
+POST {{host}}/api/discovery/nodes/{{nodeId}}/output
+Content-Type: application/json
+
+{
+  "outputType": "TEXT"
+}
+
+### 200. `No output yet`, and it keeps the work open.
+###
+### The honest reading of a thin acknowledgement: *done* with no artefact named says a person replied,
+### not that a thing now exists. The answer is recorded, the message stays as evidence, the work carries
+### on, and the person answers properly when there is something to name.
+###
+### **DISCOVERY_REQ_SPEC_01 finding 4 is why this is the reading that ships.** Machine 4.1 draws no
+### `Completed → Completed` arrow, so a NONE node that had reached Completed could never record a real
+### output afterwards — it could not close, could not lapse, and would sit in the graph as work that
+### finished having produced nothing. Send the request above after this one and it is accepted.
+POST {{host}}/api/discovery/nodes/{{nodeId}}/output
+Content-Type: application/json
+
+{
+  "outputType": "NONE"
+}
+
+### 409 OUTPUT_ALREADY_RECORDED. Send the TEXT request twice.
+###
+### The first answer stands. Two answers are two observations rather than one fact stated twice, and
+### overwriting silently would lose what the first person actually saw.
+
+### 409 ILLEGAL_NODE_TRANSITION. Send it against work that is Blocked.
+###
+### The person has to say the wait ended before the work can end. Resuming on their behalf would seal
+### somebody else's silence as work, which is exactly the figure invariant I4 exists to prevent.
+
+### 422 UNKNOWN_WORK_NODE.
+POST {{host}}/api/discovery/nodes/00000000-0000-0000-0000-000000000000/output
+Content-Type: application/json
+
+{
+  "outputType": "TEXT"
+}
+
+###############################################################################
+### DISCOVERY-BLOCK-NODE-01 — Blocked ▸ waiting on whom?
+###############################################################################
+
+### 200. A client's silence, and it opens an EXTERNAL_WAIT segment.
+###
+### **The client/supplier split is not cosmetic — it is what makes invariant I4 computable.** External
+### waiting is somebody else's silence and must never enter a performance figure, and a free-text reason
+### cannot be aggregated. That is why there are four buttons and no text field.
+###
+### Discovery cannot borrow the application's phases here: those have one BLOCKED state and a free-text
+### reason, which cannot answer *did the client keep us waiting*.
+###
+### CLIENT and SUPPLIER open EXTERNAL_WAIT. COLLEAGUE and APPROVAL open INTERNAL_WAIT.
+POST {{host}}/api/discovery/nodes/{{nodeId}}/block
+Content-Type: application/json
+
+{
+  "waitingOn": "CLIENT"
+}
+
+### 200. A colleague's, on a second unit of work — INTERNAL_WAIT, and the same stretch of time means
+### something entirely different.
+POST {{host}}/api/discovery/nodes/{{secondNodeId}}/block
+Content-Type: application/json
+
+{
+  "waitingOn": "COLLEAGUE"
+}
+
+### 200. Resume — whoever was being waited on came back.
+###
+### The wait is sealed and a **new** work segment opens. A segment that could be re-ended could be
+### lengthened after the fact, and every median built from it would move with nothing recording that it
+### had — so the history of a unit of work reads as a sequence rather than as a set of adjusted totals.
+###
+### No body. There is nothing to ask a person here; the answer that mattered was given when the work
+### stopped.
+POST {{host}}/api/discovery/nodes/{{nodeId}}/resume
+
+### 409 ILLEGAL_NODE_TRANSITION. Send the resume against work that was never blocked.
+
+### 422 UNKNOWN_WORK_NODE.
+POST {{host}}/api/discovery/nodes/00000000-0000-0000-0000-000000000000/block
+Content-Type: application/json
+
+{
+  "waitingOn": "CLIENT"
+}
+
+###############################################################################
+### DISCOVERY-NUDGE-COMPLETION-01 — one nudge per node, ever
+###############################################################################
+
+### 200 with one unit of work, or 204 when there is nothing to ask about.
+###
+### **One, never a list.** A queue of these would be the growing number this feature refuses everywhere:
+### a count that goes up is a count people stop opening.
+###
+### **204 is the ordinary answer rather than a failure.** Most of the time there is nothing worth
+### anybody's attention, and a question asked for the sake of asking is what teaches people to stop
+### reading the questions.
+###
+### It offers this person's own oldest unanswered work — the oldest, because that is the one most likely
+### to have quietly died, and their own, because only the performer can answer *is this still going*
+### without guessing.
+GET {{host}}/api/discovery/nudge
+
+### 200. Still going — the answer that keeps live work out of Lapsed.
+###
+### Lapsed means *failed capture*, and it degrades the coverage figure that gates every discovered type.
+### An answer that moves nothing is still the answer that matters.
+POST {{host}}/api/discovery/nodes/{{nodeId}}/nudge-answer
+Content-Type: application/json
+
+{
+  "answer": "STILL_GOING"
+}
+
+### 200. Done — and it deliberately does not record an output.
+###
+### The button reads `[ Done ▸ output ]`. Saying the work finished does not say what it produced, and
+### this endpoint will not invent the answer to the highest-value question in the system. The response
+### carries `asksForAnOutput: true` and the person meets the five buttons of
+### DISCOVERY-RECORD-OUTPUT-01 next.
+POST {{host}}/api/discovery/nodes/{{nodeId}}/nudge-answer
+Content-Type: application/json
+
+{
+  "answer": "DONE"
+}
+
+### 200 on work in Assigned or InProgress · 409 ILLEGAL_NODE_TRANSITION on work in Self or Blocked.
+###
+### **Dropped is the answer DISCOVERY_REQ_SPEC_01 is open about.** Machine 4.1 draws Lapsed from
+### Assigned and from InProgress and from nowhere else, and DISCOVERY_03 §0 forbids adding the arrow in
+### passing — so a solo node that was never started, and a node blocked on a client who never replied,
+### both refuse. That is a guarantee weaker than DISCOVERY_04 §3 states, which is why it is a request
+### rather than a note, and **no arrow will be added while it is open**.
+###
+### The refusal costs the person nothing. The nudge stamp and the transition are one transaction, so a
+### refused answer rolls both back: `nudged_at` stays null and the work is offered again by the GET
+### above. Without that, the request's worst case would be real — one nudge per node is for all time.
+POST {{host}}/api/discovery/nodes/{{nodeId}}/nudge-answer
+Content-Type: application/json
+
+{
+  "answer": "DROPPED"
+}
+
+### 200 on work in Marked or Assigned. It was a question, and the node leaves its thread entirely.
+###
+### **The fourth answer earns its place.** *"Where's the Aurora design?"* can be answered but never
+### completed, so without it such nodes drift to Lapsed and quietly degrade the coverage figure.
+###
+### **It is a human recognising their own message and is NEVER inferred from wording** — invariant I11.
+### Reading content to classify is refused across this zone, and a misread question fabricates a duration
+### that nothing afterwards could detect. There is no branch anywhere in this slice that looks at what a
+### message said.
+###
+### The node leaves its thread because position within a track is a fingerprint component: a question
+### sitting in a thread would fingerprint every node after it one place along.
+POST {{host}}/api/discovery/nodes/{{nodeId}}/nudge-answer
+Content-Type: application/json
+
+{
+  "answer": "WAS_A_QUESTION"
+}
+
+### 409 ALREADY_NUDGED. Send any nudge-answer twice against the same unit of work.
+###
+### **One nudge per node, for all time.** A second would teach people to ignore the first, and this
+### product has exactly one input to protect. DISCOVERY_07 §5 lists it among the things that must never
+### become a threshold, because making the count configurable only invites somebody to try two.
+
+### 422 UNKNOWN_WORK_NODE.
+POST {{host}}/api/discovery/nodes/00000000-0000-0000-0000-000000000000/nudge-answer
+Content-Type: application/json
+
+{
+  "answer": "STILL_GOING"
+}
+
+###############################################################################################
+### DISCOVERY-ENRICH-NODE-01 — what is this work, actually?
+###
+### **The one endpoint in this file with a free-text field, and the exception is the point.** Every
+### other answer here is recognition, because a vocabulary can be aggregated and free text cannot. What
+### people *call* a piece of work is the one thing no vocabulary can supply: the template suggester
+### needs the recurring title people typed, and a dropdown would return the options the product
+### invented rather than the words the business uses.
+###
+### The circle captured that work happened; this captures what it was. Measured 2026-08-31: **150 of
+### 200 nodes carry no work description at all** — a node's `text` is a sentence copied from a message,
+### and "Fine by me, that gives us room." is stored as ADS work. Nothing downstream repairs that.
+###############################################################################################
+
+### A person names the work. 200, with accepted=true.
+###
+### `checklist` distinguishes two different answers: omit it and nobody has said; send `[]` and
+### somebody has said there are no steps. Collapsing them would make enrichment unmeasurable, and the
+### template suggester's confidence is a measurement of how much has actually been said.
+PATCH {{host}}/api/discovery/nodes/{{nodeId}}/enrichment
+Content-Type: application/json
+
+{
+  "title": "caption set for Aurora",
+  "detail": "three posts and a story for the summer menu",
+  "checklist": ["draft the copy", "check the brand voice"]
+}
+
+### Send it again with a different title. **200 with accepted=false, NOT 409.**
+###
+### Enrichment fills an empty field and never changes a set one. Somebody re-sending a field they
+### already filled has done nothing wrong — what must not happen is the value moving, because analysers
+### cluster on it and a title that can change means two runs can disagree with nothing to say which was
+### right. Read the response: `title` is still the first answer.
+PATCH {{host}}/api/discovery/nodes/{{nodeId}}/enrichment
+Content-Type: application/json
+
+{
+  "title": "something else entirely"
+}
+
+### 400. A title is a name to scan a list by, not a sentence — varchar(120), and the contract says so
+### rather than truncating silently. Paste anything over 120 characters here.
+PATCH {{host}}/api/discovery/nodes/{{nodeId}}/enrichment
+Content-Type: application/json
+
+{
+  "title": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+
+### 422 UNKNOWN_WORK_NODE.
+PATCH {{host}}/api/discovery/nodes/00000000-0000-0000-0000-000000000000/enrichment
+Content-Type: application/json
+
+{
+  "title": "nothing to name"
+}
+
+###############################################################################################
+### DISCOVERY-VIEW-NODE-TRAIL-01 — what did this work actually do?
+###
+### `work_node.state` is a single overwriting column. A node that went MARKED → ASSIGNED → IN_PROGRESS
+### → BLOCKED → IN_PROGRESS → COMPLETED → CLOSED reads afterwards as CLOSED and nothing else, and that
+### lifetime is what S3 Effort measures. None of it is recoverable from a column that keeps only the
+### last answer.
+###############################################################################################
+
+### Every move, oldest first. Run this after the output and block requests above and watch the
+### IN_PROGRESS nobody ever pressed a button for: tapping Done on work never explicitly started walks
+### two drawn arrows in one call.
+###
+### `actorId` is **null where nothing moved it** — the sweep lapsing work nobody answered for, a loop
+### reopening completed work. Work somebody dropped and work nobody came back to are different
+### findings, so the absence is reported rather than filled in.
+###
+### `recordedFromTheStart` is false for any node marked before V92, which is almost all of them today.
+### Its earlier moves are gone, not absent, and a duration measured from its first row would be short.
+GET {{host}}/api/discovery/nodes/{{nodeId}}/trail
+
+### 422 UNKNOWN_WORK_NODE — rather than an empty list, which would read exactly like a node that has
+### made no moves. Those are different facts and the caller is owed the difference.
+GET {{host}}/api/discovery/nodes/00000000-0000-0000-0000-000000000000/trail

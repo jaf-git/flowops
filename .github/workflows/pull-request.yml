@@ -1,0 +1,271 @@
+name: pull request
+
+# The merge gates. Every job here blocks the merge.
+#
+# Four of the gates are bespoke scripts rather than an off-the-shelf linter, and each one exists
+# because a defect reached the tree past everything that was already watching. The comment above each
+# step names that defect. A gate whose reason is not written down is a gate somebody deletes.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pull-request-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  JAVA_VERSION: '21'
+  # Pinned to the patch, and matching `.nvmrc`. `'22'` resolved to whatever 22.x the runner happened
+  # to carry, which is a different Node from the one on a developer's machine for no reason anybody
+  # chose — and `jsdom@30` already declares `^22.22.2`, so 22.21 warns on every install locally while
+  # CI silently runs something newer. A version skew between the two is exactly the shape of failure
+  # this project has already spent time on twice.
+  NODE_VERSION: '22.22.2'
+  GITLEAKS_VERSION: '8.30.1'
+  SEMGREP_VERSION: '1.172.0'
+
+jobs:
+  backend:
+    name: backend build, tests, format and style
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      # A permission written as a disjunction is under-proven three times out of three on this
+      # project, and never by a test that failed — a disjunction short-circuits, so the second term
+      # is executed on every path the first term already admitted and decides none of them. Coverage
+      # shows the line green; a reviewer reads a diff in which the wrong fixture looks right. Both
+      # instruments that ever caught it were mutation-shaped. This one is cheap and mechanical: it
+      # asks whether a caller who fails the first term could exist at all.
+      - name: Every disjunctive permission has a possible witness
+        run: bash .github/scripts/check-disjunction-witnesses.sh
+
+      # A control gated on a permission the backend never grants is unreachable for everybody, and
+      # a test that passes the same invented name agrees with the bug instead of catching it. That
+      # is not hypothetical: `TemplateScreen` shipped gated on `PROCESS_AUTHOR`, which is granted to
+      # nobody, so the one screen that authors a process could not author a process — with nine
+      # tests green and a mutation reddening. Both sides are string literals, so `tsc` cannot help.
+      - name: Every permission gate names a permission that exists
+        run: bash .github/scripts/check-permission-names.sh
+
+      # The stream's heartbeat interval and the client's patience are one number in two places, and
+      # drift between them has no error, no exception and no failing test — it announces itself as
+      # every working board reporting offline on a schedule, until people stop reading the badge.
+      # A comment beside each number is exactly the mechanism that was already found insufficient
+      # twice, so it is a gate.
+      - name: The stream's heartbeat and the client's patience still agree
+        run: bash .github/scripts/check-heartbeat-agrees-with-client.sh
+
+      # Spotless and Checkstyle are bound to validate, so this one command is the
+      # build, the unit and integration tests against a database in a container,
+      # the format check, and the style check.
+      #
+      # `-P full` is named rather than relied on: it selects what the default already does, and it
+      # means no change to a pom property can quietly take the round trips out of the gate.
+      - name: Build, verify and test
+        working-directory: app/backend
+        run: ./mvnw -B --no-transfer-progress -P full clean verify
+
+      # Listed separately so it is visible as its own gate even though the command above already ran
+      # it. It reads the answer from `target/surefire-reports` rather than re-running the class,
+      # which costs a second Maven start to re-answer a question already answered — and a surefire
+      # report is better evidence than a second run, because `mvnw -q verify` prints nothing and a
+      # piped command reports the pipe's status rather than the build's.
+      #
+      # The `-eq 0` guard is not decoration. A report with zero tests satisfies "no failures" while
+      # having checked nothing, and a missing file would make `grep` return empty and read as success.
+      - name: Architecture rules
+        working-directory: app/backend
+        run: |
+          report="target/surefire-reports/TEST-com.flowops.architecture.ArchitectureRulesTest.xml"
+          if [ ! -f "$report" ]; then
+            echo "::error::$report is absent, so the architecture rules did not run in the build above"
+            exit 1
+          fi
+          # Each attribute read on its own, because surefire writes them in the order
+          # `tests errors skipped failures` and a single pattern that assumes an order silently
+          # extracts nothing when the order differs. That is not hypothetical: the first version of
+          # this step assumed `tests failures errors`, matched nothing, and was caught by the
+          # zero-tests guard below rather than passing green — which is the guard doing exactly the
+          # job it was added for, on its author.
+          attribute () { grep -m1 -oE "$1=\"[0-9]+\"" "$report" | grep -oE '[0-9]+'; }
+          tests="$(attribute tests)"
+          failures="$(attribute failures)"
+          errors="$(attribute errors)"
+          echo "ArchitectureRulesTest: ${tests:-?} tests, ${failures:-?} failures, ${errors:-?} errors"
+          if [ -z "$tests" ] || [ "$tests" -eq 0 ]; then
+            echo "::error::the report names no tests, so nothing was checked"
+            exit 1
+          fi
+          [ "$failures" -eq 0 ] && [ "$errors" -eq 0 ]
+
+      - name: Publish coverage
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-coverage
+          path: app/backend/target/site/jacoco/
+          if-no-files-found: error
+
+      # Coverage is watched as a trend, never gated as a number.
+      - name: Summarise coverage
+        if: always()
+        run: |
+          report="app/backend/target/site/jacoco/index.html"
+          echo "### Backend coverage" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f "$report" ]; then
+            sed -n 's/.*<tfoot>.*Total<\/td>\(.*\)/\1/p' "$report" \
+              | sed 's/<[^>]*>/ /g' | tr -s ' ' \
+              | awk '{print "Missed/covered counters: " $0}' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No coverage report was produced." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  frontend:
+    name: frontend build, tests, lint and format
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/frontend
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: app/frontend/package-lock.json
+
+      # The revisit trigger for a dismissed advisory. GHSA-qwww-vcr4-c8h2 was dismissed as
+      # "vulnerable code is not actually used" — true today, and it stops being true the moment
+      # somebody adopts an RSC API. A note in a decision record relies on the next person reading
+      # it; this fails the build. It retires itself once react-router reaches 8.3.0.
+      - name: The react-router dismissal still holds
+        working-directory: .
+        run: bash .github/scripts/check-react-router-rsc.sh
+
+      - name: Install
+        run: npm ci
+
+      # Chromium, for the browser suite. `--with-deps` because a bare ubuntu runner is missing the
+      # shared libraries Chromium links against, and the failure that produces names a library rather
+      # than a browser, which reads as anything but a missing install step.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Build
+        run: npm run build
+
+      # Not `npm test`. Vitest reports a total it computed about itself, and it has twice collected
+      # fewer files than exist while printing a passing summary — the second time without even
+      # setting a non-zero exit. This runs the suite and then checks its count against `find`, which
+      # is a source that can disagree with it.
+      # Both suites, each counted against `find` separately — the jsdom run excludes the browser
+      # files by design, so one total over everything on disk would report a correct skip as a
+      # missing file.
+      - name: Test, and every test file actually ran
+        working-directory: .
+        run: bash .github/scripts/check-every-test-file-ran.sh
+
+  secret-scan:
+    name: secret scanner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Run gitleaks
+        run: |
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar -xz gitleaks
+          ./gitleaks detect --source . --config .gitleaks.toml --redact --verbose
+
+  static-analysis:
+    name: static analyzer
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep:1.172.0
+    steps:
+      - uses: actions/checkout@v7
+
+      # Community rulesets; no account or token is involved.
+      - name: Run semgrep
+        run: semgrep scan --config p/java --config p/typescript --error --metrics off
+
+  # The backend dependency scan used to live here and no longer does. It moved to
+  # .github/workflows/dependency-scan.yml, which runs it weekly on main and on demand, because it
+  # took 45 minutes on one run and was still going at 75 on the next — on a pull request that changed
+  # no dependency at all. The trade is explicit: a vulnerable dependency can now reach main and sit
+  # until the next scheduled run. It is left as a comment rather than deleted silently, because a
+  # security gate that disappears from a file with no trace is the thing nobody notices.
+
+  dependency-scan-frontend:
+    name: frontend dependency scan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/frontend
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: app/frontend/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      # A plain `npm audit` cannot express "this one, for this reason", so it is either
+      # fully red or switched off. This fails on every high or critical advisory except
+      # the ones listed here, each of which carries its reason.
+      #
+      # The list is currently empty, and getting there is the mechanism working end to end.
+      # GHSA-qwww-vcr4-c8h2 — React Router's RSC-mode CSRF bypass — was accepted here because every
+      # published v7 was affected and no fix existed. The audit later reported it as no longer
+      # applying, in the words this script prints for exactly that case, so it is removed rather than
+      # left as an accepted risk nobody re-reads. An allowlist that only ever grows stops being a list
+      # of decisions and becomes a list of things that were once true.
+      - name: Audit
+        run: |
+          npm audit --json > audit.json || true
+          node --input-type=module -e '
+            import { readFileSync } from "node:fs";
+            const allowed = new Set([]);
+            const report = JSON.parse(readFileSync("audit.json", "utf8"));
+            const found = new Set();
+            for (const vulnerability of Object.values(report.vulnerabilities ?? {})) {
+              if (!["high", "critical"].includes(vulnerability.severity)) continue;
+              for (const via of vulnerability.via ?? []) {
+                if (typeof via === "object" && via.url) found.add(via.url.split("/").pop());
+              }
+            }
+            const unexpected = [...found].filter((id) => !allowed.has(id));
+            const stale = [...allowed].filter((id) => !found.has(id));
+            for (const id of stale) {
+              console.log(`Allowlisted advisory ${id} no longer applies; remove it.`);
+            }
+            if (unexpected.length) {
+              console.error(`Unaccepted advisories: ${unexpected.join(", ")}`);
+              process.exit(1);
+            }
+            console.log("No unaccepted high or critical advisories.");
+          '

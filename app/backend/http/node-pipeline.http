@@ -1,0 +1,303 @@
+### Node pipeline — does this work match a template we already have?
+#
+# Six stages over the node graph. Every verdict is recorded, abstentions included, because precision is
+# measurable from what the pipeline said and recall only from what it did not.
+#
+# Backend on 8081, not 8080: Tomcat9 owns 8080 on the development machine and a run started on the wrong
+# port answers from whatever else is listening.
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@password = ParolaMea!2026
+### Paste the id the COMPARE run answered with, before sending the comparison read below.
+@runId = 00000000-0000-0000-0000-000000000000
+
+### Sign in. Every call below needs the session cookie this returns.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{owner}}",
+  "password": "{{password}}"
+}
+
+### Run the matcher over the last thirty days — NODEPIPE-RUN-01.
+#
+# Answers 200 with the shape of the result. On a workspace with no approved templates every node
+# abstains with `no_eligible_template`, which is the normal state of a new installation rather than a
+# fault: the reference implementation threw an IndexError here.
+#
+# Expect `tiers` to be mostly ABSTAIN. On the reference corpora it is nine in ten, and a run that
+# suddenly found something to say about every node would be the defect, not the success.
+#
+# `jobTiers` is the same at the engagement grain and reads very differently — STALE, IN_PROGRESS,
+# REWORK, NOT_SHAPE_EVIDENCE, UNKNOWN_PATTERN. On this workspace expect almost everything to be
+# IN_PROGRESS or STALE: no job has reached a terminal state yet, and ADR-013 admits only finished work
+# as shape evidence.
+#
+# `discoveryCandidates` is the number to read first. It counts finished engagements that matched no
+# process anybody has written down — the queue cold-start discovery consumes.
+POST {{host}}/api/node-pipeline/runs
+
+### Run over a named window.
+#
+# The window is what the run *looked at* and is deliberately not part of the signature — a signature
+# that moved with the window would change every night by construction and could never tell a rules
+# change from a discovery.
+POST {{host}}/api/node-pipeline/runs?from=2026-05-01T00:00:00Z&to=2026-09-01T00:00:00Z
+
+### COMPARE — the model shadows the run and changes nothing about it.
+#
+# Every node is scored TWICE: once by the rules with no model in the process at all, and once with
+# the plug points on. The deterministic answer is the baseline, and a baseline derived from the AI
+# run is not one — which is why it is scored separately rather than recorded as "what changed".
+#
+# ⚠️ COMPARE doubles the work of every run it is on. GIVE IT AN END DATE. A measurement left
+# running becomes a permanent tax nobody remembers choosing.
+#
+# The model must also be reachable and a plug point switched on, and those are two separate things:
+#   flowops.ai.enabled: true
+#   flowops.ai.plug.same-work: true
+# With the model enabled and every plug point off, a run must produce byte-identical output to a run
+# with no model at all. That equality is the acceptance, not the panel.
+POST {{host}}/api/node-pipeline/runs?aiMode=COMPARE
+
+### NODEPIPE-VIEW-COMPARISON-01 — how the two paths differed, on one run.
+#
+# Five buckets over the nodes that run scored twice:
+#
+#   `agreed`   — asked, and the answer did not move
+#   `raised`   — silence became something to say
+#   `lowered`  — something to say became silence
+#   `changed`  — both spoke, and differently. The fifth bucket, and it is separate on purpose:
+#                folding it into raised or lowered would be a claim rather than a count
+#   `failed`   — asked and unusable. **Distinct from never asked**, which is what makes a plug point
+#                that silently degraded visible at all — without it, that and "switched off" look
+#                identical and only the first is a fault
+#
+# `compared` is the denominator and the ONLY cost figure this reports. Neither the number of model
+# calls nor the time they took is stored anywhere, so neither is invented to fill a column.
+#
+# 204 where that run was not in COMPARE — a different answer from a row of zeros. One says the
+# measurement was never taken; the other says it was taken and found nothing, and returning zeros
+# for both would let a misconfigured run read as a vindication of the model.
+#
+# Take the id from the POST above.
+GET {{host}}/api/node-pipeline/runs/{{runId}}/comparison
+
+### Refused for a caller who does not hold PIPELINE_RUN_START.
+#
+# Answers 403. Sign in as an employee first to see it; V85 grants the permission to OWNER and MANAGER
+# only, declared and granted in the same migration because V2's blanket owner grant already ran.
+POST {{host}}/api/node-pipeline/runs
+
+### What the run wrote, read straight from the database rather than through an endpoint.
+#
+# There is no read endpoint yet — that arrives with the Pipeline screen. Until then:
+#
+# ⚠️ The queries below order by `seq`, not `started_at`, and that is not a style preference.
+# Under the `demo` profile the clock is a `MutableClock` that nothing advances once seeding
+# finishes, so **every `analysis_run` row carries the same `started_at`** and
+# `order by started_at desc limit 1` returns an arbitrary run. `seq` is monotonic and already
+# indexed (`analysis_run_by_seq`). On a real installation both work; here only one does, and
+# the failure is silent — you get a row, just not the one you meant.
+#
+#   docker exec flowops-postgres psql -U flowops -d flowops -c \
+#     "select deterministic_outcome, reason, count(*) from pipeline_decision \
+#       where run_id = (select id from analysis_run order by seq desc limit 1) \
+#       group by 1, 2 order by 3 desc;"
+#
+#   docker exec flowops-postgres psql -U flowops -d flowops -c \
+#     "select last_stage, reason, count(*) from pipeline_item_stage \
+#       where run_id = (select id from analysis_run order by seq desc limit 1) \
+#       group by 1, 2 order by 3 desc;"
+#
+# And the engagements, which are the more interesting half:
+#
+#   docker exec flowops-postgres psql -U flowops -d flowops -c \
+#     "select reason, count(*) from pipeline_decision \
+#       where finding_kind = 'JOB_MATCH' \
+#         and run_id = (select id from analysis_run order by seq desc limit 1) \
+#       group by 1 order by 2 desc;"
+#
+# The second is the stuck ledger: every node that produced nothing, attributable to a stage and a
+# reason. It is the only record in this feature about things that did not happen.
+
+### How long an engagement took, and how much of it was waiting on somebody else — NODEPIPE-ELAPSED-01.
+#
+# P15's whole acceptance is that this sentence is computable from one job: *19 days, 11 of them waiting
+# on the client*. On the demonstration database, job c982a166 answers 19 days total, 6 external and 13
+# working, with 5 of the external days waiting on the client and the rest on a supplier — the two
+# supplier waits and the client wait overlap, and the figure counts the overlap once.
+#
+# Read the three numbers together. `externalWaitDays` is CLIENT and SUPPLIER only and must never enter a
+# performance figure (R7.5): a business whose work sat five days waiting on a client has not been slow.
+# `workingDays` is the difference, and is the only one of the three that may. `daysWaitingByKind` splits
+# the same total four ways, zeros included — hiding the zeros would make *we never wait on suppliers*
+# indistinguishable from *nobody records supplier waits*.
+#
+# Find a job with waits on it:
+#
+#   docker exec flowops-postgres psql -U flowops -d flowops -c \
+#     "select waiting.job_id, count(*) from work_node_wait w \
+#        join work_bracket waiting on waiting.id = w.bracket_id group by 1 order by 2 desc;"
+GET {{host}}/api/node-pipeline/jobs/c982a166-5c65-42ca-a92c-ebd8692b6601/elapsed
+
+### An engagement nobody has. Answers 404, which is a different thing from an engagement with no waits.
+#
+# An engagement that exists and never waited answers 200 with every day of it in `workingDays`. The two
+# must not be confused: one is *nothing to report*, the other is *nothing here*.
+GET {{host}}/api/node-pipeline/jobs/00000000-0000-0000-0000-000000000000/elapsed
+
+### Which processes a run could be started from — NODEPIPE-START-PROCESS-01, the picker.
+#
+# PROCESS's own active library, answered through its published surface rather than read here. Retired
+# templates are absent rather than greyed out: PROCESS-INSTANTIATE-01 refuses them, and offering one is
+# advertising a door that is closed. An empty list is an ordinary answer.
+GET {{host}}/api/node-pipeline/processes/startable
+
+### Run this process — the button.
+#
+# Starts a run through PROCESS-INSTANTIATE-01 and nothing else: the template is copied into the run, its
+# graph is re-validated because it may have been edited since it was authored, every entry step becomes
+# reachable at once, and the whole of that commits together. The run's steps reflect the confirmed edges.
+#
+# `name` may be omitted or null, in which case the run takes the process's own name. The pipeline has no
+# name of its own to lend a run, and an invented one puts a label in a library everybody reads.
+#
+# Take a templateId and a person from the picker above and from the workspace:
+#
+#   docker exec flowops-postgres psql -U flowops -d flowops -c \
+#     "select id, name from process_template limit 5;"
+POST {{host}}/api/node-pipeline/processes/REPLACE_WITH_A_TEMPLATE_ID/runs
+Content-Type: application/json
+
+{
+  "name": "Aurora Coffee — October campaign",
+  "processOwnerId": "REPLACE_WITH_AN_ACTIVE_PERSON_ID"
+}
+
+### Refused in PROCESS's own words, never as a 500.
+#
+# A process that does not exist answers 404 TEMPLATE_NOT_FOUND; one that has been retired answers 409
+# TEMPLATE_IS_RETIRED; a graph edited into something invalid answers 409 GRAPH_CYCLE or 409
+# STEP_STRANDED and creates no run; a Process Owner who has been deactivated answers 409
+# ASSIGNEE_NOT_ACTIVE.
+#
+# **That last one is 422 PROCESS_OWNER_NOT_ACTIVE through POST /api/process-instances and 409 here**, and
+# the difference is permanent rather than an oversight: `RefusalKind` carries three values and none of
+# them means *unprocessable*, so no neighbour of PROCESS can answer 422. Every published caller — CHAT,
+# DISCOVERY — already answers it this way. The code and the sentence are PROCESS's own, passed through
+# untouched.
+POST {{host}}/api/node-pipeline/processes/00000000-0000-0000-0000-000000000000/runs
+Content-Type: application/json
+
+{
+  "processOwnerId": "REPLACE_WITH_AN_ACTIVE_PERSON_ID"
+}
+
+### Deliver the last run's findings — NODEPIPE-NOTIFY-01.
+#
+# The delivery policy, R1-R6, applied to whatever the most recent run decided. Almost everything is
+# suppressed and that is the feature: `06_NOTIFICATIONS.md` measures the same corpus at **156 nudges
+# from 180 nodes** without these rules and **ten** with them, at unchanged precision.
+#
+# Expect the response to show far more `proposed` than `individualMessages`, and on a second call
+# expect `individualMessages` to be **zero** with `repeated` high — that is digest diffing, and it is
+# the whole of `10_RISKS.md` section 8: weeks 5 and 6 of the reference trace sent identical messages,
+# and in production the owner stops opening it.
+#
+# Who gets what, and it is worth checking against the inbox rather than trusting the counts:
+#
+#   - a nudge goes to `work_node.marker_id`, never `creator_id` (ADR-002) -- Sara writes the copy,
+#     Ines marks it, Ines is told
+#   - a role mismatch goes to `job.opened_by` as a staffing note and **never to the person**, who
+#     cannot act on it and would read it as criticism
+#   - an undocumented process goes to the workspace owner, the only person who can write one down
+#   - a stalled engagement produces a stall notice and **no nudges at all** for its people
+#   - an abstention notifies nobody, and abstentions are nine outcomes in ten
+#
+# Sending nothing answers 200. A 404 means the pipeline has never run, which is a different fact.
+#
+# On this workspace expect very little: `work_node.nudged_at` is already set on whatever the observing
+# zone asked about, and no job has reached a terminal state, so most engagements are IN_PROGRESS and
+# silent.
+POST {{host}}/api/node-pipeline/notices
+
+### Call it again immediately.
+#
+# The second call should send nothing. Every finding it would propose was stamped `cta_shown` by the
+# first, so the diff finds nothing new — and `repeated` says how many proposals it suppressed for
+# exactly that reason.
+POST {{host}}/api/node-pipeline/notices
+
+### ── NODEPIPE-COMPOSE-01: write down what the pipeline found ──────────────────────────────────────
+#
+# The act that ends a cold start, and the reason nothing before it wrote a row. R12.3: nothing a
+# human should decide is auto-created. Every run above journals its findings and touches neither
+# library; this is where somebody says yes.
+#
+# What it does, in the order the schema forces. `step_definition.task_template_id` is NOT NULL, so
+# the vocabulary has to exist before the grammar:
+#
+#   C1  each discovered kind of work is scored against the library — 0.45 text, 0.35 role, 0.20
+#       output — and reuses an existing template at >= 0.70 **and** a text agreement >= 0.45. The
+#       text floor is not negotiable: on role agreement alone a *brief* matched a *caption* template
+#       at 0.583 (ADR-008).
+#   C2  anything nothing described gets a DRAFT, never an approved entry (ADR-015). Its description
+#       says what it was drawn from rather than what the work is — a sentence about the work would be
+#       this system inventing a claim about a business it only watched.
+#   C3  one process per discovered shape, with lanes. **Same lane means sequential**; built inverted
+#       it draws zero edges and looks like a beautifully parallel process.
+#   C4  the validator says what would stop approval. On a first run that is normally the steps still
+#       being drafts, which is the design working rather than a failure.
+#
+# Every edge lands OBSERVED with the confidence measured across the runs it was seen in. **They block
+# nothing.** Instantiate the result and every step is assignable at once — *A followed B eight times*
+# is not *B waits for A*, and it may simply be that one person does content on Mondays.
+POST {{host}}/api/node-pipeline/compositions
+
+### Press it again.
+#
+# Safe, and not by luck. A process whose name is already in the library comes back under
+# `alreadyThere` rather than as a failure or as *Client launch (2)*. Task templates go through
+# find-before-create on TASKLIB's side, so a second press adds no second *Design* either.
+POST {{host}}/api/node-pipeline/compositions
+
+### Then promote one edge and see the difference.
+#
+# Take a `templateId` from the response above, read it back, and confirm `dependencies` is empty
+# while `step_dependency` holds OBSERVED rows with their confidence. Promote one through
+# `process.http`, re-read, and exactly one edge is now in the graph. Instantiate before and after:
+# every step assignable, then one of them waiting.
+GET {{host}}/api/process-templates/{{composedTemplateId}}
+
+### Does what somebody just said look like a template they have already approved?
+#
+# `NODEPIPE-RESEMBLE-WORK-01`. The same matcher, the same weights and the same gates the batch run
+# uses — given one sentence instead of eight hundred, so the library becomes reachable from the one
+# place people describe their work.
+#
+# **`match: null` is the ordinary answer and is not a failure.** Most of what people say is not work,
+# and most work resembles nothing written down yet; on the measured corpus 167 of 800 marks abstain.
+#
+# It writes nothing: no run row, no decision row, no node. Press it fifty times and every count in
+# the database is where it was.
+POST {{host}}/api/node-pipeline/resemblance
+Content-Type: application/json
+
+{
+  "text": "Wrote the October Iulius monthly summary, what worked and what to change."
+}
+
+### The same call, with something that is not work.
+#
+# A question is gated before it is scored (`gate:intent:meta`), so this answers `match: null` however
+# closely the words happen to resemble a template. Try it with a two-word message as well: below the
+# text-quality floor, and equally silent.
+POST {{host}}/api/node-pipeline/resemblance
+Content-Type: application/json
+
+{
+  "text": "Should we do the October Iulius monthly summary?"
+}

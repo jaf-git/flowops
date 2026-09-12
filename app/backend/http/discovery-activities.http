@@ -1,0 +1,312 @@
+### FEATURE_DISCOVERY — the activity a person names, and the step key that follows it
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects. The demo backend runs on 8081 — Tomcat9 owns 8080
+### on this machine.
+###
+### **This file proves one thing: a step can be keyed on what somebody says they did, not only on the
+### department they sit in.** A mark has always carried a work type, and a work type is a coarse word —
+### CONTENT covers writing a caption, writing an article and writing a script. Every engagement that ran
+### those three collapsed them into one step, and a thirteen-activity process came back as five. The
+### activity is the finer word, chosen from a list rather than typed fresh, and the requests below walk
+### it end to end: what the list holds, adding to it, and carrying one on a mark.
+###
+### **The list is the whole design, and typing is not.** A free-text box would produce "caption",
+### "Caption", "write caption" and "write the caption" inside one week, and four names for one activity
+### fragment a process exactly as badly as one name for four activities merges it. So the field offers
+### what the workspace already uses, ordered by how often, and adding is the exception rather than the
+### path — but adding is never blocked, PRINCIPLE-NEVER-BLOCK, because a person who cannot name their
+### own work stops naming it.
+###
+### **The activity is OPTIONAL, and that is the safety property rather than a compromise.** A mark
+### without one keys its step on the work type exactly as every mark did before this column existed, so
+### a cold workspace works on day one and resolution improves as people name things. Nothing below
+### requires an activity for a mark to succeed; the last request in this file shows what changes when
+### one is sent, and the answer is a longer step key and nothing else.
+###
+### **Nothing here is a figure about a person.** `activity_usage` records who chose what, because a
+### suggestion has to be able to say where it came from, and no route aggregates by that column —
+### invariant 14, and this is the table it would be easiest to break.
+###
+### Seed the workspace first, or the list will be empty and the marks will have nothing to attach to:
+###   ./mvnw spring-boot:run "-Dspring-boot.run.profiles=demo"
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@employee = ionut@atelier.ro
+@password = password1234
+
+### **CSRF applies to every POST here.** The session is a cookie, so the token travels in a readable
+### cookie and must come back in a header (`SecurityConfiguration`, double-submit). A REST client that
+### keeps cookies does this for you; `curl` needs `-c`/`-b` and an explicit `X-XSRF-TOKEN`, and without
+### it every request answers **401 with an empty body** — which reads exactly like a wrong password and
+### is not one.
+
+### Copy real identifiers out of `discovery.http` and out of the POST below into these.
+@jobId = 00000000-0000-0000-0000-000000000000
+@messageId = 00000000-0000-0000-0000-000000000000
+@performerId = 00000000-0000-0000-0000-000000000000
+@activityId = 00000000-0000-0000-0000-000000000000
+
+### Sign in as the person who does the work. Every endpoint in this file requires WORK_NODE_MARK, which
+### every role holds — naming your own work is recognition rather than classification, and a permission
+### gate on it would be a gate on this zone's only supply of evidence.
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{employee}}",
+  "password": "{{password}}"
+}
+
+###############################################################################
+### DISCOVERY-MANAGE-ACTIVITIES-01 — what the workspace already says it does
+###############################################################################
+
+### 200. Every activity anybody can still pick, ordered by how often it has been used.
+###
+### **Fetched once, not searched.** A workspace holds tens of these, not thousands, and a debounced
+### endpoint behind a text field would spend a network round trip answering what filtering forty rows in
+### the browser answers in under a millisecond. The mark panel loads this list and narrows it locally.
+###
+### Two fields on each row are worth reading rather than skimming. `timesUsed` is why the top of the
+### list covers most marks — it is maintained on use rather than counted live, so it is the product's
+### own claim about itself. And `departments` names everyone who has used the activity: three or more
+### comes back as **`tooGenericToBeOneThing: true`**, because "review" means one thing in Design and
+### another in Legal, and an activity broad enough to be picked everywhere has stopped naming anything.
+### That flag is shown, never enforced — the workspace is told, and decides.
+GET {{host}}/api/discovery/activities
+
+###############################################################################
+### Adding one — never blocked, and never a duplicate
+###############################################################################
+
+### 201. A name nobody has used here yet.
+###
+### The response carries the `slug` alongside the name, and the slug is the identity rather than the
+### decoration: it is what gets carried inside the step key, which is why its charset is narrower than
+### the name's. A colon in a step key forges an output type, a slash a conversation split, a hash a
+### concept split and a plus a second step, so normalisation folds case and diacritics and reduces
+### everything else to hyphens. "Write the caption" becomes `write-the-caption`.
+###
+### Copy `id` out of the response into `@activityId` above.
+POST {{host}}/api/discovery/activities
+Content-Type: application/json
+
+{
+  "name": "Write the caption"
+}
+
+### 201 again — **and the same `id` as the request above.** This is the thing to watch in this file.
+###
+### The name is cased differently and padded, and it normalises to the slug that already exists, so the
+### existing row comes back rather than a refusal or a second row. Compare the two `id` values: they are
+### equal, and `timesUsed` has not moved, because naming an activity is not using one.
+###
+### **Refusing here would be worse than it looks.** The person who typed "write the caption" is not
+### making a mistake, they are describing the same work; told the name was taken they would invent a
+### third name for it, and the workspace would end the week with two activities where the point of the
+### list is that it has one. This is the same reasoning that makes adding a client idempotent by name.
+POST {{host}}/api/discovery/activities
+Content-Type: application/json
+
+{
+  "name": "  write the CAPTION  "
+}
+
+### 400 REFUSED, for a name that leaves nothing behind once it is normalised.
+###
+### `":::"` is three characters that all reduce to separators, so the slug would be empty — and an empty
+### slug is not a small problem. Two people naming two different things would both land on it, the step
+### keys of unrelated work would collide, and a process would be assembled out of steps that have nothing
+### to do with each other. The refusal is in the domain rather than in this endpoint, and it says what it
+### is: no two people could ever pick this and mean the same thing.
+###
+### **This is the one refusal in the file**, and it is not a validation preference. A blank name is
+### caught earlier by `@NotBlank`; this catches the name that looks like a name and is not one.
+POST {{host}}/api/discovery/activities
+Content-Type: application/json
+
+{
+  "name": ":::"
+}
+
+###############################################################################
+### Carrying one on a mark — the whole reason the list exists
+###############################################################################
+
+### 201. The same mark as in `discovery-brackets.http`, with the activity attached.
+###
+### **Watch the response's `activity` field, and watch what does NOT change.** The activity comes back
+### as the name, and `bracketId`, `joined` and `destination` are exactly what they would have been
+### without it: the bracket address is chat · client · project · work type · performer, and the activity
+### is not one of the five. Marking the same work twice with the same activity still answers
+### `"joined": true` on the same bracket. If the activity had reached the address, one engagement's
+### thirteen activities would have opened thirteen brackets where the work is one piece, and every
+### duration in it would be measured over a fraction of the work.
+###
+### What it does change is the step key the clusterer reads afterwards. A node with an activity keys on
+### `K:CONTENT@write-the-caption`; the same node without one keys on `K:CONTENT`, which is what every
+### node did before this column existed.
+POST {{host}}/api/discovery/work
+Content-Type: application/json
+
+{
+  "messageId": "{{messageId}}",
+  "jobId": "{{jobId}}",
+  "performerId": "{{performerId}}",
+  "workType": "CONTENT",
+  "activityId": "{{activityId}}",
+  "verb": "CREATE"
+}
+
+### 201 with `"activity": null`. The ordinary mark, unchanged.
+###
+### Omitting `activityId` is not a degraded path and there is no nudge for it. This is the request every
+### caller in the product made before the field existed, it answers identically, and its node keys on
+### `K:CONTENT`. Run this and the one above in the same engagement and read the two step keys side by
+### side — that difference, repeated across a quarter of real work, is the whole measurement.
+POST {{host}}/api/discovery/work
+Content-Type: application/json
+
+{
+  "messageId": "{{messageId}}",
+  "jobId": "{{jobId}}",
+  "performerId": "{{performerId}}",
+  "workType": "CONTENT",
+  "verb": "ADD"
+}
+
+### 200 again, and now the activity that was just used has moved.
+###
+### `timesUsed` is up by one and `lastUsedAt` is set, so the next person opening the mark panel finds it
+### near the top. Re-read the list after marking rather than before: the ordering is the only thing that
+### makes a list of forty usable without a search box, and it is earned by use rather than configured.
+GET {{host}}/api/discovery/activities
+
+###############################################################################
+### Two names for one thing — merging, and the one that must never be automatic
+###############################################################################
+
+### Name a second activity for work the workspace already has a word for, so there is something to
+### merge. Copy its `id` into `@duplicateId`.
+POST {{host}}/api/discovery/activities
+Content-Type: application/json
+
+{
+  "name": "Post copy"
+}
+
+@duplicateId = 00000000-0000-0000-0000-000000000000
+
+### 200. "Post copy" becomes "Write the caption", and every node that carried the losing name moves.
+###
+### **This is the request in the file with the widest blast radius, and it is deliberately manual.**
+### It rewrites `work_node.activity_id` and `activity_usage.activity_id` for every node the losing
+### activity ever named, which is the point: two half-populated steps become one, and a process that
+### came back as two shapes comes back as one. The two use counts add up, so the survivor sorts where
+### its real history puts it rather than below activities it has just absorbed.
+###
+### The losing activity is **kept**, as MERGED with `merged_into_id` pointing at the survivor. Deleting
+### it would orphan every step key it ever produced, and the pointer is the only record that a person
+### decided these were one thing.
+###
+### **A wrong merge cannot be undone by another merge.** Two different activities become one and nothing
+### afterwards can tell their nodes apart. That asymmetry is why nothing in this product merges on its
+### own: character matching in the browser suggests, the model below suggests, and a person presses.
+###
+### ⚠️ **Watch what does NOT happen to the library.** Templates drafted from the absorbed name keep
+### their titles, their approvals and their use counts. Nothing is retired, because
+### `DECISION-NO-TEMPLATE-BINDING-01` binds nothing — a person deciding that two words mean one thing
+### is not evidence that a template they approved has stopped describing real work. What happens
+### instead is that a **finding** is raised, at merge time rather than on the next scheduled run,
+### carrying those templates as its evidence: *"2 approved templates still name 'Post copy', which is
+### now 'Write the caption'"*, with **Review them** and **They are still correct**. Read it back at
+### `GET /api/analysis/findings`. If no analysis has ever run there is nothing to attach it to and
+### nothing is raised, which is the one case where the merge is silent.
+POST {{host}}/api/discovery/activities/{{duplicateId}}/merge
+Content-Type: application/json
+
+{
+  "intoId": "{{activityId}}"
+}
+
+### 409 ACTIVITY_MERGE_REFUSED. Into itself, or into one that is already merged or retired.
+###
+### Both refusals protect the same thing. Merging an activity into itself would mark it MERGED and point
+### it at itself, leaving a name nobody can pick and nothing to pick instead; merging into a name that
+### has already gone would hide both rather than joining them. The refusal names which side it was.
+POST {{host}}/api/discovery/activities/{{activityId}}/merge
+Content-Type: application/json
+
+{
+  "intoId": "{{activityId}}"
+}
+
+### 200. Retired — nobody can pick it again, and **nothing already marked with it changes.**
+###
+### Read those two halves separately, because the second is the one that is easy to get wrong. A step
+### key that has been discovered stays the step it was; if retiring rewrote the nodes, every shape built
+### on that step would silently become a different shape and the runs before and after would stop being
+### comparable. Retiring stops a name spreading. It is not a rewrite of the graph behind it.
+###
+### **Retire a name that should stop; merge a name that duplicates.** Retiring a duplicate strands its
+### nodes under a word no one can choose again, which is the worst of both.
+POST {{host}}/api/discovery/activities/{{duplicateId}}/retire
+Content-Type: application/json
+
+{}
+
+###############################################################################
+### The one place a model belongs in this feature
+###############################################################################
+
+### 200, 204, or 409 — and the three answers mean different things.
+###
+### The browser already catches "caption" against "captions" by comparing characters, instantly and for
+### nothing. It cannot catch **"post copy" against "caption set"**, which share none. That is the whole
+### job of this endpoint and the reason the plug point exists.
+###
+### **It suggests. It never merges.** The answer is rendered as the same question a character match
+### renders — *this looks like "Write the caption", use it or say yours is different* — and nothing is
+### written either way. The verdict is also checked against the candidates that were sent, so a model
+### that invents a name it was not offered is discarded rather than shown.
+###
+### **200** carries the existing activity it considers the same work. **204** is the model having no
+### opinion, which is a correct and common answer. **409** is the model being off, unavailable, or this
+### plug point not switched on — a different fact, and a caller that could not tell them apart would
+### show the person a wrong reason for an empty result.
+###
+### Requires `flowops.ai.plug.same-activity=true` and the runtime switch on
+### (`PUT /api/node-pipeline/ai {"on":true}`). Both, deliberately: one is a deployment decision and the
+### other is a demonstration one.
+POST {{host}}/api/node-pipeline/activities/near-miss
+Content-Type: application/json
+
+{
+  "typed": "Post copy",
+  "candidates": ["Write the caption", "Shot list", "Schedule the post"]
+}
+
+###############################################################################
+### What is deliberately not here
+###############################################################################
+
+### **There is no route that renames an activity into a different slug.** The domain refuses it: the
+### slug is carried inside every step key the activity has ever produced, and reslugging would leave
+### two eras of one process looking like two processes. A name may be tidied where it normalises to the
+### same slug, and nothing else.
+###
+### **There is no route that deletes one.** Merge and retire are above and delete is not, because a slug
+### is unique across ACTIVE, MERGED and RETIRED alike: reissuing one would collapse two eras of history
+### into a single step, and deleting would orphan every step key the activity ever produced rather than
+### ending it. The schema enforces the states the two routes move between (`activity_status_is_known`,
+### `activity_merged_names_its_survivor`).
+###
+### **There is no route that reports by who chose what.** `activity_usage.used_by` exists so a
+### suggestion can say where it came from, and no endpoint aggregates it. "Caption writing: 40 marks" is
+### a fact about the work and is allowed; the same data pointed at a person is forbidden.
+###
+### **And nothing here reaches a task.** Naming an activity writes a row in this zone and no further —
+### the one thing that crosses zones is an approved template, and `NoRouteFromDiscoveryToATaskTest`
+### asserts the absence of the rest rather than trusting it.

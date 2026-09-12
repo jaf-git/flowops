@@ -1,0 +1,209 @@
+### FEATURE_DISCOVERY — the analysis pipeline: what the graph says, and the one act it offers
+###
+### Every request here is a real one against a running instance. Sign in first: the session cookie and
+### the cross-site token are what the chain expects. The demo backend runs on 8081 — Tomcat9 owns 8080
+### on this machine.
+###
+### **Six stages over one window, read once.** Observe, normalise, measure, detect, correlate,
+### recommend. Every detector is asked its question of the same window, so twenty questions cost one
+### pass over the graph; a detector that fails is logged and the run carries on, because one badly
+### written question must not cost the owner every other answer.
+###
+### **The figure to watch is `bracketsRead`, and it is not decoration.** No findings across four hundred
+### brackets is a real answer about a business. The same silence across zero brackets means the thing is
+### not running. Without the count those are the same response.
+###
+### **Nothing here is keyed to a person.** Findings are about work types, clients, role pairs, addresses
+### and shapes — `ROLE_PAIR` is as close as this comes to a human, and the distance is the product. The
+### database refuses a finding whose subject kind is not one of those, which is invariant 14 enforced at
+### the cheapest place rather than by a check somebody has to remember.
+###
+### **One request in this file changes something outside the zone**: `write-it-down` authors a process
+### template. It is served from `FormalisationController` with the other two crossings, and it is
+### documented here rather than in `discovery-crossing.http` because a reader working through the
+### pipeline page wants that page's calls in one place. What decides where the *code* lives is what it
+### writes; what decides where the *walkthrough* lives is who is reading it.
+###
+### Seed the workspace in discovery mode and let it build a graph — the detectors have sample floors and
+### will honestly report nothing over three brackets:
+###   ./mvnw spring-boot:run -Dspring-boot.run.arguments="--discovery"
+
+@host = http://localhost:8081
+@owner = maria@atelier.ro
+@employee = andrei@atelier.ro
+@password = a-long-enough-passphrase
+
+### Copy a real identifier out of the recommendations response below.
+@recommendationId = 00000000-0000-0000-0000-000000000000
+
+###############################################################################
+### Sign in as the owner
+###############################################################################
+
+### DISCOVERY_CANVAS_VIEW is the owner's and a manager's, never an employee's. This reads the business
+### rather than any individual's work, which is the whole reason it is gated differently from marking.
+# @name signIn
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{owner}}",
+  "password": "{{password}}"
+}
+
+###############################################################################
+### Run the pipeline, and read what it found
+###############################################################################
+
+### 200. The response says what it READ as well as what it found — `bracketsRead`, `waitsRead`, and the
+### furthest stage it reached. A run that stopped at DETECT produced no recommendations because it never
+### got there, which is a different fact from having nothing to recommend.
+POST {{host}}/api/discovery/analysis/run
+
+### 200. The latest run, whether or not this session started it.
+###
+### **This endpoint exists because the page was lying about itself.** The KPI strip took its counts from
+### the run mutation's response, which is absent until somebody presses the button — so a page rendering
+### a previous run's findings displayed `0 brackets read` beside them, claiming to have read nothing
+### while presenting conclusions. 204 when nothing has ever run, which is a real state and not an error.
+GET {{host}}/api/discovery/analysis/run/latest
+
+### 200. The latest run's findings, strongest evidence first.
+###
+### The latest run ONLY. Several runs together would put last week's figure beside this week's with
+### nothing to say which was which, and a reader takes whichever they see first. History is kept so the
+### page can say *this got worse*; it is not the default view.
+GET {{host}}/api/discovery/analysis/findings
+
+### 200. The open proposals, strongest first.
+###
+### Ordered by confidence, then by evidence. A proposal the pipeline has argued against sinks to the
+### bottom rather than being hidden: UNDERMINED says the evidence is thin in a specific, fixable way,
+### not that the idea is wrong. Acted-on and dismissed proposals are excluded — a list that kept them
+### would be a log, and what somebody opens this for is a queue.
+###
+### Copy a `WRITE_IT_DOWN` id into `@recommendationId` above.
+GET {{host}}/api/discovery/analysis/recommendations
+
+###############################################################################
+### Both directions of the graph link
+###############################################################################
+
+### 200. Which brackets a finding was drawn from — read forwards, to highlight exactly those.
+GET {{host}}/api/discovery/analysis/findings/{{recommendationId}}/subjects
+
+### 200. Which findings mention one bracket — read backwards, and the canvas's question: *why is this
+### one coloured?* Without it the drawer and the canvas would be two products sharing a database.
+GET {{host}}/api/discovery/analysis/findings/touching/{{recommendationId}}
+
+###############################################################################
+### The act: a shape becomes a process
+###############################################################################
+
+### 201. DISCOVERY-WRITE-IT-DOWN-01, and the product's thesis closed.
+###
+### **Watch the two counts on either side of this request:**
+###
+###   select (select count(*) from task) as tasks, (select count(*) from process_instance) as runs;
+###
+### Both are unchanged afterwards. A shape became a process *template*; nobody was given any work and no
+### run started. What did change is `process_template`, by one — and `task_template` by however many of
+### the shape's work types were not already in the library, which after the second process anybody
+### writes down is usually none: the steps are RESOLVED against the library, not created.
+###
+### **The name is required and is never invented on the server.** The page prefills the shape's own
+### words — `Content → Design → Ads` — so agreeing costs one glance. A workspace that calls this
+### something else types that instead, because a name enters a library everybody afterwards picks from.
+POST {{host}}/api/discovery/analysis/recommendations/{{recommendationId}}/write-it-down
+Content-Type: application/json
+
+{
+  "name": "Client campaign"
+}
+
+### 409 RECOMMENDATION_ALREADY_DECIDED. Send the same request twice.
+###
+### **This is a button people press twice**, because nothing visible happens while the request is in
+### flight. Refused rather than treated as idempotent: the template authored the first time is a real
+### artefact somebody may since have edited, and returning it as though this press produced it would
+### tell the second person they wrote something they did not.
+###
+### The proposal is CLAIMED before the process is authored, not after. Check-then-act with another
+### feature's work inside the window means both presses pass the check and the workspace gets two
+### identical processes.
+POST {{host}}/api/discovery/analysis/recommendations/{{recommendationId}}/write-it-down
+Content-Type: application/json
+
+{
+  "name": "Client campaign"
+}
+
+### 409 TEMPLATE_NAME_TAKEN — PROCESS's own refusal, in PROCESS's own words, reaching the caller intact.
+###
+### Run the analysis again so the shape gets a fresh proposal, then write it down under a name already
+### in the library. Until 2026-08-26 this answered **500**: DISCOVERY had no handler for a neighbour's
+### `PublishedRefusal` at all, so every refusal PROCESS or TASKLIB made through the crossing was the
+### server blaming itself for a rule another feature applied on purpose.
+POST {{host}}/api/discovery/analysis/recommendations/{{recommendationId}}/write-it-down
+Content-Type: application/json
+
+{
+  "name": "Client campaign"
+}
+
+### 422 PROPOSAL_IS_NOT_A_SHAPE. Send a `SPLIT_WORK_TYPE` proposal's id instead.
+###
+### Six kinds of proposal exist and exactly one authors anything. *Split this work type* and *ask for a
+### slot* are decisions about how a workspace is organised, with nothing for a button to produce — so
+### the card carries none. The server refuses anyway, because **a page is not a permission**.
+POST {{host}}/api/discovery/analysis/recommendations/{{recommendationId}}/write-it-down
+Content-Type: application/json
+
+{
+  "name": "Whatever this would be"
+}
+
+###############################################################################
+### The other half of the queue
+###############################################################################
+
+### 204. Put a proposal aside.
+###
+### **A list of suggestions nobody can clear stops being read.** The pipeline proposes on every run; a
+### workspace that has already considered and rejected four meets those four again each week, above the
+### one that is new.
+###
+### This is not hiding. The row keeps its evidence, its wording and its confidence, and gains the fact
+### that somebody looked at it and said no — with their name on it, so they can be asked why. It writes
+### nothing outside the zone, which is why it is served from `AnalysisController` and its sibling above
+### is not.
+POST {{host}}/api/discovery/analysis/recommendations/{{recommendationId}}/dismiss
+
+###############################################################################
+### The refusals, as somebody else
+###############################################################################
+
+### Sign in as an employee.
+# @name signInEmployee
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{employee}}",
+  "password": "{{password}}"
+}
+
+### 403 NOT_PERMITTED. Andrei may mark messages — WORK_NODE_MARK is granted to everybody, because
+### nothing exists to analyse unless the people doing the work click. He may not read the business.
+GET {{host}}/api/discovery/analysis/findings
+
+### 403 NOT_PERMITTED, and for a second reason on top of the first. Writing a process down needs
+### DISCOVERY_CANVAS_VIEW *and* PROCESS's own PROCESS_TEMPLATE_AUTHOR — mirrored rather than chosen:
+### somebody who may not write a process template on PROCESS's own screen may not write one through this
+### door either.
+POST {{host}}/api/discovery/analysis/recommendations/{{recommendationId}}/write-it-down
+Content-Type: application/json
+
+{
+  "name": "Andrei's process"
+}

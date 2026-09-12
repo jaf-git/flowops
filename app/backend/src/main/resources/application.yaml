@@ -1,0 +1,174 @@
+spring:
+  application:
+    name: flowops
+
+  # Every value below is overridable by environment variable. The defaults are the
+  # local development container in docker-compose.yml and hold no production secret.
+  datasource:
+    url: ${FLOWOPS_DATASOURCE_URL:jdbc:postgresql://localhost:5434/flowops}
+    username: ${FLOWOPS_DATASOURCE_USERNAME:flowops}
+    password: ${FLOWOPS_DATASOURCE_PASSWORD:flowops}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: never
+
+  # The local mail catcher, which accepts unauthenticated mail and sends nothing outward.
+  #
+  # **The defaults below are Mailpit and they are deliberate.** Development must not be able to mail a
+  # real person by accident, so every default here points at a trap on this machine: no credentials, no
+  # authentication, no transport security, because there is no network hop to secure.
+  #
+  # Pointing at a real server is configuration and not a code change -- set the five variables in
+  # `.env` (see `.env.example`). The moment FLOWOPS_MAIL_AUTH is true, messages leave this machine and
+  # reach whatever address the product was told to write to.
+  mail:
+    host: ${FLOWOPS_MAIL_HOST:localhost}
+    port: ${FLOWOPS_MAIL_PORT:1025}
+    username: ${FLOWOPS_MAIL_USERNAME:}
+    password: ${FLOWOPS_MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${FLOWOPS_MAIL_AUTH:false}
+          # STARTTLS on the submission port, which is what Gmail, Outlook and every transactional
+          # provider expect on 587. Mailpit needs neither and is given neither.
+          starttls:
+            enable: ${FLOWOPS_MAIL_STARTTLS:false}
+            required: ${FLOWOPS_MAIL_STARTTLS:false}
+        # A hung SMTP connection must not hold a request thread open. Mail is dispatched after commit
+        # and asynchronously, so a slow server delays a message and never a person.
+        transport:
+          protocol: smtp
+
+server:
+  port: ${FLOWOPS_SERVER_PORT:8081}
+  servlet:
+    session:
+      # The idle lock. Spring Session enforces it against last-access, so it is
+      # configuration rather than code (DECISION-AUTH-DEFAULTS-01).
+      timeout: ${FLOWOPS_SESSION_IDLE_TIMEOUT:8h}
+
+# The shipping defaults of DECISION-AUTH-DEFAULTS-01. They live here rather than in a
+# spec, which may not carry volatile values, and are owner-configurable per installation.
+flowops:
+  # **Where a person's browser reaches this installation**, and the one place to say it.
+  #
+  # Every link this product emails — an invitation, a password reset — points at a *browser* route,
+  # which the backend cannot infer: building one from a request header is a host-header injection. So
+  # it is configuration, and until now it was configuration written out once per link, each with its
+  # own copy of the origin. Both copies said 5173; on a machine where the dev server had moved to
+  # 5174 the invitation link pointed at a port with nothing behind it, and the person clicking it met
+  # a dead page while the token sat valid for another six days. One origin, set once, is what stops
+  # the two disagreeing — or being right individually and wrong together.
+  #
+  # Each link can still be overridden on its own, for the deployment where they genuinely differ.
+  web:
+    app-origin: ${FLOWOPS_APP_ORIGIN:http://localhost:5173}
+
+  # ── AI assist ───────────────────────────────────────────────────────────────────────────────────
+  #
+  # **Off by default, and that is the constraint rather than a preference.** CONSTRAINT-AI-OPTIONAL-01
+  # says the product works without a model, and a feature that needed a network service in order to
+  # start would not be optional whatever a constraint called it. The default here and
+  # `matchIfMissing = true` on `NoLanguageModelAdapter` are the same decision said twice, in the two
+  # places somebody would look.
+  #
+  # Switched off, the switched-off product contains no code that can reach Ollama at all -- the
+  # container never builds the adapter -- so this is a wiring decision rather than an `if` somebody
+  # can forget. Switch it on with FLOWOPS_AI_ENABLED=true and `docker compose up -d ollama`.
+  ai:
+    enabled: ${FLOWOPS_AI_ENABLED:false}
+    ollama-url: ${FLOWOPS_OLLAMA_URL:http://localhost:11434}
+    # llama3.2:3b, at 2GB, answers the shape question in about eighteen seconds on this hardware and
+    # runs on a laptop. The model is named here rather than assumed so that trying another is a
+    # configuration change; the prompt asks for keys and a boolean, which is a small enough ask that
+    # it does not depend on this particular one.
+    model: ${FLOWOPS_AI_MODEL:llama3.2:3b}
+    # Longer than the observed eighteen seconds and shorter than any person's patience. A read that
+    # gives up answers exactly as a model with no opinion does, so this bounds the wait rather than
+    # deciding anything.
+    timeout-seconds: ${FLOWOPS_AI_TIMEOUT_SECONDS:45}
+
+  auth:
+    passcode-lifetime: ${FLOWOPS_PASSCODE_LIFETIME:PT10M}
+    passcode-failure-ceiling: ${FLOWOPS_PASSCODE_FAILURE_CEILING:5}
+    reauthentication-window: ${FLOWOPS_REAUTHENTICATION_WINDOW:PT15M}
+    rate-limit-window: ${FLOWOPS_RATE_LIMIT_WINDOW:PT15M}
+    failures-per-email: ${FLOWOPS_FAILURES_PER_EMAIL:10}
+    failures-per-address: ${FLOWOPS_FAILURES_PER_ADDRESS:30}
+
+    # AUTH-RESET-PASSWORD-01. Provisional until AUTH_REQ_DECISION_24 item 1 is ruled on:
+    # DECISION-AUTH-DEFAULTS-01 names its limited actions exhaustively and reset is absent from that
+    # list, so there is nothing to read and these are the implementer's until the owner says otherwise.
+    #
+    # An hour, because this token opens an account that already exists — which is the use case's own
+    # reason for it being "materially shorter than an invitation", and an invitation is seven days.
+    # The limits are the invitation's rather than login's, because the thing being bounded is the same
+    # thing: an endpoint that sends a message to any address on demand.
+    reset-token-lifetime: ${FLOWOPS_RESET_TOKEN_LIFETIME:PT60M}
+    reset-rate-limit-window: ${FLOWOPS_RESET_RATE_LIMIT_WINDOW:PT24H}
+    resets-per-email: ${FLOWOPS_RESETS_PER_EMAIL:3}
+    resets-per-address: ${FLOWOPS_RESETS_PER_ADDRESS:20}
+
+    # Where the emailed link points. The browser route, not an API path: a person clicks it and lands
+    # on a page, which then calls the API. The origin comes from `flowops.web.app-origin` above, so
+    # moving the frontend is one variable rather than two that can be changed apart.
+    reset-link-base: ${FLOWOPS_RESET_LINK_BASE:${flowops.web.app-origin}/reset-password}
+
+    notification-sender: ${FLOWOPS_NOTIFICATION_SENDER:no-reply@flowops.local}
+
+  # The invitation's equivalent of `reset-link-base`, and it is here for the same reason — plus one
+  # this installation learned the hard way.
+  #
+  # The property already existed, with this default written into `InvitationMailAdapter` and named
+  # nowhere else. So on a machine where the frontend is not on 5173 — this one, where Tomcat holds
+  # 8080 and the dev server moved to 5174 — every invitation carried a link to a port with nothing
+  # behind it, and the person clicking it met a dead page while the token was perfectly valid. A
+  # default only reachable by editing Java is a default nobody can correct.
+  workspace:
+    invitation:
+      accept-url: ${FLOWOPS_INVITATION_ACCEPT_URL:${flowops.web.app-origin}/invitation}
+
+  # Who outbound mail is from.
+  #
+  # **A real SMTP server will not honour an arbitrary sender.** Gmail rewrites or rejects a `From` that
+  # is not the authenticated account, so against real SMTP this and `notification-sender` above must
+  # both be the mailbox being authenticated as. Against Mailpit anything is accepted, which is why the
+  # default reads as obviously fake rather than as a plausible address somebody might trust.
+  mail:
+    from: ${FLOWOPS_MAIL_FROM:no-reply@flowops.local}
+
+  # CANVAS-VIEW-PROCESS-01, the live half.
+  #
+  # **This number and the client's patience are one number in two places.** The stream writes a `beat`
+  # frame on this interval so that silence becomes measurable — a calm process emits no deltas for
+  # hours, and a connection wedged open by a proxy emits none either, so without a frame that arrives
+  # regardless the client cannot tell a quiet board from a dead one and reads *Live* on both.
+  # `shared/realtime/RealtimeClient.ts` waits three of these before it stops believing the stream;
+  # raising this without raising that makes a working board call itself offline.
+  canvas:
+    heartbeat-interval-ms: ${FLOWOPS_CANVAS_HEARTBEAT_INTERVAL_MS:15000}
+
+# The published HTTP contract (CONSTRAINT-API-FIRST-01).
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    # The browser assets are pinned ahead of the version springdoc expects, because that version
+    # carries known advisories. springdoc otherwise looks for its own version's folder inside the
+    # webjar and finds nothing, so the whole interface answered 500 while the specification itself
+    # served perfectly. Kept in step with swagger.ui.version in the pom; if they drift, the interface
+    # breaks again and no test would have said so.
+    version: ${FLOWOPS_SWAGGER_UI_VERSION:5.32.11}
